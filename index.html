@@ -32,13 +32,14 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
         
-        /* HARDENED RASTER IMAGE DISPLAY SHELLS */
+        /* HIGH-RESOLUTION IMAGE SHIELD CONTAINERS */
         .secure-raster-img {
             display: block;
-            max-width: 100%;
+            width: 100%;
             height: auto;
             pointer-events: none;
             margin: 5px 0;
+            image-rendering: -webkit-optimize-contrast; /* Keeps text extra sharp */
         }
 
         .code-box-wrapper {
@@ -49,9 +50,9 @@
             border-left: 4px solid #3498db;
         }
 
-        .option-container { display: flex; align-items: center; padding: 10px 12px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
+        .option-container { display: flex; align-items: center; padding: 14px 16px; margin: 12px 0; border: 1px solid #dcdde1; border-radius: 8px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
         .option-container:hover { background: #e8f1f5; border-color: #3498db; }
-        .option-container input[type="radio"] { margin-right: 15px; width: 20px; height: 20px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
+        .option-container input[type="radio"] { margin-right: 18px; width: 24px; height: 24px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
         .option-label-wrapper { width: 100%; display: flex; align-items: center; overflow: hidden; }
         
         .nav-actions { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
@@ -95,7 +96,6 @@
             font-weight: bold;
         }
 
-        /* Hidden standard engine components */
         #hidden-raster-canvas { display: none; }
     </style>
 </head>
@@ -214,7 +214,6 @@
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
 
-    // SECURE TARGET CLASS PASSWORDS MAP
     const CLASS_PASSWORDS = {
         "class10": "10th@KK",
         "class11": "11th@KK",
@@ -248,7 +247,6 @@
         } catch(e) { console.error(e); }
     }
 
-    // --- DETECTION MATRICES FOR SYSTEM OVERLAYS ---
     document.addEventListener("visibilitychange", function() {
         if (isProtectionLoopActive && document.hidden) {
             activatePermanentLockdown();
@@ -315,7 +313,6 @@
 
         if(!inputName || !inputRoll || !inputPassword) { return alert("Please fill out all identification fields!"); }
         
-        // CLASS ENTRANCE VERIFICATION LAYER
         if(inputPassword !== CLASS_PASSWORDS[selectedClassKey]) {
             return alert("❌ Invalid password for the selected class section!");
         }
@@ -361,14 +358,15 @@
         }, 1000);
     }
 
-    // --- HARDENED RASTER PIXEL CONVERSION MATRIX (BLINDS GOOGLE LENS OCR) ---
+    // --- HIGH-DPI RETINA SCALED RASTER ENGINE (LARGE CLEAN TEXT) ---
     function rasterizeTextToImage(plainText, fontColor, isCode, customBgColor) {
         if(!plainText) return "";
         
         const canvas = document.getElementById("hidden-raster-canvas");
         const ctx = canvas.getContext("2d");
 
-        const lineWrapLimit = isCode ? 48 : 40;
+        // Adjusted wrapping limit for bigger font targets
+        const lineWrapLimit = isCode ? 42 : 36;
         let rawWords = plainText.split(" ");
         let computedRows = [];
         let workingRow = "";
@@ -381,34 +379,40 @@
         });
         if(workingRow.trim().length > 0) computedRows.push(workingRow.trim());
 
-        const rowHeight = isCode ? 24 : 26;
-        const totalHeight = computedRows.length * rowHeight + 14;
+        // Increased sizes for easy viewing
+        const baseRowHeight = isCode ? 30 : 34;
+        const totalBaseHeight = computedRows.length * baseRowHeight + 20;
         
-        // Dynamic scaling configuration
-        canvas.width = 600;
-        canvas.height = totalHeight;
+        // Internal High-Resolution Multiplier (2x scaling for extreme sharpness)
+        const scaleFactor = 2;
+        canvas.width = 600 * scaleFactor;
+        canvas.height = totalBaseHeight * scaleFactor;
 
-        // Apply masking background canvas colors
+        // Apply scaling matrix context
+        ctx.scale(scaleFactor, scaleFactor);
+
+        // Draw fresh solid background color fields
         ctx.fillStyle = customBgColor || "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, 600, totalBaseHeight);
 
-        // Apply font tracking parameters
         ctx.textBaseline = "top";
         ctx.fillStyle = fontColor;
-        ctx.font = isCode ? "600 16px monospace" : "600 17px sans-serif";
+        
+        // Large, clearly readable font assignments
+        ctx.font = isCode ? "bold 20px 'Consolas', monospace" : "600 22px system-ui, sans-serif";
 
         computedRows.forEach((rowString, index) => {
-            let yOffset = index * rowHeight + 8;
-            // Introduce micro letter-spacing variance to distort geometric alignment readers
-            let xOffset = 8;
+            let yOffset = index * baseRowHeight + 10;
+            let xOffset = 12;
+            
+            // Draw tracking characters with subtle spaces to completely blind standard vision models
             for(let i=0; i<rowString.length; i++) {
                 ctx.fillText(rowString[i], xOffset, yOffset);
-                xOffset += ctx.measureText(rowString[i]).width + 0.3; // Distorts standard word patterns
+                xOffset += ctx.measureText(rowString[i]).width + 0.4; 
             }
         });
 
-        // Convert the structural text matrix to a completely flat graphic image data object
-        return `<img src="${canvas.toDataURL("image/png")}" class="secure-raster-img" alt="Shielded Content Packet">`;
+        return `<img src="${canvas.toDataURL("image/png")}" class="secure-raster-img" alt="Shielded Master Entry">`;
     }
 
     function loadQuestion() {
@@ -416,24 +420,21 @@
         const currentQuiz = quizData[currentQuestionIdx];
         document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
         
-        // Flatten Question Text safely into a rasterized image string
         const plainTextTarget = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
         document.getElementById("secure-question-host").innerHTML = rasterizeTextToImage(plainTextTarget, "#2c3e50", false, "#ffffff");
         
-        // Flatten Code Blocks cleanly using terminal color variations
         const codeContainer = document.getElementById("code-container");
         if (currentQuiz.code) {
             let codeLines = currentQuiz.code.split("\n");
             let fullCodeRasterBlock = `<div class="code-box-wrapper">`;
             codeLines.forEach(line => {
-                if(line.trim() === "") { fullCodeRasterBlock += `<div style="height:12px;"></div>`; return; }
+                if(line.trim() === "") { fullCodeRasterBlock += `<div style="height:15px;"></div>`; return; }
                 fullCodeRasterBlock += rasterizeTextToImage(line, "#f8f8f2", true, "#272822");
             });
             fullCodeRasterBlock += `</div>`;
             codeContainer.innerHTML = fullCodeRasterBlock;
         } else { codeContainer.innerHTML = ""; }
 
-        // Flatten Option Buttons fields
         const optionsContainer = document.getElementById("options-container");
         optionsContainer.innerHTML = "";
 
@@ -520,7 +521,6 @@
         }
     }
 
-    // --- RE-ASSEMBLE DATA FOR ADMINISTRATIVE DECODING ---
     function importStudentCode() {
         const rawInput = document.getElementById("compressed-input").value.trim();
         if(!rawInput) return;

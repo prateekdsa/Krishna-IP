@@ -1,0 +1,32 @@
+{
+  "class10": [
+    {
+      "question": "Class 10 Example Question?",
+      "code": "",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correct": 0
+    }
+  ],
+  "class11": [
+    {
+      "question": "Class 11 Example Question?",
+      "code": "",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correct": 1
+    }
+  ],
+  "class12": [
+    {
+      "question": "What will be the output of the following Python Pandas code?",
+      "code": "import pandas as pd\ns = pd.Series([10, 20, 30], index=['a', 'b', 'c'])\nprint(s['b'])",
+      "options": ["10", "20", "30", "IndexError"],
+      "correct": 1
+    },
+    {
+      "question": "Which SQL command is used to remove duplicate rows from a SELECT query result?",
+      "code": "SELECT ______ column_name FROM table_name;",
+      "options": ["UNIQUE", "DISTINCT", "REMOVE", "DROP"],
+      "correct": 1
+    }
+  ]
+}

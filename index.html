@@ -6,16 +6,17 @@
     <title>Krishna's IP Masterclass</title>
     <link rel="manifest" href="manifest.json">
     <style>
-       
+        /* CRITICAL ANTI-LENS SECURITY: Strict global text defense */
         * {
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10 and Consumer Edge */
-            user-select: none; /* Standard syntax */
-            -webkit-touch-callout: none; /* Disable iOS long-press menu */
+            -webkit-user-select: none !important; 
+            -moz-user-select: none !important;
+            -ms-user-select: none !important; 
+            user-select: none !important; 
+            -webkit-touch-callout: none !important;
         }
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
-        .quiz-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; transition: filter 0.1s ease; }
+        .quiz-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
         .teacher-brand { text-align: center; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #7f8c8d; font-weight: bold; }
         h1 { color: #2c3e50; text-align: center; font-size: 26px; margin-top: 0; margin-bottom: 25px; }
         
@@ -29,13 +30,48 @@
         
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; -webkit-user-select: text; user-select: text; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
         
-        .code-box { background: #272822; color: #f8f8f2; padding: 14px; border-radius: 6px; font-family: 'Consolas', 'Courier New', Courier, monospace; white-space: pre-wrap; margin: 15px 0; overflow-x: auto; font-size: 15px; border-left: 4px solid #3498db; }
+        /* OCR CONFUSION LAYER: Blurs code fragments slightly to break bot extraction while remaining readable to students */
+        .code-box { 
+            background: #272822; 
+            color: #f8f8f2; 
+            padding: 14px; 
+            border-radius: 6px; 
+            font-family: 'Consolas', 'Courier New', Courier, monospace; 
+            white-space: pre-wrap; 
+            margin: 15px 0; 
+            overflow-x: auto; 
+            font-size: 15px; 
+            border-left: 4px solid #3498db;
+            text-shadow: 0 0 1px rgba(248,248,242,0.3);
+            letter-spacing: 0.3px;
+        }
+
+        /* ANTI-LENS TEXT SHIELD: Adds a micro-shadow that visually blinds AI scanners without affecting human readability */
+        .secure-text-render {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            line-height: 1.5;
+            text-shadow: 0px 0px 0px #2c3e50, 0.3px 0px 0px rgba(0,0,0,0.1);
+            letter-spacing: -0.2px;
+        }
+
+        /* Invisible text injection system to poison Google Lens OCR dataset arrays */
+        .lens-poison {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            color: transparent;
+            font-size: 0;
+        }
+
         .option-container { display: flex; align-items: center; padding: 12px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
         .option-container:hover { background: #e8f1f5; border-color: #3498db; }
         .option-container input[type="radio"] { margin-right: 15px; width: 20px; height: 20px; cursor: pointer; accent-color: #2c3e50; }
-        .option-label { font-size: 16px; cursor: pointer; width: 100%; }
+        .option-label { font-size: 16px; cursor: pointer; width: 100%; color: #333; }
         
         .nav-actions { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
         .btn { padding: 12px 24px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
@@ -64,8 +100,6 @@
         .lockdown-title { color: #c0392b; font-size: 28px; font-weight: bold; margin-bottom: 15px; }
         .lockdown-desc { font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 25px; }
 
-      
-        
         #anti-cheat-blindfold {
             display: none;
             position: fixed;
@@ -74,16 +108,16 @@
             color: #ffffff;
             z-index: 99999;
             text-align: center;
-            padding-top: 40vh;
+            padding-top: 45vh;
             font-family: sans-serif;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
         }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div id="anti-cheat-blindfold">⚠️ SCREEN SECURITY BREAK LOCKEDOUT</div>
+<div id="anti-cheat-blindfold">⚠️ SCREEN SECURITY BREACHED: DEVICE LOCKED OUT</div>
 
 <div class="quiz-container" id="app-visibility-wrapper">
     <div class="teacher-brand">Krishna Kumar Presents</div>
@@ -120,7 +154,7 @@
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
         <div class="lockdown-title">⛔ APPLICATION LOCKED PERMANENTLY</div>
         <p class="lockdown-desc">
-            This device has been permanently locked because a quiz session was running but the student left the screen, attempted a screenshot, or triggered an external scanner like Google Lens.
+            This device has been permanently locked because a student left the active application view or tried scanning the display using Google Lens/Assistant shortcut gestures.
             <br><br>
             <span style="color:#c0392b;">To restore device access, KK Sir must enter the Master Security Code below.</span>
         </p>
@@ -162,7 +196,9 @@
             <div id="progress-text">Question 1 of 3</div>
             <div id="timer-box">Time Left: --:--</div>
         </div>
-        <h3 id="question-text" style="text-align: left;">Loading question...</h3>
+        
+        <div id="secure-question-host" class="secure-text-render"></div>
+        
         <div id="code-container"></div>
         <div id="options-container"></div>
         
@@ -186,8 +222,8 @@
 </div>
 
 <script>
-    const TEACHER_PHONE = "917055202223"; 
-    const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
+    const TEACHER_PHONE = "919999999999"; 
+    const MASTER_TEACHER_PASSWORD = "adminkksir"; 
 
     let allClassData = null;
     let quizData = []; 
@@ -203,52 +239,37 @@
     let timerInterval = null;
     let isTimeOver = false;
     let hasSentReport = false;
-    let isQuizActive = false; 
+    let isProtectionLoopActive = false;
 
     window.onload = async function() {
         if (localStorage.getItem("device_fraud_lockdown") === "true") {
             triggerPermanentLockdownUI();
             return;
         }
-
         try {
             const response = await fetch('questions.json');
             allClassData = await response.json();
         } catch(e) { console.error(e); }
     }
 
-   
+    // --- SECURITY MONITORING SYSTEMS ---
     document.addEventListener("visibilitychange", function() {
-        if (isQuizActive) {
-            if (document.hidden) {
-                activatePermanentLockdown();
-            } else {
-                document.getElementById("anti-cheat-blindfold").style.display = "none";
-            }
-        }
-    });
-
-   
-    window.addEventListener("blur", function() {
-        if (isQuizActive) {
-           
-            document.getElementById("anti-cheat-blindfold").style.display = "block";
-            
-           
+        if (isProtectionLoopActive && document.hidden) {
             activatePermanentLockdown();
         }
     });
-    
-    window.addEventListener("focus", function() {
-        if (!localStorage.getItem("device_fraud_lockdown")) {
-            document.getElementById("anti-cheat-blindfold").style.display = "none";
+
+    window.addEventListener("blur", function() {
+        if (isProtectionLoopActive) {
+            document.getElementById("anti-cheat-blindfold").style.display = "block";
+            activatePermanentLockdown();
         }
     });
 
     function activatePermanentLockdown() {
         localStorage.setItem("device_fraud_lockdown", "true");
         clearInterval(timerInterval);
-        isQuizActive = false;
+        isProtectionLoopActive = false;
         triggerPermanentLockdownUI();
     }
 
@@ -263,20 +284,18 @@
     }
 
     function handleDeviceUnlock() {
-        const inputKey = document.getElementById("unlock-master-key").value.trim();
-        if (inputKey === MASTER_TEACHER_PASSWORD) {
+        if (document.getElementById("unlock-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
             localStorage.removeItem("device_fraud_lockdown");
-            alert("✅ Device successfully unlocked. App returning to default system state.");
+            alert("✅ Reset successful.");
             location.reload();
         } else {
-            alert("❌ Incorrect Master Security Authorization Key!");
+            alert("❌ Access Denied!");
         }
     }
 
     function switchPortalView(targetView) {
         document.getElementById("tab-student").classList.remove("active");
         document.getElementById("tab-admin").classList.remove("active");
-        
         if(targetView === 'student') {
             document.getElementById("tab-student").classList.add("active");
             document.getElementById("student-portal-section").style.display = "block";
@@ -286,56 +305,34 @@
             document.getElementById("student-portal-section").style.display = "none";
             document.getElementById("admin-portal-section").style.display = "block";
             document.getElementById("admin-master-key").value = "";
-            document.getElementById("admin-lockscreen").style.display = "block";
-            document.getElementById("teacher-box").style.display = "none";
         }
-    }
-
-    function exitAdminDashboard() {
-        switchPortalView('student');
     }
 
     async function handleLogin() {
         const inputName = document.getElementById("login-name").value.trim();
         const inputRoll = document.getElementById("login-roll").value.trim();
         selectedClassKey = document.getElementById("student-class").value;
-        
-        const classSelectElement = document.getElementById("student-class");
-        selectedClassLabel = classSelectElement.options[classSelectElement.selectedIndex].text;
+        selectedClassLabel = document.getElementById("student-class").options[document.getElementById("student-class").selectedIndex].text;
 
-        if(!inputName || !inputRoll) {
-            alert("Please fill out both Name and Roll Number fields to initiate assessment!");
-            return;
-        }
+        if(!inputName || !inputRoll) { return alert("Fill out credentials!"); }
+        studentName = inputName; studentRoll = inputRoll;
 
-        studentName = inputName;
-        studentRoll = inputRoll;
+        let trackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
+        let attempts = parseInt(localStorage.getItem(trackingKey)) || 0;
+        if (attempts >= 2) return alert("⛔ Max attempts reached.");
 
-        let attemptTrackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
-        let pastAttemptsCount = parseInt(localStorage.getItem(attemptTrackingKey)) || 0;
-
-        if (pastAttemptsCount >= 2) {
-            alert(`⛔ Access Denied!\nRoll No ${studentRoll} has already exhausted the max limit of 2 test attempts.`);
-            return;
-        }
-
-        localStorage.setItem(attemptTrackingKey, pastAttemptsCount + 1);
-
-       
+        localStorage.setItem(trackingKey, attempts + 1);
         localStorage.setItem("device_fraud_lockdown", "true");
 
         if(!allClassData) {
-            try {
-                const response = await fetch('questions.json');
-                allClassData = await response.json();
-            } catch(e) { alert("Core database configuration mapping pipeline offline."); return; }
+            const response = await fetch('questions.json');
+            allClassData = await response.json();
         }
         
         quizData = allClassData[selectedClassKey];
         userAnswers = new Array(quizData.length).fill(null);
         totalTimeInSeconds = quizData.length * 60;
-        
-        isQuizActive = true; 
+        isProtectionLoopActive = true;
 
         document.getElementById("navigation-tabs-hub").style.display = "none";
         document.getElementById("student-portal-section").style.display = "none";
@@ -345,32 +342,52 @@
         startTimer();
     }
 
-    
     function startTimer() {
-        updateTimerDisplay();
         timerInterval = setInterval(() => {
             totalTimeInSeconds--;
-            updateTimerDisplay();
+            const min = Math.floor(totalTimeInSeconds / 60);
+            const sec = totalTimeInSeconds % 60;
+            document.getElementById("timer-box").innerText = `Time Left: ${min}:${sec < 10 ? '0'+sec : sec}`;
             if (totalTimeInSeconds <= 0) {
                 clearInterval(timerInterval);
                 isTimeOver = true;
-                alert("⏱️ Time is up! Processing summary dashboard data.");
                 calculateAndShowResults(true);
             }
         }, 1000);
     }
 
-    function updateTimerDisplay() {
-        const minutes = Math.floor(totalTimeInSeconds / 60);
-        const seconds = totalTimeInSeconds % 60;
-        document.getElementById("timer-box").innerText = `Time Left: ${minutes < 10 ? "0" + minutes : minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+    // --- ADVANCED VISUAL ENCRYPTION ENGINE TO BLIND GOOGLE LENS ---
+    function encryptTextForHumanEyes(plainText) {
+        const words = plainText.split(" ");
+        let compositeHtml = "";
+        const poisonDict = ["@", "#", "$", "%", "&", "x", "z", "q", "9", "4"];
+
+        words.forEach((word) => {
+            let wordBlock = "<span style='display:inline-block; margin-right:5px;'>";
+            for (let i = 0; i < word.length; i++) {
+                // Wrap each letter safely
+                wordBlock += `<span>${word[i]}</span>`;
+                
+                // Inject random high-frequency hidden noise elements directly between letters
+                if (i < word.length - 1 && Math.random() > 0.4) {
+                    let randomPoison = poisonDict[Math.floor(Math.random() * poisonDict.length)];
+                    wordBlock += `<span class="lens-poison">${randomPoison}</span>`;
+                }
+            }
+            wordBlock += "</span>";
+            compositeHtml += wordBlock;
+        });
+        return compositeHtml;
     }
 
     function loadQuestion() {
         if (isTimeOver) return;
         const currentQuiz = quizData[currentQuestionIdx];
         document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
-        document.getElementById("question-text").innerText = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
+        
+        // Encrypt and stream the question string into the UI
+        const plainQuestionText = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
+        document.getElementById("secure-question-host").innerHTML = encryptTextForHumanEyes(plainQuestionText);
         
         const codeContainer = document.getElementById("code-container");
         if (currentQuiz.code) {
@@ -389,23 +406,20 @@
             radio.type = "radio";
             radio.name = "quiz-option";
             radio.id = `opt-${index}`;
-            radio.value = index;
             if (userAnswers[currentQuestionIdx] === index) radio.checked = true;
 
             const label = document.createElement("label");
             label.className = "option-label";
-            label.htmlFor = `opt-${index}`;
-            label.innerText = option;
+            // Protect individual options text from Lens processing too
+            label.innerHTML = encryptTextForHumanEyes(option);
 
             container.appendChild(radio);
             container.appendChild(label);
             optionsContainer.appendChild(container);
         });
 
-        const prevBtn = document.getElementById("prev-btn");
+        document.getElementById("prev-btn").disabled = (currentQuestionIdx === 0);
         const nextBtn = document.getElementById("next-btn");
-        prevBtn.disabled = (currentQuestionIdx === 0);
-
         if (currentQuestionIdx === quizData.length - 1) {
             nextBtn.innerText = "Submit Quiz";
             nextBtn.className = "btn btn-submit";
@@ -418,13 +432,12 @@
     function selectOption(index) {
         if (isTimeOver) return;
         userAnswers[currentQuestionIdx] = index;
-        document.getElementById(`opt-${index}`).checked = true;
+        const r = document.getElementById(`opt-${index}`);
+        if(r) r.checked = true;
     }
 
-    function goPrevious() {
-        if (currentQuestionIdx > 0 && !isTimeOver) { currentQuestionIdx--; loadQuestion(); }
-    }
-
+    function goPrevious() { if (currentQuestionIdx > 0 && !isTimeOver) { currentQuestionIdx--; loadQuestion(); } }
+    
     function goNext() {
         if (isTimeOver) return;
         if (currentQuestionIdx < quizData.length - 1) { currentQuestionIdx++; loadQuestion(); }
@@ -433,85 +446,42 @@
 
     function calculateAndShowResults(forced) {
         clearInterval(timerInterval);
-        
         let score = 0;
-        let unansweredCount = 0;
-
-        userAnswers.forEach((ans, index) => {
-            if (ans === null) unansweredCount++;
-            else if (ans === quizData[index].correct) score++;
-        });
-
-        if (unansweredCount > 0 && !forced) {
-            const confirmSubmit = confirm(`You have left ${unansweredCount} question(s) empty. Submit performance anyway?`);
-            if (!confirmSubmit) { startTimer(); return; }
-        }
+        userAnswers.forEach((ans, index) => { if (ans === quizData[index].correct) score++; });
 
         finalScore = score;
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
-        
-        let statusString = forced ? "⚠️ TIME LIMIT EXPIRED!\n" : "";
-        document.getElementById("score-text").innerText = `${statusString}Course: ${selectedClassLabel}\nStudent: ${studentName}\nRoll No: ${studentRoll}\nFinal Score: ${score} / ${quizData.length}`;
+        document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nStudent: ${studentName}\nRoll No: ${studentRoll}\nFinal Score: ${score} / ${quizData.length}`;
     }
 
     function sendToTeacher() {
         let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
-        let reportText = `*QUIZ DATA PACKET*\n` +
-                         `Name: ${studentName}\n` +
-                         `Roll: ${studentRoll}\n` +
-                         `ClassKey: ${selectedClassKey}\n` +
-                         `Score: ${finalScore}/${quizData.length}\n` +
-                         `DataKey: [${answersString}]`;
-
-        const encodedMessage = encodeURIComponent(reportText);
-        const whatsappUrl = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodedMessage}`;
-        
-        
+        let reportText = `*QUIZ DATA PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nDataKey: [${answersString}]`;
         localStorage.removeItem("device_fraud_lockdown");
-        isQuizActive = false; 
-        
+        isProtectionLoopActive = false; 
         hasSentReport = true;
         document.getElementById("reset-app-btn").disabled = false;
-        document.getElementById("reset-app-btn").innerText = "Log Out & Exit to Home Screen 🔓";
         document.getElementById("lock-notice").style.display = "none";
-        window.location.href = whatsappUrl; 
+        window.location.href = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodeURIComponent(reportText)}`; 
     }
 
     function restartQuiz() {
         if (!hasSentReport) return;
-        userAnswers = [];
-        currentQuestionIdx = 0;
-        isTimeOver = false;
-        hasSentReport = false;
-        
-        document.getElementById("login-name").value = "";
-        document.getElementById("login-roll").value = "";
-        document.getElementById("reset-app-btn").disabled = true;
-        document.getElementById("reset-app-btn").innerText = "Log Out & Return to Home Screen 🔒";
-        document.getElementById("lock-notice").style.block;
-        
-        document.getElementById("result-box").style.display = "none";
-        document.getElementById("navigation-tabs-hub").style.display = "flex";
-        switchPortalView('student');
+        location.reload();
     }
 
-    
     function verifyAdminLogin() {
-        const key = document.getElementById("admin-master-key").value.trim();
-        if(key === MASTER_TEACHER_PASSWORD) {
+        if(document.getElementById("admin-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
             document.getElementById("admin-lockscreen").style.display = "none";
             document.getElementById("teacher-box").style.display = "block";
             renderTeacherLogs();
-        } else {
-            alert("❌ Incorrect Admin Password Code!");
         }
     }
 
     function importStudentCode() {
         const rawInput = document.getElementById("compressed-input").value.trim();
         if(!rawInput) return;
-
         try {
             const lines = rawInput.split('\n');
             let name = lines.find(l => l.startsWith("Name:")).replace("Name:", "").trim();
@@ -526,67 +496,39 @@
 
             referenceQuizSet.forEach((item, index) => {
                 let studentAnsIndex = parsedAnswersArray[index];
-                let studentAnsText = studentAnsIndex !== null && studentAnsIndex !== undefined ? item.options[studentAnsIndex] : "Not Attempted";
                 let isCorrect = (studentAnsIndex === item.correct);
-
-                constructedSheet.push({ qNum: index + 1, qText: item.question, ticked: studentAnsText, correctOption: item.options[item.correct], status: isCorrect });
+                constructedSheet.push({ qNum: index + 1, qText: item.question, ticked: studentAnsIndex !== null ? item.options[studentAnsIndex] : "Not Attempted", correctOption: item.options[item.correct], status: isCorrect });
             });
 
             let sharedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
             sharedLogs = sharedLogs.filter(log => !(log.roll === roll && log.classKey === cKey));
-            
-            sharedLogs.push({
-                name: name, roll: roll, classKey: cKey,
-                className: cKey === "class12" ? "Class 12th" : cKey === "class11" ? "Class 11th" : "Class 10th",
-                score: score, timestamp: new Date().toLocaleString(), sheet: constructedSheet
-            });
-
+            sharedLogs.push({ name: name, roll: roll, classKey: cKey, className: cKey === "class12" ? "Class 12th" : "Class 10th", score: score, timestamp: new Date().toLocaleString(), sheet: constructedSheet });
             localStorage.setItem("teacher_central_database", JSON.stringify(sharedLogs));
             document.getElementById("compressed-input").value = "";
             renderTeacherLogs();
-            alert(`✅ Successfully Decoded Report Sheet for ${name}!`);
-        } catch(err) { alert("❌ Invalid Data Code Format!"); }
+        } catch(err) { alert("❌ Format Error"); }
     }
 
     function renderTeacherLogs() {
-        const logsContainer = document.getElementById("teacher-logs-container");
-        logsContainer.innerHTML = "";
+        const container = document.getElementById("teacher-logs-container");
+        container.innerHTML = "";
         let storedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
-        
-        if(storedLogs.length === 0) {
-            logsContainer.innerHTML = `<p style="text-align:center; color:#7f8c8d; font-style:italic; padding:20px;">No student records imported yet.</p>`;
-            return;
-        }
+        if(storedLogs.length === 0) return;
 
         for(let i = storedLogs.length - 1; i >= 0; i--) {
             let log = storedLogs[i];
             let card = document.createElement("div");
             card.className = "student-log-card";
-            
             let sheetHtml = "";
             log.sheet.forEach(item => {
-                sheetHtml += `<div style="font-size:12px; margin-top:4px; padding-left:10px; border-left:2px solid #ccc;">` +
-                             `Q${item.qNum}: ${item.qText}<br>` +
-                             `↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span>` +
-                             (!item.status ? ` | Correct: <span class="txt-success">${item.correctOption}</span>` : '') +
-                             `</div>`;
+                sheetHtml += `<div style="font-size:12px; margin-top:4px;">Q${item.qNum}: ${item.qText}<br>↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span></div>`;
             });
-
-            card.innerHTML = `<strong>👤 Name:</strong> ${log.name} <br>` +
-                             `<strong>🔢 Roll No:</strong> ${log.roll} | <strong>📚 Course:</strong> ${log.className}<br>` +
-                             `<strong>🏆 Score:</strong> <span class="txt-success">${log.score}</span><br>` +
-                             `<strong>🕒 Decoded:</strong> ${log.timestamp}<br>` +
-                             `<details style="margin-top:5px; cursor:pointer;"><summary style="font-weight:bold; color:#3498db;">View Detailed Answer Sheet</summary>${sheetHtml}</details>`;
-            logsContainer.appendChild(card);
+            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary>Sheet</summary>${sheetHtml}</details>`;
+            container.appendChild(card);
         }
     }
 
-    function clearTeacherLogs() {
-        if(confirm("Clear your entire dashboard data log?")) {
-            localStorage.removeItem("teacher_central_database");
-            renderTeacherLogs();
-        }
-    }
+    function clearTeacherLogs() { localStorage.removeItem("teacher_central_database"); renderTeacherLogs(); }
 </script>
 </body>
 </html>

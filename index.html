@@ -260,7 +260,6 @@
         isProtectionLoopActive = false;
         clearInterval(timerInterval);
         
-        // Flash alert feedback overlay
         document.getElementById("anti-cheat-blindfold").style.display = "block";
         
         setTimeout(() => {
@@ -269,7 +268,6 @@
             document.getElementById("navigation-tabs-hub").style.display = "flex";
             document.getElementById("student-portal-section").style.display = "block";
             
-            // Wipe runtime answers out completely
             userAnswers = [];
             currentQuestionIdx = 0;
             
@@ -321,6 +319,7 @@
         selectedClassKey = document.getElementById("student-class").value;
         selectedClassLabel = document.getElementById("student-class").options[document.getElementById("student-class").selectedIndex].text;
 
+        // FIXED: Extract information FIRST before evaluating locks
         if(!inputName || !inputRoll || !inputPassword) { return alert("Please fill out all identification fields!"); }
         
         if(inputPassword !== CLASS_PASSWORDS[selectedClassKey]) {
@@ -380,7 +379,6 @@
         const canvas = document.getElementById("hidden-raster-canvas");
         const ctx = canvas.getContext("2d");
 
-        // Dynamic wrap spacing thresholds for clear massive display profiles
         const lineWrapLimit = isCode ? 38 : 32;
         let rawWords = plainText.split(" ");
         let computedRows = [];
@@ -394,22 +392,19 @@
         });
         if(workingRow.trim().length > 0) computedRows.push(workingRow.trim());
 
-        // Massive line sizing for immediate student reading accessibility
         const baseRowHeight = isCode ? 36 : 42;
         const totalBaseHeight = computedRows.length * baseRowHeight + 30;
         
-        // 3x Ultra-High Resolution scaling engine to maintain perfect sharpness while zooming
         const scaleFactor = 3;
         canvas.width = 650 * scaleFactor;
         canvas.height = totalBaseHeight * scaleFactor;
 
         ctx.scale(scaleFactor, scaleFactor);
 
-        // Anti-OCR Textured Background Generation (Disrupts continuous color block scanner masks)
         ctx.fillStyle = customBgColor || "#fcfdfe";
         ctx.fillRect(0, 0, 650, totalBaseHeight);
         
-        // Inject structural anchor interference hashes (invisible to humans, corrupts pixel algorithms)
+        // Anti-OCR background disturbance hashes
         ctx.strokeStyle = isCode ? "rgba(255,255,255,0.06)" : "rgba(44,62,80,0.04)";
         ctx.lineWidth = 1.5;
         for (let j = 5; j < totalBaseHeight; j += 15) {
@@ -419,7 +414,6 @@
         ctx.textBaseline = "top";
         ctx.fillStyle = fontColor;
         
-        // HUGE text size assignments 
         ctx.font = isCode ? "bold 24px 'Courier New', monospace" : "bold 26px system-ui, -apple-system, sans-serif";
 
         computedRows.forEach((rowString, index) => {
@@ -428,4 +422,34 @@
             
             for(let i = 0; i < rowString.length; i++) {
                 ctx.save();
-                //
+                let jitterY = (Math.sin(i + index) * 0.3); 
+                
+                ctx.translate(xOffset, yOffset + jitterY);
+                ctx.fillText(rowString[i], 0, 0);
+                ctx.restore();
+                
+                xOffset += ctx.measureText(rowString[i]).width + 0.5; 
+            }
+        });
+
+        return `<img src="${canvas.toDataURL("image/png")}" class="secure-raster-img" alt="Shielded Quiz Block">`;
+    }
+
+    function loadQuestion() {
+        if (isTimeOver) return;
+        const currentQuiz = quizData[currentQuestionIdx];
+        document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
+        
+        const plainTextTarget = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
+        document.getElementById("secure-question-host").innerHTML = rasterizeTextToImage(plainTextTarget, "#1a252f", false, "#ffffff");
+        
+        const codeContainer = document.getElementById("code-container");
+        if (currentQuiz.code) {
+            let codeLines = currentQuiz.code.split("\n");
+            let fullCodeRasterBlock = `<div class="code-box-wrapper">`;
+            codeLines.forEach(line => {
+                if(line.trim() === "") { fullCodeRasterBlock += `<div style="height:18px;"></div>`; return; }
+                fullCodeRasterBlock += rasterizeTextToImage(line, "#a6e22e", true, "#1e1e1e");
+            });
+            fullCodeRasterBlock += `</div>`;
+            codeContainer.innerHTML = fullCodeRaster

@@ -6,7 +6,7 @@
     <title>Krishna's IP Masterclass</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* GLOBAL SELECTION PROTECTION */
+        /* STRATIFIED OS PROTECTION LAYER */
         * {
             -webkit-user-select: none !important; 
             -moz-user-select: none !important;
@@ -32,7 +32,7 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
         
-        /* HARDENED CODE BLOCK SHIELD */
+        /* HARDENED CODE BOX CONTEXTS */
         .code-box { 
             background: #272822; 
             color: #f8f8f2; 
@@ -44,48 +44,39 @@
             overflow-x: auto; 
             font-size: 15px; 
             border-left: 4px solid #3498db;
-            display: inline-block;
-            width: 100%;
-            box-sizing: border-box;
-            transform: scaleX(-1); /* Flips code snippet block backwards globally */
-        }
-        .code-box span {
-            display: inline-block;
-            transform: scaleX(-1); /* Corrects reading direction for human students only */
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
         }
 
-        /* ANTI-OCR GEOMETRIC DECEPTION SYSTEM */
+        /* SHATTER ENGINE CSS ALIGNMENTS */
         .secure-text-render {
-            font-size: 18px;
+            font-size: 19px;
             font-weight: 600;
             color: #2c3e50;
-            line-height: 1.7;
+            line-height: 1.8;
             margin: 15px 0;
-            display: inline-block;
-            width: 100%;
-            transform: scaleX(-1); /* Complete directional inversion across horizontal layout axis */
+            display: flex;
+            flex-wrap: wrap;
+            row-gap: 6px;
+            column-gap: 2px;
         }
 
-        /* Human reading re-alignment sub-token engine */
-        .lens-blind-word {
-            display: inline-block;
-            transform: scaleX(-1); /* Returns standard tracking orientation to student eyes */
-            margin-left: 5px; /* Adjust layout offset gaps across reversed flow */
-            position: relative;
+        /* Words are individual structural layouts */
+        .scrambled-word-wrapper {
+            display: inline-flex;
+            margin-right: 6px;
         }
 
-        /* Dynamic injection fields that hide character structures from HTML scrapers */
-        .lens-blind-word::before {
-            content: attr(data-prefix);
-        }
-        .lens-blind-word::after {
-            content: attr(data-suffix);
+        /* Characters are sorted inside out dynamically */
+        .scrambled-char-unit {
+            display: inline-block;
         }
 
         .option-container { display: flex; align-items: center; padding: 12px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
         .option-container:hover { background: #e8f1f5; border-color: #3498db; }
         .option-container input[type="radio"] { margin-right: 15px; width: 20px; height: 20px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
-        .option-label { font-size: 16px; cursor: pointer; width: 100%; color: #333; display: flex; transform: scaleX(-1); justify-content: flex-end; }
+        .option-label { font-size: 16px; cursor: pointer; width: 100%; color: #333; display: flex; flex-wrap: wrap; }
         
         .nav-actions { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
         .btn { padding: 12px 24px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
@@ -266,7 +257,7 @@
         } catch(e) { console.error(e); }
     }
 
-    // --- TRACKING OVERLAYS VIA BLUR TRIGGER DESTRUCTION ---
+    // --- OS VIEWPORT INTERACTION RIGID LOCKS ---
     document.addEventListener("visibilitychange", function() {
         if (isProtectionLoopActive && document.hidden) {
             activatePermanentLockdown();
@@ -322,6 +313,10 @@
         }
     }
 
+    function exitAdminDashboard() {
+        switchPortalView('student');
+    }
+
     async function handleLogin() {
         const inputName = document.getElementById("login-name").value.trim();
         const inputRoll = document.getElementById("login-roll").value.trim();
@@ -370,36 +365,49 @@
         }, 1000);
     }
 
-    // --- MATRIX STRUCTURAL OBFUSCATION ENGINE (BLINDS GOOGLE LENS OCR) ---
-    function transformToAntiLensLayout(plainText) {
-        // Reverse array indexing layout alignment configuration tracking 
-        const rawWordsArray = plainText.split(" ");
-        let combinedStringOutput = "";
+    // --- DOM SHATTERING ENCRYPTION ALGORITHM (BLINDS SYSTEM-LEVEL LENS ACCESSIBILITY) ---
+    function scrambleStringStructure(textInput) {
+        const tokens = textInput.split(" ");
+        let fullContainerMarkup = "";
 
-        rawWordsArray.forEach((word) => {
+        tokens.forEach((word) => {
             if(word.length === 0) return;
             
-            // Extract the center core of the text fragment string
-            let prefixChar = word.charAt(0);
-            let suffixChar = word.length > 1 ? word.charAt(word.length - 1) : "";
-            let remainingCore = word.length > 2 ? word.substring(1, word.length - 1) : (word.length === 2 ? "" : "");
+            // Transform string into character mapping blocks
+            let characterArray = word.split("").map((char, index) => {
+                return { letter: char, logicalIndex: index };
+            });
 
-            if (word.length === 1) {
-                prefixChar = ""; suffixChar = ""; remainingCore = word;
+            // Randomize array layout sequence thoroughly
+            for (let i = characterArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [characterArray[i], characterArray[j]] = [characterArray[j], characterArray[i]];
             }
 
-            // Inject the segmented elements right back into stylized CSS variable mapping slots
-            combinedStringOutput += `<span class="lens-blind-word" data-prefix="${prefixChar}" data-suffix="${suffixChar}">${remainingCore}</span>`;
+            // Create Flexbox structure where layout display ordering is inverted from natural syntax sequence
+            let wordHtmlNode = `<span class="scrambled-word-wrapper">`;
+            characterArray.forEach((node) => {
+                wordHtmlNode += `<span class="scrambled-char-unit" style="order: ${node.logicalIndex};">${node.letter}</span>`;
+            });
+            wordHtmlNode += `</span>`;
+            fullContainerMarkup += wordHtmlNode;
         });
-        
-        return combinedStringOutput;
+
+        return fullContainerMarkup;
     }
 
     function secureCodeBoxFormat(codeSnippet) {
         if(!codeSnippet) return "";
         let lines = codeSnippet.split("\n");
-        let formattedLines = lines.map(line => `<span>${line}</span>`).join("\n");
-        return `<div class="code-box">${formattedLines}</div>`;
+        let completeOutput = `<div class="code-box">`;
+        
+        lines.forEach(line => {
+            if(line.trim() === "") { completeOutput += `<div style="width:100%; height:14px;"></div>`; return; }
+            completeOutput += scrambleStringStructure(line) + `<div style="width:100%;"></div>`;
+        });
+        
+        completeOutput += `</div>`;
+        return completeOutput;
     }
 
     function loadQuestion() {
@@ -407,9 +415,8 @@
         const currentQuiz = quizData[currentQuestionIdx];
         document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
         
-        // Pass standard question tracking texts directly into the transformation layout pipeline
-        const plaintextString = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
-        document.getElementById("secure-question-host").innerHTML = transformToAntiLensLayout(plaintextString);
+        const plainTextTarget = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
+        document.getElementById("secure-question-host").innerHTML = scrambleStringStructure(plainTextTarget);
         
         const codeContainer = document.getElementById("code-container");
         if (currentQuiz.code) {
@@ -432,7 +439,7 @@
 
             const label = document.createElement("label");
             label.className = "option-label";
-            label.innerHTML = transformToAntiLensLayout(option);
+            label.innerHTML = scrambleStringStructure(option);
 
             container.appendChild(radio);
             container.appendChild(label);

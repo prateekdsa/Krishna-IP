@@ -7,11 +7,15 @@
     <link rel="manifest" href="manifest.json">
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
-        .quiz-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; }
+        .quiz-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
         .teacher-brand { text-align: center; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #7f8c8d; font-weight: bold; }
         h1 { color: #2c3e50; text-align: center; font-size: 26px; margin-top: 0; margin-bottom: 25px; }
         
-        /* Student Details Form */
+        /* Top Status Bar (Progress & Timer side-by-side) */
+        .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #eef2f7; padding: 10px 15px; border-radius: 6px; }
+        #progress-text { font-size: 14px; color: #2c3e50; font-weight: bold; }
+        #timer-box { font-size: 16px; color: #c0392b; font-weight: bold; background: #fde8e7; padding: 4px 10px; border-radius: 4px; border: 1px solid #f5c2c2; }
+        
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         .input-group input { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
@@ -35,7 +39,6 @@
         .btn-whatsapp:hover { background: #20ba5a; }
         
         .score-box { text-align: center; font-size: 22px; font-weight: bold; color: #2ecc71; }
-        #progress-text { font-size: 14px; color: #7f8c8d; margin-bottom: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -57,7 +60,10 @@
     </div>
     
     <div id="quiz-box" style="display: none;">
-        <div id="progress-text">Question 1 of 3</div>
+        <div class="status-bar">
+            <div id="progress-text">Question 1 of 3</div>
+            <div id="timer-box">Time Left: --:--</div>
+        </div>
         <h3 id="question-text">Loading question...</h3>
         <div id="code-container"></div>
         <div id="options-container"></div>
@@ -77,7 +83,7 @@
 </div>
 
 <script>
-    // --- PUT YOUR NUMBER HERE (e.g., 919876543210) ---
+    // --- PUT YOUR NUMBER HERE (include country code '91' at front, no spaces/plus) ---
     const TEACHER_PHONE = "917055202223"; 
 
     // --- INFORMATICS PRACTICES QUESTIONS ARRAY ---
@@ -107,6 +113,11 @@
     let studentName = "";
     let studentRoll = "";
     let finalScore = 0;
+    
+    // Timer configurations variables
+    let totalTimeInSeconds = quizData.length * 60; // 1 minute per question automatically
+    let timerInterval = null;
+    let isTimeOver = false;
 
     function startQuiz() {
         studentName = document.getElementById("student-name").value.trim();
@@ -119,10 +130,40 @@
 
         document.getElementById("login-box").style.display = "none";
         document.getElementById("quiz-box").style.display = "block";
+        
         loadQuestion();
+        startTimer();
+    }
+
+    function startTimer() {
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            totalTimeInSeconds--;
+            updateTimerDisplay();
+
+            if (totalTimeInSeconds <= 0) {
+                clearInterval(timerInterval);
+                isTimeOver = true;
+                alert("⏱️ Time is up! Your quiz will be submitted automatically.");
+                calculateAndShowResults(true); // True forces submission bypass checks
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const minutes = Math.floor(totalTimeInSeconds / 60);
+        const seconds = totalTimeInSeconds % 60;
+        
+        // Pad numbers with leading zeroes
+        const displayMinutes = minutes < 10 ? "0" + minutes : minutes;
+        const displaySeconds = seconds < 10 ? "0" + seconds : seconds;
+        
+        document.getElementById("timer-box").innerText = `Time Left: ${displayMinutes}:${displaySeconds}`;
     }
 
     function loadQuestion() {
+        if (isTimeOver) return;
+
         const currentQuiz = quizData[currentQuestionIdx];
         document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
         document.getElementById("question-text").innerText = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
@@ -177,27 +218,33 @@
     }
 
     function selectOption(index) {
+        if (isTimeOver) return;
         userAnswers[currentQuestionIdx] = index;
         document.getElementById(`opt-${index}`).checked = true;
     }
 
     function goPrevious() {
-        if (currentQuestionIdx > 0) {
+        if (currentQuestionIdx > 0 && !isTimeOver) {
             currentQuestionIdx--;
             loadQuestion();
         }
     }
 
     function goNext() {
+        if (isTimeOver) return;
+        
         if (currentQuestionIdx < quizData.length - 1) {
             currentQuestionIdx++;
             loadQuestion();
         } else {
-            calculateAndShowResults();
+            calculateAndShowResults(false);
         }
     }
 
-    function calculateAndShowResults() {
+    function calculateAndShowResults(forced) {
+        // Kill active clock processes
+        clearInterval(timerInterval);
+
         let score = 0;
         let unansweredCount = 0;
 
@@ -206,31 +253,32 @@
             else if (ans === quizData[index].correct) score++;
         });
 
-        if (unansweredCount > 0) {
+        // Prompt confirmation block if manually submitting incomplete forms
+        if (unansweredCount > 0 && !forced) {
             const confirmSubmit = confirm(`You have left ${unansweredCount} question(s) unanswered. Submit anyway?`);
-            if (!confirmSubmit) return;
+            if (!confirmSubmit) {
+                startTimer(); // Restart timer if student cancels submission
+                return;
+            }
         }
 
         finalScore = score;
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
-        document.getElementById("score-text").innerText = `Student: ${studentName}\nRoll No: ${studentRoll}\n\nYour Score: ${score} / ${quizData.length}`;
+        
+        let statusString = forced ? "⚠️ Time Limit Expired!\n" : "";
+        document.getElementById("score-text").innerText = `${statusString}Student: ${studentName}\nRoll No: ${studentRoll}\n\nYour Score: ${score} / ${quizData.length}`;
     }
 
     function sendToTeacher() {
-        // Formulates a clean report string text layout automatically
         const messageText = `*Class XII IP Quiz Report*\n\n` +
                             `👤 *Student Name:* ${studentName}\n` +
                             `🔢 *Roll Number:* ${studentRoll}\n` +
                             `🏆 *Score Obtained:* ${finalScore} / ${quizData.length}\n\n` +
                             `Submitted via Krishna Kumar's App.`;
 
-        // Encodes values into standard URL string configuration query format
         const encodedMessage = encodeURIComponent(messageText);
-        
-        // Deep link redirection launcher logic sequence triggering native messenger application
         const whatsappUrl = `https://wa.me/${TEACHER_PHONE}?text=${encodedMessage}`;
-        
         window.open(whatsappUrl, '_blank');
     }
 </script>

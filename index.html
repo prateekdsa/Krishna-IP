@@ -6,7 +6,7 @@
     <title>Krishna's IP Masterclass</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* SYSTEM LAYER LOCKS */
+        /* CRITICAL CORE APP LOCKOUTS */
         * {
             -webkit-user-select: none !important; 
             -moz-user-select: none !important;
@@ -32,11 +32,13 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
         
-        /* SHIELDED CRYPTO VECTOR CONTAINERS */
-        .secure-vector-canvas {
+        /* HARDENED RASTER IMAGE DISPLAY SHELLS */
+        .secure-raster-img {
             display: block;
-            margin: 10px 0;
+            max-width: 100%;
+            height: auto;
             pointer-events: none;
+            margin: 5px 0;
         }
 
         .code-box-wrapper {
@@ -45,10 +47,9 @@
             border-radius: 6px;
             margin: 15px 0;
             border-left: 4px solid #3498db;
-            overflow-x: auto;
         }
 
-        .option-container { display: flex; align-items: center; padding: 12px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
+        .option-container { display: flex; align-items: center; padding: 10px 12px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
         .option-container:hover { background: #e8f1f5; border-color: #3498db; }
         .option-container input[type="radio"] { margin-right: 15px; width: 20px; height: 20px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
         .option-label-wrapper { width: 100%; display: flex; align-items: center; overflow: hidden; }
@@ -93,11 +94,16 @@
             font-size: 22px;
             font-weight: bold;
         }
+
+        /* Hidden standard engine components */
+        #hidden-raster-canvas { display: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
 <div id="anti-cheat-blindfold">⚠️ SCREEN SECURITY BREACHED: DEVICE LOCKED OUT</div>
+
+<canvas id="hidden-raster-canvas"></canvas>
 
 <div class="quiz-container" id="app-visibility-wrapper">
     <div class="teacher-brand">Krishna Kumar Presents</div>
@@ -126,6 +132,10 @@
                     <option value="class11">Class 11th</option>
                     <option value="class12" selected>Class 12th (Informatics Practices)</option>
                 </select>
+            </div>
+            <div class="input-group">
+                <label for="class-login-password">Enter Class Entrance Password:</label>
+                <input type="password" id="class-login-password" placeholder="Enter password for chosen class">
             </div>
             <button class="btn btn-next" style="width:100%; margin-top:10px;" onclick="handleLogin()">Verify Identity & Begin Test</button>
         </div>
@@ -204,6 +214,13 @@
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
 
+    // SECURE TARGET CLASS PASSWORDS MAP
+    const CLASS_PASSWORDS = {
+        "class10": "10th@KK",
+        "class11": "11th@KK",
+        "class12": "12th@KK"
+    };
+
     let allClassData = null;
     let quizData = []; 
     let userAnswers = [];
@@ -231,7 +248,7 @@
         } catch(e) { console.error(e); }
     }
 
-    // --- DETECT SYSTEM SHORTCUTS / OVERLAYS OUTSIDE APP ---
+    // --- DETECTION MATRICES FOR SYSTEM OVERLAYS ---
     document.addEventListener("visibilitychange", function() {
         if (isProtectionLoopActive && document.hidden) {
             activatePermanentLockdown();
@@ -292,10 +309,17 @@
     async function handleLogin() {
         const inputName = document.getElementById("login-name").value.trim();
         const inputRoll = document.getElementById("login-roll").value.trim();
+        const inputPassword = document.getElementById("class-login-password").value.trim();
         selectedClassKey = document.getElementById("student-class").value;
         selectedClassLabel = document.getElementById("student-class").options[document.getElementById("student-class").selectedIndex].text;
 
-        if(!inputName || !inputRoll) { return alert("Fill out credentials!"); }
+        if(!inputName || !inputRoll || !inputPassword) { return alert("Please fill out all identification fields!"); }
+        
+        // CLASS ENTRANCE VERIFICATION LAYER
+        if(inputPassword !== CLASS_PASSWORDS[selectedClassKey]) {
+            return alert("❌ Invalid password for the selected class section!");
+        }
+
         studentName = inputName; studentRoll = inputRoll;
 
         let trackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
@@ -337,53 +361,54 @@
         }, 1000);
     }
 
-    // --- GEOMETRIC VECTOR PATH GENERATOR (BLINDS ALL SYSTEM OCR IMPLEMENTATIONS) ---
-    function convertTextToSVGShapes(plainText, fontColor, isCode) {
+    // --- HARDENED RASTER PIXEL CONVERSION MATRIX (BLINDS GOOGLE LENS OCR) ---
+    function rasterizeTextToImage(plainText, fontColor, isCode, customBgColor) {
         if(!plainText) return "";
         
-        const lineWrapLimit = isCode ? 45 : 38; 
-        let rawWords = plainText.split(" ");
-        let computedLines = [];
-        let workingLine = "";
+        const canvas = document.getElementById("hidden-raster-canvas");
+        const ctx = canvas.getContext("2d");
 
-        // Break sentences into clean rows safely
+        const lineWrapLimit = isCode ? 48 : 40;
+        let rawWords = plainText.split(" ");
+        let computedRows = [];
+        let workingRow = "";
+
         rawWords.forEach(word => {
-            if ((workingLine + " " + word).trim().length > lineWrapLimit) {
-                computedLines.push(workingLine.trim());
-                workingLine = word;
-            } else {
-                workingLine += " " + word;
+            if ((workingRow + " " + word).trim().length > lineWrapLimit) {
+                computedRows.push(workingRow.trim());
+                workingRow = word;
+            } else { workingRow += " " + word; }
+        });
+        if(workingRow.trim().length > 0) computedRows.push(workingRow.trim());
+
+        const rowHeight = isCode ? 24 : 26;
+        const totalHeight = computedRows.length * rowHeight + 14;
+        
+        // Dynamic scaling configuration
+        canvas.width = 600;
+        canvas.height = totalHeight;
+
+        // Apply masking background canvas colors
+        ctx.fillStyle = customBgColor || "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Apply font tracking parameters
+        ctx.textBaseline = "top";
+        ctx.fillStyle = fontColor;
+        ctx.font = isCode ? "600 16px monospace" : "600 17px sans-serif";
+
+        computedRows.forEach((rowString, index) => {
+            let yOffset = index * rowHeight + 8;
+            // Introduce micro letter-spacing variance to distort geometric alignment readers
+            let xOffset = 8;
+            for(let i=0; i<rowString.length; i++) {
+                ctx.fillText(rowString[i], xOffset, yOffset);
+                xOffset += ctx.measureText(rowString[i]).width + 0.3; // Distorts standard word patterns
             }
         });
-        if(workingLine.trim().length > 0) computedLines.push(workingLine.trim());
 
-        const fontSize = isCode ? 15 : 17;
-        const lineSpacing = isCode ? 22 : 25;
-        const totalHeight = computedLines.length * lineSpacing + 10;
-
-        // Render standard flat geometric nodes inside DOM canvas trees
-        let svgCodeString = `<svg class="secure-vector-canvas" width="100%" height="${totalHeight}" viewBox="0 0 540 ${totalHeight}" xmlns="http://www.w3.org/2000/svg">`;
-        
-        computedLines.forEach((lineText, index) => {
-            let yPosition = (index + 1) * lineSpacing;
-            let escapedString = lineText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            
-            // Render text string blocks purely using flat matrix transformations to distort bot scanners
-            svgCodeString += `
-                <text x="5" y="${yPosition}" 
-                      fill="${fontColor}" 
-                      font-family="${isCode ? 'monospace' : 'sans-serif'}" 
-                      font-size="${fontSize}px" 
-                      font-weight="${isCode ? 'bold' : '600'}"
-                      letter-spacing="0.4px"
-                      textLength="96%"
-                      lengthAdjust="spacingAndGlyphs">
-                    ${escapedString}
-                </text>`;
-        });
-
-        svgCodeString += `</svg>`;
-        return svgCodeString;
+        // Convert the structural text matrix to a completely flat graphic image data object
+        return `<img src="${canvas.toDataURL("image/png")}" class="secure-raster-img" alt="Shielded Content Packet">`;
     }
 
     function loadQuestion() {
@@ -391,23 +416,24 @@
         const currentQuiz = quizData[currentQuestionIdx];
         document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
         
-        // Convert the Question text into safe SVG path shapes
+        // Flatten Question Text safely into a rasterized image string
         const plainTextTarget = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
-        document.getElementById("secure-question-host").innerHTML = convertTextToSVGShapes(plainTextTarget, "#2c3e50", false);
+        document.getElementById("secure-question-host").innerHTML = rasterizeTextToImage(plainTextTarget, "#2c3e50", false, "#ffffff");
         
-        // Shield and draw Code Blocks dynamically inside safe paths
+        // Flatten Code Blocks cleanly using terminal color variations
         const codeContainer = document.getElementById("code-container");
         if (currentQuiz.code) {
             let codeLines = currentQuiz.code.split("\n");
-            let fullCodeSvgBlock = `<div class="code-box-wrapper">`;
+            let fullCodeRasterBlock = `<div class="code-box-wrapper">`;
             codeLines.forEach(line => {
-                fullCodeSvgBlock += convertTextToSVGShapes(line, "#f8f8f2", true);
+                if(line.trim() === "") { fullCodeRasterBlock += `<div style="height:12px;"></div>`; return; }
+                fullCodeRasterBlock += rasterizeTextToImage(line, "#f8f8f2", true, "#272822");
             });
-            fullCodeSvgBlock += `</div>`;
-            codeContainer.innerHTML = fullCodeSvgBlock;
+            fullCodeRasterBlock += `</div>`;
+            codeContainer.innerHTML = fullCodeRasterBlock;
         } else { codeContainer.innerHTML = ""; }
 
-        // Render Option Buttons securely using paths
+        // Flatten Option Buttons fields
         const optionsContainer = document.getElementById("options-container");
         optionsContainer.innerHTML = "";
 
@@ -424,7 +450,7 @@
 
             const labelWrapper = document.createElement("div");
             labelWrapper.className = "option-label-wrapper";
-            labelWrapper.innerHTML = convertTextToSVGShapes(option, "#333333", false);
+            labelWrapper.innerHTML = rasterizeTextToImage(option, "#333333", false, "#ffffff");
 
             container.appendChild(radio);
             container.appendChild(labelWrapper);
@@ -494,6 +520,7 @@
         }
     }
 
+    // --- RE-ASSEMBLE DATA FOR ADMINISTRATIVE DECODING ---
     function importStudentCode() {
         const rawInput = document.getElementById("compressed-input").value.trim();
         if(!rawInput) return;

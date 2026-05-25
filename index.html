@@ -48,7 +48,7 @@
             letter-spacing: 0.3px;
         }
 
-        /* ANTI-LENS TEXT SHIELD: Adds a micro-shadow that visually blinds AI scanners without affecting human readability */
+        /* ANTI-LENS TEXT SHIELD */
         .secure-text-render {
             font-size: 18px;
             font-weight: 600;
@@ -117,7 +117,7 @@
 </head>
 <body oncontextmenu="return false;">
 
-<div id="anti-cheat-blindfold">⚠️ SCREEN SECURITY BREACHED: DEVICE LOCKED OUT</div>
+<div id="anti-cheat-blindfold">⚠️ SECURITY SHIELD: PROCESSING AUTO-LOGOUT ACTION...</div>
 
 <div class="quiz-container" id="app-visibility-wrapper">
     <div class="teacher-brand">Krishna Kumar Presents</div>
@@ -152,11 +152,11 @@
     </div>
 
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
-        <div class="lockdown-title">⛔ APPLICATION LOCKED PERMANENTLY</div>
+        <div class="lockdown-title">⛔ ATTEMPT QUOTA DELETED</div>
         <p class="lockdown-desc">
-            This device has been permanently locked because a student left the active application view or tried scanning the display using Google Lens/Assistant shortcut gestures.
+            This student account entry has reached the limit of 3 validation login sequences.
             <br><br>
-            <span style="color:#c0392b;">To restore device access, KK Sir must enter the Master Security Code below.</span>
+            <span style="color:#c0392b;">To release or unlock this attempt limit, KK Sir must authorize a profile state refresh below.</span>
         </p>
         <div class="input-group" style="max-width: 400px; margin: 0 auto 15px auto;">
             <label for="unlock-master-key">Enter Teacher Unlock Code:</label>
@@ -216,13 +216,13 @@
         
         <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()" disabled>Log Out & Return to Home Screen 🔒</button>
         <div id="lock-notice" style="text-align:center; font-size:12px; color:#e74c3c; margin-top:8px; font-weight:bold;">
-            CRITICAL WARNING: You must submit your score via WhatsApp above to unlock this app! Exiting, refreshing, or closing the app now will PERMANENTLY LOCK this device!
+            CRITICAL WARNING: You must submit your score via WhatsApp above to unlock this app! Exiting, refreshing, or closing the app now will consume 1 login ticket attempt.
         </div>
     </div>
 </div>
 
 <script>
-    // UPDATED ROUTING VALUES
+    // ROUTING ROUTINE INTEGRATION VALUES
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
 
@@ -243,39 +243,47 @@
     let isProtectionLoopActive = false;
 
     window.onload = async function() {
-        if (localStorage.getItem("device_fraud_lockdown") === "true") {
-            triggerPermanentLockdownUI();
-            return;
-        }
         try {
             const response = await fetch('questions.json');
             allClassData = await response.json();
         } catch(e) { console.error(e); }
     }
 
-    // --- SECURITY MONITORING SYSTEMS ---
+    // --- AUTOMATIC SESSION TERMINATION ENGINE ---
     document.addEventListener("visibilitychange", function() {
         if (isProtectionLoopActive && document.hidden) {
-            activatePermanentLockdown();
+            executeAutoLogoutAction();
         }
     });
 
     window.addEventListener("blur", function() {
         if (isProtectionLoopActive) {
-            document.getElementById("anti-cheat-blindfold").style.display = "block";
-            activatePermanentLockdown();
+            executeAutoLogoutAction();
         }
     });
 
-    function activatePermanentLockdown() {
-        localStorage.setItem("device_fraud_lockdown", "true");
-        clearInterval(timerInterval);
+    function executeAutoLogoutAction() {
         isProtectionLoopActive = false;
-        triggerPermanentLockdownUI();
+        clearInterval(timerInterval);
+        
+        // Brief security overlay display
+        document.getElementById("anti-cheat-blindfold").style.display = "block";
+        
+        setTimeout(() => {
+            document.getElementById("anti-cheat-blindfold").style.display = "none";
+            document.getElementById("quiz-box").style.display = "none";
+            document.getElementById("navigation-tabs-hub").style.display = "flex";
+            document.getElementById("student-portal-section").style.display = "block";
+            
+            // Clean up session states and answers
+            userAnswers = [];
+            currentQuestionIdx = 0;
+            
+            alert("⚠️ SECURITY SIGNAL: Window minimized or exited. Active exam token destroyed. 1 entry ticket consumed!");
+        }, 1200);
     }
 
     function triggerPermanentLockdownUI() {
-        document.getElementById("anti-cheat-blindfold").style.display = "none";
         document.getElementById("navigation-tabs-hub").style.display = "none";
         document.getElementById("student-portal-section").style.display = "none";
         document.getElementById("admin-portal-section").style.display = "none";
@@ -284,13 +292,28 @@
         document.getElementById("permanent-lockdown-box").style.display = "block";
     }
 
+    // --- MASTER ACCOUNT RESET CONTROLLER ---
     function handleDeviceUnlock() {
-        if (document.getElementById("unlock-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
-            localStorage.removeItem("device_fraud_lockdown");
-            alert("✅ Reset successful.");
+        const masterKeyInput = document.getElementById("unlock-master-key").value.trim();
+        if (masterKeyInput === MASTER_TEACHER_PASSWORD) {
+            if (studentRoll && selectedClassKey) {
+                let trackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
+                localStorage.removeItem(trackingKey);
+            } else {
+                // FALLBACK BYPASS: Wipe all validation attempts if browser states are lost
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith("attempts_")) {
+                        localStorage.removeItem(key);
+                    }
+                });
+            }
+            document.getElementById("permanent-lockdown-box").style.display = "none";
+            document.getElementById("navigation-tabs-hub").style.display = "flex";
+            document.getElementById("student-portal-section").style.display = "block";
+            alert("✅ Authorization accepted. Matching student access entries successfully reset.");
             location.reload();
         } else {
-            alert("❌ Access Denied!");
+            alert("❌ Incorrect Teacher Unlock Code!");
         }
     }
 
@@ -309,6 +332,8 @@
         }
     }
 
+    function exitAdminDashboard() { switchPortalView('student'); }
+
     async function handleLogin() {
         const inputName = document.getElementById("login-name").value.trim();
         const inputRoll = document.getElementById("login-roll").value.trim();
@@ -318,12 +343,16 @@
         if(!inputName || !inputRoll) { return alert("Fill out credentials!"); }
         studentName = inputName; studentRoll = inputRoll;
 
+        // Configuration of up to 3 entry allowance states per ID configuration profile
         let trackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
         let attempts = parseInt(localStorage.getItem(trackingKey)) || 0;
-        if (attempts >= 2) return alert("⛔ Max attempts reached.");
+        
+        if (attempts >= 3) {
+            triggerPermanentLockdownUI();
+            return;
+        }
 
         localStorage.setItem(trackingKey, attempts + 1);
-        localStorage.setItem("device_fraud_lockdown", "true");
 
         if(!allClassData) {
             const response = await fetch('questions.json');
@@ -344,6 +373,7 @@
     }
 
     function startTimer() {
+        clearInterval(timerInterval); // Prevent layout intervals piling leaks
         timerInterval = setInterval(() => {
             totalTimeInSeconds--;
             const min = Math.floor(totalTimeInSeconds / 60);
@@ -442,6 +472,7 @@
 
     function calculateAndShowResults(forced) {
         clearInterval(timerInterval);
+        isProtectionLoopActive = false;
         let score = 0;
         userAnswers.forEach((ans, index) => { if (ans === quizData[index].correct) score++; });
 
@@ -454,7 +485,6 @@
     function sendToTeacher() {
         let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
         let reportText = `*QUIZ DATA PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nDataKey: [${answersString}]`;
-        localStorage.removeItem("device_fraud_lockdown");
         isProtectionLoopActive = false; 
         hasSentReport = true;
         document.getElementById("reset-app-btn").disabled = false;
@@ -527,7 +557,7 @@
             log.sheet.forEach(item => {
                 sheetHtml += `<div style="font-size:12px; margin-top:4px; padding-left:10px; border-left:2px solid #ccc;">Q${item.qNum}: ${item.qText}<br>↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span></div>`;
             });
-            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
+            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (Roll: ${log.roll})br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
             container.appendChild(card);
         }
     }

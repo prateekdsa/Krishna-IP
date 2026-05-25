@@ -45,12 +45,17 @@
         .restart-btn:disabled { background: #bdc3c7; cursor: not-allowed; opacity: 0.6; }
         
         .score-box { text-align: center; font-size: 22px; font-weight: bold; color: #2ecc71; }
-        .warning-text { color: #c0392b; font-size: 13px; margin-top: 5px; font-weight: bold; }
-        .toggle-link { display: block; text-align: center; margin-top: 15px; color: #3498db; text-decoration: none; font-weight: bold; cursor: pointer; }
-        .toggle-link:hover { text-decoration: underline; }
-
         .student-log-card { background: #f1f2f6; padding: 12px; margin-bottom: 10px; border-radius: 6px; border-left: 5px solid #2c3e50; text-align: left; }
         .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { background: #c0392b; }
+
+        .txt-success { color: #2ecc71; font-weight: bold; }
+        .txt-danger { color: #e74c3c; font-weight: bold; }
+
+        /* PERMANENT HARD LOCKDOWN SCREEN STYLES */
+        .lockdown-container { text-align: center; padding: 20px; }
+        .lockdown-title { color: #c0392b; font-size: 28px; font-weight: bold; margin-bottom: 15px; }
+        .lockdown-desc { font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 25px; }
 
         /* SECURITY BLUR: Hides the quiz instantly if app backgrounding occurs */
         .secure-blur-overlay { filter: blur(40px) grayscale(100%); opacity: 0.05; pointer-events: none; user-select: none; }
@@ -69,14 +74,14 @@
 
     <div id="student-portal-section">
         <div id="login-box">
-            <h3 style="color:#2c3e50; margin-top:0;">Student Account Login</h3>
+            <h3 style="color:#2c3e50; margin-top:0;">Student Verification Access</h3>
             <div class="input-group">
-                <label for="login-roll">Roll Number / ID:</label>
-                <input type="text" id="login-roll" placeholder="Enter your registered roll number">
+                <label for="login-name">Student Full Name:</label>
+                <input type="text" id="login-name" placeholder="Enter your full name">
             </div>
             <div class="input-group">
-                <label for="login-password">Account Password:</label>
-                <input type="password" id="login-password" placeholder="Enter your password">
+                <label for="login-roll">Roll Number / ID:</label>
+                <input type="text" id="login-roll" placeholder="Enter your official roll number">
             </div>
             <div class="input-group">
                 <label for="student-class">Select Quiz Target Class:</label>
@@ -86,39 +91,23 @@
                     <option value="class12" selected>Class 12th (Informatics Practices)</option>
                 </select>
             </div>
-            <button class="btn btn-next" style="width:100%; margin-top:10px;" onclick="handleLogin()">Login & Start Quiz</button>
-            <a class="toggle-link" onclick="switchFrame('register-box')">New Student? Register Account Here</a>
+            <button class="btn btn-next" style="width:100%; margin-top:10px;" onclick="handleLogin()">Verify Identity & Begin Test</button>
         </div>
+    </div>
 
-        <div id="register-box" style="display: none;">
-            <h3 style="color:#2c3e50; margin-top:0;">Create New Account</h3>
-            <div class="input-group">
-                <label for="reg-name">Student Full Name:</label>
-                <input type="text" id="reg-name" placeholder="Enter your full name">
-            </div>
-            <div class="input-group">
-                <label for="reg-roll">Roll Number / ID:</label>
-                <input type="text" id="reg-roll" placeholder="Enter your official roll number">
-            </div>
-            <div class="input-group">
-                <label for="reg-class">Your Assigned Class:</label>
-                <select id="reg-class">
-                    <option value="class10">Class 10th</option>
-                    <option value="class11">Class 11th</option>
-                    <option value="class12" selected>Class 12th (Informatics Practices)</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="reg-school-code">School Registration Code:</label>
-                <input type="password" id="reg-school-code" placeholder="Enter registration pass given by KK Sir">
-            </div>
-            <div class="input-group">
-                <label for="reg-password">Create Password:</label>
-                <input type="password" id="reg-password" placeholder="Create a secret access password">
-            </div>
-            <button class="btn btn-submit" style="width:100%; margin-top:10px;" onclick="handleRegistration()">Register Secure Account</button>
-            <a class="toggle-link" onclick="switchFrame('login-box')">Already have an account? Log In</a>
+    <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
+        <div class="lockdown-title">⛔ APPLICATION LOCKED PERMANENTLY</div>
+        <p class="lockdown-desc">
+            This device has been permanently locked because a previous quiz session was completed but 
+            <strong>NOT submitted to KK Sir via WhatsApp</strong>, or the exam parameters were intentionally violated.
+            <br><br>
+            <span style="color:#c0392b;">To restore device access, KK Sir must enter the Master Security Code below.</span>
+        </p>
+        <div class="input-group" style="max-width: 400px; margin: 0 auto 15px auto;">
+            <label for="unlock-master-key">Enter Teacher Unlock Code:</label>
+            <input type="password" id="unlock-master-key" placeholder="Enter master code">
         </div>
+        <button class="btn btn-submit" style="width: 100%; max-width:400px;" onclick="handleDeviceUnlock()">Authorize & Reset App State</button>
     </div>
 
     <div id="admin-portal-section" style="display: none;">
@@ -132,7 +121,10 @@
         </div>
 
         <div id="teacher-box" style="display: none;">
-            <h2 style="color: #2c3e50; margin-top: 0;">📋 KK Sir's Central Dashboard</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                <h2 style="color: #2c3e50; margin: 0;">📋 KK Sir's Dashboard</h2>
+                <button class="btn btn-prev" style="padding: 6px 14px; font-size:14px;" onclick="exitAdminDashboard()">← Exit Admin</button>
+            </div>
             <div class="input-group" style="background: #eef2f7; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1;">
                 <label for="compressed-input" style="color: #2c3e50; font-weight: bold;">📥 Paste Student's WhatsApp Report Code Here:</label>
                 <textarea id="compressed-input" rows="3" placeholder="Paste entire raw text packet message here..."></textarea>
@@ -140,7 +132,7 @@
             </div>
             <h3 style="color: #2c3e50; margin-top: 20px; border-bottom: 2px solid #2c3e50; padding-bottom: 5px;">Student Evaluation Logs</h3>
             <div id="teacher-logs-container" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;"></div>
-            <button class="btn btn-danger" style="width: 100%; color: white;" onclick="clearTeacherLogs()">Clear Dashboard Data Archive</button>
+            <button class="btn btn-danger" style="width: 100%;" onclick="clearTeacherLogs()">Clear Dashboard Data Archive</button>
         </div>
     </div>
     
@@ -163,11 +155,11 @@
         <p class="score-box">🎉 Quiz Completed! 🎉</p>
         <p id="score-text" style="text-align: center; font-size: 18px; color: #555; line-height: 1.6; font-weight: bold;"></p>
         
-        <button class="btn-whatsapp" onclick="sendToTeacher()">Send Score to KK Sir via WhatsApp 💬</button>
+        <button class="btn-whatsapp" id="whatsapp-submit-btn" onclick="sendToTeacher()">Send Score to KK Sir via WhatsApp 💬</button>
         
-        <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()" disabled>Take Another Test (Locked 🔒)</button>
-        <div id="lock-notice" style="text-align:center; font-size:12px; color:#e74c3c; margin-top:5px; font-weight:bold;">
-            You must click the green WhatsApp button above to unlock this app!
+        <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()" disabled>Log Out & Return to Home Screen 🔒</button>
+        <div id="lock-notice" style="text-align:center; font-size:12px; color:#e74c3c; margin-top:8px; font-weight:bold;">
+            CRITICAL WARNING: You must submit your score via WhatsApp above to unlock this app! Exiting, refreshing, or closing the app now will PERMANENTLY LOCK this device!
         </div>
     </div>
 </div>
@@ -175,12 +167,6 @@
 <script>
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "adminkksir"; 
-
-    const INSTITUTION_REG_CODES = {
-        "class10": "pass10",
-        "class11": "pass11",
-        "class12": "pass12"
-    };
 
     let allClassData = null;
     let quizData = []; 
@@ -196,25 +182,33 @@
     let timerInterval = null;
     let isTimeOver = false;
     let hasSentReport = false;
-    let isQuizActive = false; // Flag to track when a test session is hot
+    let isQuizActive = false; 
 
     window.onload = async function() {
+        // First, check if this specific device is logged under lockdown fraud parameters
+        if (localStorage.getItem("device_fraud_lockdown") === "true") {
+            triggerPermanentLockdownUI();
+            return;
+        }
+
         try {
             const response = await fetch('questions.json');
             allClassData = await response.json();
         } catch(e) { console.error(e); }
     }
 
+    // --- SECURITY PROTOCOLS: CHEATING PREVENTION ENGINES ---
     
-    
-    
+    // Engine A: Force Logout / Terminate when app minimizes or moves tabs
     document.addEventListener("visibilitychange", function() {
         if (document.hidden && isQuizActive) {
-            triggerSecurityCheatingLogout("App was minimized, closed, or device was locked.");
+            // Student abandoned mid-test: Force permanent block and log fraud state
+            localStorage.setItem("device_fraud_lockdown", "true");
+            triggerSecurityCheatingLogout("App backgrounding/minimization detected during live test execution.");
         }
     });
 
-    
+    // Engine B: Content blinding on focus loss (Prevents hardware app-switcher tracking snapshots)
     window.addEventListener("blur", function() {
         if (isQuizActive) {
             document.getElementById("app-visibility-wrapper").classList.add("secure-blur-overlay");
@@ -229,19 +223,31 @@
         clearInterval(timerInterval);
         isQuizActive = false;
         isTimeOver = false;
-        userAnswers = [];
-        currentQuestionIdx = 0;
         
-        alert(`⚠️ SECURITY ALERT!\n\nYour session was terminated because: ${reason}\nThis attempt has been logged against your allowance limits.`);
-        
-        
+        alert(`⚠️ SECURITY CRITICAL VIOLATION!\n\nYour session was terminated because: ${reason}\n\nThis device has been flagged and permanently locked.`);
+        triggerPermanentLockdownUI();
+    }
+
+    function triggerPermanentLockdownUI() {
+        isQuizActive = false;
+        clearInterval(timerInterval);
+        document.getElementById("navigation-tabs-hub").style.display = "none";
+        document.getElementById("student-portal-section").style.display = "none";
+        document.getElementById("admin-portal-section").style.display = "none";
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "none";
-        document.getElementById("navigation-tabs-hub").style.display = "flex";
-        
-        document.getElementById("login-roll").value = "";
-        document.getElementById("login-password").value = "";
-        switchPortalView('student');
+        document.getElementById("permanent-lockdown-box").style.display = "block";
+    }
+
+    function handleDeviceUnlock() {
+        const inputKey = document.getElementById("unlock-master-key").value.trim();
+        if (inputKey === MASTER_TEACHER_PASSWORD) {
+            localStorage.removeItem("device_fraud_lockdown");
+            alert("✅ Device successfully unlocked. App returning to system default.");
+            location.reload();
+        } else {
+            alert("❌ Incorrect Master Security Authorization Key!");
+        }
     }
 
     function switchPortalView(targetView) {
@@ -254,7 +260,6 @@
             document.getElementById("admin-portal-section").style.display = "none";
         } else {
             document.getElementById("tab-admin").classList.add("active");
-            document.getElementById("student-portal-section").style.display = "block";
             document.getElementById("student-portal-section").style.display = "none";
             document.getElementById("admin-portal-section").style.display = "block";
             document.getElementById("admin-master-key").value = "";
@@ -263,106 +268,52 @@
         }
     }
 
-    function switchFrame(frameId) {
-        document.getElementById("login-box").style.display = "none";
-        document.getElementById("register-box").style.display = "none";
-        document.getElementById(frameId).style.display = "block";
-    }
-
-    function verifyAdminLogin() {
-        const key = document.getElementById("admin-master-key").value.trim();
-        if(key === MASTER_TEACHER_PASSWORD) {
-            document.getElementById("admin-lockscreen").style.display = "none";
-            document.getElementById("teacher-box").style.display = "block";
-            renderTeacherLogs();
-        } else {
-            alert("❌ Incorrect Admin Password Code!");
-        }
-    }
-
-    function handleRegistration() {
-        const name = document.getElementById("reg-name").value.trim();
-        const roll = document.getElementById("reg-roll").value.trim();
-        const cKey = document.getElementById("reg-class").value;
-        const schoolCode = document.getElementById("reg-school-code").value.trim();
-        const password = document.getElementById("reg-password").value.trim();
-
-        if(!name || !roll || !schoolCode || !password) {
-            alert("Please input details across all standard configuration lines!");
-            return;
-        }
-
-        if(schoolCode !== INSTITUTION_REG_CODES[cKey]) {
-            alert("❌ Invalid Registration Verification Key!");
-            return;
-        }
-
-        let globalAccountKey = `account_${roll.replace(/\s+/g, '_')}`;
-        if(localStorage.getItem(globalAccountKey)) {
-            alert("⚠️ Account already mapped to this Roll No on this machine!");
-            switchFrame('login-box');
-            return;
-        }
-
-        let userAccountProfile = { name: name, roll: roll, classKey: cKey, password: password };
-        localStorage.setItem(globalAccountKey, JSON.stringify(userAccountProfile));
-        alert("🎉 Registration Successful!");
-        document.getElementById("login-roll").value = roll;
-        switchFrame('login-box');
+    function exitAdminDashboard() {
+        switchPortalView('student');
     }
 
     async function handleLogin() {
+        const inputName = document.getElementById("login-name").value.trim();
         const inputRoll = document.getElementById("login-roll").value.trim();
-        const inputPass = document.getElementById("login-password").value.trim();
         selectedClassKey = document.getElementById("student-class").value;
         
         const classSelectElement = document.getElementById("student-class");
         selectedClassLabel = classSelectElement.options[classSelectElement.selectedIndex].text;
 
-        if(!inputRoll || !inputPass) {
-            alert("Please complete fields!");
+        if(!inputName || !inputRoll) {
+            alert("Please fill out both Name and Roll Number fields to initiate assessment!");
             return;
         }
 
-        let targetAccountKey = `account_${inputRoll.replace(/\s+/g, '_')}`;
-        let matchedProfileString = localStorage.getItem(targetAccountKey);
+        studentName = inputName;
+        studentRoll = inputRoll;
 
-        if(!matchedProfileString) {
-            alert("❌ No registered account found with this Roll Number!");
-            return;
-        }
-
-        let profile = JSON.parse(matchedProfileString);
-        if(profile.password !== inputPass) {
-            alert("❌ Incorrect Password!");
-            return;
-        }
-
-        studentName = profile.name;
-        studentRoll = profile.roll;
-
+        // Block entry if student has exhausted standard evaluation thresholds
         let attemptTrackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
         let pastAttemptsCount = parseInt(localStorage.getItem(attemptTrackingKey)) || 0;
 
         if (pastAttemptsCount >= 2) {
-            alert(`⛔ Access Denied!\nRoll No ${studentRoll} has exhausted the maximum limit of 2 test attempts allowed.`);
+            alert(`⛔ Access Denied!\nRoll No ${studentRoll} has already exhausted the max limit of 2 test attempts.`);
             return;
         }
 
+        // Increment attempts entry
         localStorage.setItem(attemptTrackingKey, pastAttemptsCount + 1);
+
+        // Pre-emptively arm the lockdown flag. If they close the browser now without finishing/submitting, they get locked out!
+        localStorage.setItem("device_fraud_lockdown", "true");
 
         if(!allClassData) {
             try {
                 const response = await fetch('questions.json');
                 allClassData = await response.json();
-            } catch(e) { alert("Data pipeline connectivity offline."); return; }
+            } catch(e) { alert("Core database configuration mapping pipeline offline."); return; }
         }
         
         quizData = allClassData[selectedClassKey];
         userAnswers = new Array(quizData.length).fill(null);
         totalTimeInSeconds = quizData.length * 60;
         
-        // Arms security flag
         isQuizActive = true; 
 
         document.getElementById("navigation-tabs-hub").style.display = "none";
@@ -381,7 +332,7 @@
             if (totalTimeInSeconds <= 0) {
                 clearInterval(timerInterval);
                 isTimeOver = true;
-                alert("⏱️ Time is up!");
+                alert("⏱️ Time is up! Directing to summary processing terminal.");
                 calculateAndShowResults(true);
             }
         }, 1000);
@@ -460,7 +411,7 @@
 
     function calculateAndShowResults(forced) {
         clearInterval(timerInterval);
-        isQuizActive = false; // Disarm anti-cheat logic safely
+        isQuizActive = false; 
         
         let score = 0;
         let unansweredCount = 0;
@@ -471,7 +422,7 @@
         });
 
         if (unansweredCount > 0 && !forced) {
-            const confirmSubmit = confirm(`You have left ${unansweredCount} question(s) unselected. Submit performance anyway?`);
+            const confirmSubmit = confirm(`You have left ${unansweredCount} question(s) empty. Submit performance anyway?`);
             if (!confirmSubmit) { isQuizActive = true; startTimer(); return; }
         }
 
@@ -495,8 +446,12 @@
         const encodedMessage = encodeURIComponent(reportText);
         const whatsappUrl = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodedMessage}`;
         
+        // Clean up lockdown parameter from local device storage once verified action completes
+        localStorage.removeItem("device_fraud_lockdown");
+        
         hasSentReport = true;
         document.getElementById("reset-app-btn").disabled = false;
+        document.getElementById("reset-app-btn").innerText = "Log Out & Exit to Home Screen 🔓";
         document.getElementById("lock-notice").style.display = "none";
         window.location.href = whatsappUrl; 
     }
@@ -508,9 +463,10 @@
         isTimeOver = false;
         hasSentReport = false;
         
+        document.getElementById("login-name").value = "";
         document.getElementById("login-roll").value = "";
-        document.getElementById("login-password").value = "";
         document.getElementById("reset-app-btn").disabled = true;
+        document.getElementById("reset-app-btn").innerText = "Log Out & Return to Home Screen 🔒";
         document.getElementById("lock-notice").style.display = "block";
         
         document.getElementById("result-box").style.display = "none";
@@ -519,6 +475,17 @@
     }
 
     // --- ADMIN CENTRAL FUNCTIONS ---
+    function verifyAdminLogin() {
+        const key = document.getElementById("admin-master-key").value.trim();
+        if(key === MASTER_TEACHER_PASSWORD) {
+            document.getElementById("admin-lockscreen").style.display = "none";
+            document.getElementById("teacher-box").style.display = "block";
+            renderTeacherLogs();
+        } else {
+            alert("❌ Incorrect Admin Password Code!");
+        }
+    }
+
     function importStudentCode() {
         const rawInput = document.getElementById("compressed-input").value.trim();
         if(!rawInput) return;

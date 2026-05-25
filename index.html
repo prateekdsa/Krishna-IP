@@ -6,8 +6,16 @@
     <title>Krishna's IP Masterclass</title>
     <link rel="manifest" href="manifest.json">
     <style>
+        /* CRITICAL SECURITY: Disables all text copying, highlighting, and context menus for Google Lens protection */
+        * {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and Consumer Edge */
+            user-select: none; /* Standard syntax */
+            -webkit-touch-callout: none; /* Disable iOS long-press menu */
+        }
+
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
-        .quiz-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; }
+        .quiz-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; transition: filter 0.1s ease; }
         .teacher-brand { text-align: center; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #7f8c8d; font-weight: bold; }
         h1 { color: #2c3e50; text-align: center; font-size: 26px; margin-top: 0; margin-bottom: 25px; }
         
@@ -21,7 +29,7 @@
         
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; -webkit-user-select: text; user-select: text; }
         
         .code-box { background: #272822; color: #f8f8f2; padding: 14px; border-radius: 6px; font-family: 'Consolas', 'Courier New', Courier, monospace; white-space: pre-wrap; margin: 15px 0; overflow-x: auto; font-size: 15px; border-left: 4px solid #3498db; }
         .option-container { display: flex; align-items: center; padding: 12px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
@@ -52,16 +60,29 @@
         .txt-success { color: #2ecc71; font-weight: bold; }
         .txt-danger { color: #e74c3c; font-weight: bold; }
 
-        /* PERMANENT HARD LOCKDOWN SCREEN STYLES */
         .lockdown-container { text-align: center; padding: 20px; }
         .lockdown-title { color: #c0392b; font-size: 28px; font-weight: bold; margin-bottom: 15px; }
         .lockdown-desc { font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 25px; }
 
-        /* SECURITY BLUR: Hides the quiz instantly if app backgrounding occurs */
-        .secure-blur-overlay { filter: blur(40px) grayscale(100%); opacity: 0.05; pointer-events: none; user-select: none; }
+        /* ANTI-LENS / ANTI-SCREENSHOT BLINDING LAYER */
+        #anti-cheat-blindfold {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000000;
+            color: #ffffff;
+            z-index: 99999;
+            text-align: center;
+            padding-top: 40vh;
+            font-family: sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+        }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
+
+<div id="anti-cheat-blindfold">⚠️ SCREEN SECURITY BREAK LOCKEDOUT</div>
 
 <div class="quiz-container" id="app-visibility-wrapper">
     <div class="teacher-brand">Krishna Kumar Presents</div>
@@ -98,8 +119,7 @@
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
         <div class="lockdown-title">⛔ APPLICATION LOCKED PERMANENTLY</div>
         <p class="lockdown-desc">
-            This device has been permanently locked because a previous quiz session was completed but 
-            <strong>NOT submitted to KK Sir via WhatsApp</strong>, or the exam parameters were intentionally violated.
+            This device has been permanently locked because a quiz session was running but the student left the screen, attempted a screenshot, or triggered an external scanner like Google Lens.
             <br><br>
             <span style="color:#c0392b;">To restore device access, KK Sir must enter the Master Security Code below.</span>
         </p>
@@ -166,7 +186,7 @@
 
 <script>
     const TEACHER_PHONE = "917055202223"; 
-    const MASTER_TEACHER_PASSWORD = "adminkksir"; 
+    const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
 
     let allClassData = null;
     let quizData = []; 
@@ -185,7 +205,6 @@
     let isQuizActive = false; 
 
     window.onload = async function() {
-        // First, check if this specific device is logged under lockdown fraud parameters
         if (localStorage.getItem("device_fraud_lockdown") === "true") {
             triggerPermanentLockdownUI();
             return;
@@ -197,40 +216,45 @@
         } catch(e) { console.error(e); }
     }
 
-    // --- SECURITY PROTOCOLS: CHEATING PREVENTION ENGINES ---
+    // --- ENHANCED SECURITY ENGINES: CAPTURE DISRUPTION AND CHEATING LOCKDOWN ---
     
-    // Engine A: Force Logout / Terminate when app minimizes or moves tabs
+    // Monitors visibility state changes (Toggling away from active tab window)
     document.addEventListener("visibilitychange", function() {
-        if (document.hidden && isQuizActive) {
-            // Student abandoned mid-test: Force permanent block and log fraud state
-            localStorage.setItem("device_fraud_lockdown", "true");
-            triggerSecurityCheatingLogout("App backgrounding/minimization detected during live test execution.");
+        if (isQuizActive) {
+            if (document.hidden) {
+                activatePermanentLockdown();
+            } else {
+                document.getElementById("anti-cheat-blindfold").style.display = "none";
+            }
         }
     });
 
-    // Engine B: Content blinding on focus loss (Prevents hardware app-switcher tracking snapshots)
+    // Monitors Focus Loss (Triggers instantly during Screenshots, Google Lens overlay expansions, or hardware split-screens)
     window.addEventListener("blur", function() {
         if (isQuizActive) {
-            document.getElementById("app-visibility-wrapper").classList.add("secure-blur-overlay");
+            // Drop a complete black cover layer over the window instantly
+            document.getElementById("anti-cheat-blindfold").style.display = "block";
+            
+            // Execute permanent block immediately behind the scenes
+            activatePermanentLockdown();
         }
     });
     
     window.addEventListener("focus", function() {
-        document.getElementById("app-visibility-wrapper").classList.remove("secure-blur-overlay");
+        if (!localStorage.getItem("device_fraud_lockdown")) {
+            document.getElementById("anti-cheat-blindfold").style.display = "none";
+        }
     });
 
-    function triggerSecurityCheatingLogout(reason) {
+    function activatePermanentLockdown() {
+        localStorage.setItem("device_fraud_lockdown", "true");
         clearInterval(timerInterval);
         isQuizActive = false;
-        isTimeOver = false;
-        
-        alert(`⚠️ SECURITY CRITICAL VIOLATION!\n\nYour session was terminated because: ${reason}\n\nThis device has been flagged and permanently locked.`);
         triggerPermanentLockdownUI();
     }
 
     function triggerPermanentLockdownUI() {
-        isQuizActive = false;
-        clearInterval(timerInterval);
+        document.getElementById("anti-cheat-blindfold").style.display = "none";
         document.getElementById("navigation-tabs-hub").style.display = "none";
         document.getElementById("student-portal-section").style.display = "none";
         document.getElementById("admin-portal-section").style.display = "none";
@@ -243,7 +267,7 @@
         const inputKey = document.getElementById("unlock-master-key").value.trim();
         if (inputKey === MASTER_TEACHER_PASSWORD) {
             localStorage.removeItem("device_fraud_lockdown");
-            alert("✅ Device successfully unlocked. App returning to system default.");
+            alert("✅ Device successfully unlocked. App returning to default system state.");
             location.reload();
         } else {
             alert("❌ Incorrect Master Security Authorization Key!");
@@ -288,7 +312,6 @@
         studentName = inputName;
         studentRoll = inputRoll;
 
-        // Block entry if student has exhausted standard evaluation thresholds
         let attemptTrackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
         let pastAttemptsCount = parseInt(localStorage.getItem(attemptTrackingKey)) || 0;
 
@@ -297,10 +320,9 @@
             return;
         }
 
-        // Increment attempts entry
         localStorage.setItem(attemptTrackingKey, pastAttemptsCount + 1);
 
-        // Pre-emptively arm the lockdown flag. If they close the browser now without finishing/submitting, they get locked out!
+        // Arm the device lockdown immediately upon test launch
         localStorage.setItem("device_fraud_lockdown", "true");
 
         if(!allClassData) {
@@ -324,6 +346,7 @@
         startTimer();
     }
 
+    // --- PRE-EXISTING CORE QUIZ OPERATIONS LOGIC ---
     function startTimer() {
         updateTimerDisplay();
         timerInterval = setInterval(() => {
@@ -332,7 +355,7 @@
             if (totalTimeInSeconds <= 0) {
                 clearInterval(timerInterval);
                 isTimeOver = true;
-                alert("⏱️ Time is up! Directing to summary processing terminal.");
+                alert("⏱️ Time is up! Processing summary dashboard data.");
                 calculateAndShowResults(true);
             }
         }, 1000);
@@ -411,7 +434,6 @@
 
     function calculateAndShowResults(forced) {
         clearInterval(timerInterval);
-        isQuizActive = false; 
         
         let score = 0;
         let unansweredCount = 0;
@@ -423,7 +445,7 @@
 
         if (unansweredCount > 0 && !forced) {
             const confirmSubmit = confirm(`You have left ${unansweredCount} question(s) empty. Submit performance anyway?`);
-            if (!confirmSubmit) { isQuizActive = true; startTimer(); return; }
+            if (!confirmSubmit) { startTimer(); return; }
         }
 
         finalScore = score;
@@ -446,8 +468,9 @@
         const encodedMessage = encodeURIComponent(reportText);
         const whatsappUrl = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodedMessage}`;
         
-        // Clean up lockdown parameter from local device storage once verified action completes
+        // SAFE EXIT DISARM: Clear lock status only after genuine WhatsApp click triggered
         localStorage.removeItem("device_fraud_lockdown");
+        isQuizActive = false; 
         
         hasSentReport = true;
         document.getElementById("reset-app-btn").disabled = false;
@@ -467,7 +490,7 @@
         document.getElementById("login-roll").value = "";
         document.getElementById("reset-app-btn").disabled = true;
         document.getElementById("reset-app-btn").innerText = "Log Out & Return to Home Screen 🔒";
-        document.getElementById("lock-notice").style.display = "block";
+        document.getElementById("lock-notice").style.block;
         
         document.getElementById("result-box").style.display = "none";
         document.getElementById("navigation-tabs-hub").style.display = "flex";

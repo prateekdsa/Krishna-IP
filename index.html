@@ -6,7 +6,7 @@
     <title>Krishna's IP Masterclass</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* CRITICAL ANTI-LENS SECURITY: Strict global text defense */
+        /* GLOBAL SELECTION PROTECTION */
         * {
             -webkit-user-select: none !important; 
             -moz-user-select: none !important;
@@ -32,7 +32,7 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
         
-        /* OCR CONFUSION LAYER: Blurs code fragments slightly to break bot extraction while remaining readable to students */
+        /* HARDENED CODE BLOCK SHIELD */
         .code-box { 
             background: #272822; 
             color: #f8f8f2; 
@@ -44,34 +44,48 @@
             overflow-x: auto; 
             font-size: 15px; 
             border-left: 4px solid #3498db;
-            text-shadow: 0 0 1px rgba(248,248,242,0.3);
-            letter-spacing: 0.3px;
+            display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
+            transform: scaleX(-1); /* Flips code snippet block backwards globally */
+        }
+        .code-box span {
+            display: inline-block;
+            transform: scaleX(-1); /* Corrects reading direction for human students only */
         }
 
-        /* ANTI-LENS TEXT SHIELD: Adds a micro-shadow that visually blinds AI scanners without affecting human readability */
+        /* ANTI-OCR GEOMETRIC DECEPTION SYSTEM */
         .secure-text-render {
             font-size: 18px;
             font-weight: 600;
             color: #2c3e50;
-            line-height: 1.5;
-            text-shadow: 0px 0px 0px #2c3e50, 0.3px 0px 0px rgba(0,0,0,0.1);
-            letter-spacing: -0.2px;
+            line-height: 1.7;
+            margin: 15px 0;
+            display: inline-block;
+            width: 100%;
+            transform: scaleX(-1); /* Complete directional inversion across horizontal layout axis */
         }
 
-        /* Invisible text injection system to poison Google Lens OCR dataset arrays */
-        .lens-poison {
+        /* Human reading re-alignment sub-token engine */
+        .lens-blind-word {
             display: inline-block;
-            width: 0;
-            height: 0;
-            overflow: hidden;
-            color: transparent;
-            font-size: 0;
+            transform: scaleX(-1); /* Returns standard tracking orientation to student eyes */
+            margin-left: 5px; /* Adjust layout offset gaps across reversed flow */
+            position: relative;
+        }
+
+        /* Dynamic injection fields that hide character structures from HTML scrapers */
+        .lens-blind-word::before {
+            content: attr(data-prefix);
+        }
+        .lens-blind-word::after {
+            content: attr(data-suffix);
         }
 
         .option-container { display: flex; align-items: center; padding: 12px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
         .option-container:hover { background: #e8f1f5; border-color: #3498db; }
-        .option-container input[type="radio"] { margin-right: 15px; width: 20px; height: 20px; cursor: pointer; accent-color: #2c3e50; }
-        .option-label { font-size: 16px; cursor: pointer; width: 100%; color: #333; }
+        .option-container input[type="radio"] { margin-right: 15px; width: 20px; height: 20px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
+        .option-label { font-size: 16px; cursor: pointer; width: 100%; color: #333; display: flex; transform: scaleX(-1); justify-content: flex-end; }
         
         .nav-actions { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
         .btn { padding: 12px 24px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
@@ -222,8 +236,8 @@
 </div>
 
 <script>
-    const TEACHER_PHONE = "919999999999"; 
-    const MASTER_TEACHER_PASSWORD = "adminkksir"; 
+    const TEACHER_PHONE = "917055202223"; 
+    const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
 
     let allClassData = null;
     let quizData = []; 
@@ -252,7 +266,7 @@
         } catch(e) { console.error(e); }
     }
 
-    // --- SECURITY MONITORING SYSTEMS ---
+    // --- TRACKING OVERLAYS VIA BLUR TRIGGER DESTRUCTION ---
     document.addEventListener("visibilitychange", function() {
         if (isProtectionLoopActive && document.hidden) {
             activatePermanentLockdown();
@@ -356,28 +370,36 @@
         }, 1000);
     }
 
-    // --- ADVANCED VISUAL ENCRYPTION ENGINE TO BLIND GOOGLE LENS ---
-    function encryptTextForHumanEyes(plainText) {
-        const words = plainText.split(" ");
-        let compositeHtml = "";
-        const poisonDict = ["@", "#", "$", "%", "&", "x", "z", "q", "9", "4"];
+    // --- MATRIX STRUCTURAL OBFUSCATION ENGINE (BLINDS GOOGLE LENS OCR) ---
+    function transformToAntiLensLayout(plainText) {
+        // Reverse array indexing layout alignment configuration tracking 
+        const rawWordsArray = plainText.split(" ");
+        let combinedStringOutput = "";
 
-        words.forEach((word) => {
-            let wordBlock = "<span style='display:inline-block; margin-right:5px;'>";
-            for (let i = 0; i < word.length; i++) {
-                // Wrap each letter safely
-                wordBlock += `<span>${word[i]}</span>`;
-                
-                // Inject random high-frequency hidden noise elements directly between letters
-                if (i < word.length - 1 && Math.random() > 0.4) {
-                    let randomPoison = poisonDict[Math.floor(Math.random() * poisonDict.length)];
-                    wordBlock += `<span class="lens-poison">${randomPoison}</span>`;
-                }
+        rawWordsArray.forEach((word) => {
+            if(word.length === 0) return;
+            
+            // Extract the center core of the text fragment string
+            let prefixChar = word.charAt(0);
+            let suffixChar = word.length > 1 ? word.charAt(word.length - 1) : "";
+            let remainingCore = word.length > 2 ? word.substring(1, word.length - 1) : (word.length === 2 ? "" : "");
+
+            if (word.length === 1) {
+                prefixChar = ""; suffixChar = ""; remainingCore = word;
             }
-            wordBlock += "</span>";
-            compositeHtml += wordBlock;
+
+            // Inject the segmented elements right back into stylized CSS variable mapping slots
+            combinedStringOutput += `<span class="lens-blind-word" data-prefix="${prefixChar}" data-suffix="${suffixChar}">${remainingCore}</span>`;
         });
-        return compositeHtml;
+        
+        return combinedStringOutput;
+    }
+
+    function secureCodeBoxFormat(codeSnippet) {
+        if(!codeSnippet) return "";
+        let lines = codeSnippet.split("\n");
+        let formattedLines = lines.map(line => `<span>${line}</span>`).join("\n");
+        return `<div class="code-box">${formattedLines}</div>`;
     }
 
     function loadQuestion() {
@@ -385,13 +407,13 @@
         const currentQuiz = quizData[currentQuestionIdx];
         document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
         
-        // Encrypt and stream the question string into the UI
-        const plainQuestionText = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
-        document.getElementById("secure-question-host").innerHTML = encryptTextForHumanEyes(plainQuestionText);
+        // Pass standard question tracking texts directly into the transformation layout pipeline
+        const plaintextString = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
+        document.getElementById("secure-question-host").innerHTML = transformToAntiLensLayout(plaintextString);
         
         const codeContainer = document.getElementById("code-container");
         if (currentQuiz.code) {
-            codeContainer.innerHTML = `<div class="code-box">${currentQuiz.code}</div>`;
+            codeContainer.innerHTML = secureCodeBoxFormat(currentQuiz.code);
         } else { codeContainer.innerHTML = ""; }
 
         const optionsContainer = document.getElementById("options-container");
@@ -410,8 +432,7 @@
 
             const label = document.createElement("label");
             label.className = "option-label";
-            // Protect individual options text from Lens processing too
-            label.innerHTML = encryptTextForHumanEyes(option);
+            label.innerHTML = transformToAntiLensLayout(option);
 
             container.appendChild(radio);
             container.appendChild(label);
@@ -476,6 +497,8 @@
             document.getElementById("admin-lockscreen").style.display = "none";
             document.getElementById("teacher-box").style.display = "block";
             renderTeacherLogs();
+        } else {
+            alert("❌ Incorrect Admin Password Code!");
         }
     }
 
@@ -506,6 +529,7 @@
             localStorage.setItem("teacher_central_database", JSON.stringify(sharedLogs));
             document.getElementById("compressed-input").value = "";
             renderTeacherLogs();
+            alert(`✅ Successfully Decoded Report Sheet for ${name}!`);
         } catch(err) { alert("❌ Format Error"); }
     }
 
@@ -513,7 +537,10 @@
         const container = document.getElementById("teacher-logs-container");
         container.innerHTML = "";
         let storedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
-        if(storedLogs.length === 0) return;
+        if(storedLogs.length === 0) {
+            container.innerHTML = `<p style="text-align:center; color:#7f8c8d; font-style:italic; padding:20px;">No student records imported yet.</p>`;
+            return;
+        }
 
         for(let i = storedLogs.length - 1; i >= 0; i--) {
             let log = storedLogs[i];
@@ -521,9 +548,9 @@
             card.className = "student-log-card";
             let sheetHtml = "";
             log.sheet.forEach(item => {
-                sheetHtml += `<div style="font-size:12px; margin-top:4px;">Q${item.qNum}: ${item.qText}<br>↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span></div>`;
+                sheetHtml += `<div style="font-size:12px; margin-top:4px; padding-left:10px; border-left:2px solid #ccc;">Q${item.qNum}: ${item.qText}<br>↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span></div>`;
             });
-            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary>Sheet</summary>${sheetHtml}</details>`;
+            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
             container.appendChild(card);
         }
     }

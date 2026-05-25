@@ -11,6 +11,10 @@
         .teacher-brand { text-align: center; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #7f8c8d; font-weight: bold; }
         h1 { color: #2c3e50; text-align: center; font-size: 26px; margin-top: 0; margin-bottom: 25px; }
         
+        .portal-tabs { display: flex; background: #e2e8f0; border-radius: 8px; padding: 4px; margin-bottom: 25px; gap: 4px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 15px; font-weight: bold; color: #64748b; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .tab-btn.active { background: white; color: #2c3e50; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
         .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #eef2f7; padding: 10px 15px; border-radius: 6px; }
         #progress-text { font-size: 14px; color: #2c3e50; font-weight: bold; }
         #timer-box { font-size: 16px; color: #c0392b; font-weight: bold; background: #fde8e7; padding: 4px 10px; border-radius: 4px; border: 1px solid #f5c2c2; }
@@ -42,47 +46,102 @@
         
         .score-box { text-align: center; font-size: 22px; font-weight: bold; color: #2ecc71; }
         .warning-text { color: #c0392b; font-size: 13px; margin-top: 5px; font-weight: bold; }
-        
-        .detailed-report-card { background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; margin-top: 20px; max-height: 250px; overflow-y: auto; text-align: left; }
-        .report-item { border-bottom: 1px dashed #ccc; padding: 10px 0; font-size: 14px; }
-        .report-item:last-child { border-bottom: none; }
-        .txt-success { color: #2ecc71; font-weight: bold; }
-        .txt-danger { color: #e74c3c; font-weight: bold; }
+        .toggle-link { display: block; text-align: center; margin-top: 15px; color: #3498db; text-decoration: none; font-weight: bold; cursor: pointer; }
+        .toggle-link:hover { text-decoration: underline; }
 
-        .teacher-panel { background: #fff; border: 2px solid #2c3e50; border-radius: 8px; padding: 20px; margin-top: 20px; text-align: left; }
-        .student-log-card { background: #f1f2f6; padding: 12px; margin-bottom: 10px; border-radius: 6px; border-left: 5px solid #2c3e50; }
+        .student-log-card { background: #f1f2f6; padding: 12px; margin-bottom: 10px; border-radius: 6px; border-left: 5px solid #2c3e50; text-align: left; }
         .btn-danger { background: #e74c3c; color: white; }
+
+        /* SECURITY BLUR: Hides the quiz instantly if app backgrounding occurs */
+        .secure-blur-overlay { filter: blur(40px) grayscale(100%); opacity: 0.05; pointer-events: none; user-select: none; }
     </style>
 </head>
 <body>
 
-<div class="quiz-container">
+<div class="quiz-container" id="app-visibility-wrapper">
     <div class="teacher-brand">Krishna Kumar Presents</div>
     <h1>Class XII IP Masterclass</h1>
     
-    <div id="login-box">
-        <div class="input-group">
-            <label for="student-name">Student Full Name:</label>
-            <input type="text" id="student-name" placeholder="Enter name (Or 'ADMIN' for Dashboard)">
+    <div id="navigation-tabs-hub" class="portal-tabs">
+        <button id="tab-student" class="tab-btn active" onclick="switchPortalView('student')">👨‍🎓 Student Portal</button>
+        <button id="tab-admin" class="tab-btn" onclick="switchPortalView('admin')">🔑 Admin Dashboard</button>
+    </div>
+
+    <div id="student-portal-section">
+        <div id="login-box">
+            <h3 style="color:#2c3e50; margin-top:0;">Student Account Login</h3>
+            <div class="input-group">
+                <label for="login-roll">Roll Number / ID:</label>
+                <input type="text" id="login-roll" placeholder="Enter your registered roll number">
+            </div>
+            <div class="input-group">
+                <label for="login-password">Account Password:</label>
+                <input type="password" id="login-password" placeholder="Enter your password">
+            </div>
+            <div class="input-group">
+                <label for="student-class">Select Quiz Target Class:</label>
+                <select id="student-class">
+                    <option value="class10">Class 10th</option>
+                    <option value="class11">Class 11th</option>
+                    <option value="class12" selected>Class 12th (Informatics Practices)</option>
+                </select>
+            </div>
+            <button class="btn btn-next" style="width:100%; margin-top:10px;" onclick="handleLogin()">Login & Start Quiz</button>
+            <a class="toggle-link" onclick="switchFrame('register-box')">New Student? Register Account Here</a>
         </div>
-        <div class="input-group">
-            <label for="student-roll">Roll Number / ID:</label>
-            <input type="text" id="student-roll" placeholder="Enter roll number">
+
+        <div id="register-box" style="display: none;">
+            <h3 style="color:#2c3e50; margin-top:0;">Create New Account</h3>
+            <div class="input-group">
+                <label for="reg-name">Student Full Name:</label>
+                <input type="text" id="reg-name" placeholder="Enter your full name">
+            </div>
+            <div class="input-group">
+                <label for="reg-roll">Roll Number / ID:</label>
+                <input type="text" id="reg-roll" placeholder="Enter your official roll number">
+            </div>
+            <div class="input-group">
+                <label for="reg-class">Your Assigned Class:</label>
+                <select id="reg-class">
+                    <option value="class10">Class 10th</option>
+                    <option value="class11">Class 11th</option>
+                    <option value="class12" selected>Class 12th (Informatics Practices)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="reg-school-code">School Registration Code:</label>
+                <input type="password" id="reg-school-code" placeholder="Enter registration pass given by KK Sir">
+            </div>
+            <div class="input-group">
+                <label for="reg-password">Create Password:</label>
+                <input type="password" id="reg-password" placeholder="Create a secret access password">
+            </div>
+            <button class="btn btn-submit" style="width:100%; margin-top:10px;" onclick="handleRegistration()">Register Secure Account</button>
+            <a class="toggle-link" onclick="switchFrame('login-box')">Already have an account? Log In</a>
         </div>
-        <div class="input-group">
-            <label for="student-class">Select Your Class:</label>
-            <select id="student-class">
-                <option value="class10">Class 10th</option>
-                <option value="class11">Class 11th</option>
-                <option value="class12" selected>Class 12th (Informatics Practices)</option>
-            </select>
+    </div>
+
+    <div id="admin-portal-section" style="display: none;">
+        <div id="admin-lockscreen">
+            <h3 style="color:#2c3e50; margin-top:0;">Teacher Authentication</h3>
+            <div class="input-group">
+                <label for="admin-master-key">Enter Admin Secure Code:</label>
+                <input type="password" id="admin-master-key" placeholder="Enter master password">
+            </div>
+            <button class="btn btn-next" style="width: 100%;" onclick="verifyAdminLogin()">Access Dashboard</button>
         </div>
-        <div class="input-group">
-            <label for="class-password">Class Password / Admin Pass:</label>
-            <input type="password" id="class-password" placeholder="Enter password">
-            <div class="warning-text">⚠️ Note: Max 2 exam attempts allowed per class!</div>
+
+        <div id="teacher-box" style="display: none;">
+            <h2 style="color: #2c3e50; margin-top: 0;">📋 KK Sir's Central Dashboard</h2>
+            <div class="input-group" style="background: #eef2f7; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                <label for="compressed-input" style="color: #2c3e50; font-weight: bold;">📥 Paste Student's WhatsApp Report Code Here:</label>
+                <textarea id="compressed-input" rows="3" placeholder="Paste entire raw text packet message here..."></textarea>
+                <button class="btn btn-submit" style="width: 100%; margin-top: 8px;" onclick="importStudentCode()">Decode & Add to Evaluation Log</button>
+            </div>
+            <h3 style="color: #2c3e50; margin-top: 20px; border-bottom: 2px solid #2c3e50; padding-bottom: 5px;">Student Evaluation Logs</h3>
+            <div id="teacher-logs-container" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;"></div>
+            <button class="btn btn-danger" style="width: 100%; color: white;" onclick="clearTeacherLogs()">Clear Dashboard Data Archive</button>
         </div>
-        <button class="btn btn-next" style="width:100%; margin-top:10px;" onclick="verifyAndStart()">Validate & Start Test</button>
     </div>
     
     <div id="quiz-box" style="display: none;">
@@ -90,7 +149,7 @@
             <div id="progress-text">Question 1 of 3</div>
             <div id="timer-box">Time Left: --:--</div>
         </div>
-        <h3 id="question-text">Loading question...</h3>
+        <h3 id="question-text" style="text-align: left;">Loading question...</h3>
         <div id="code-container"></div>
         <div id="options-container"></div>
         
@@ -104,30 +163,11 @@
         <p class="score-box">🎉 Quiz Completed! 🎉</p>
         <p id="score-text" style="text-align: center; font-size: 18px; color: #555; line-height: 1.6; font-weight: bold;"></p>
         
-        <button class="btn-whatsapp" onclick="sendToTeacher()">Send Code to KK Sir via WhatsApp 💬</button>
+        <button class="btn-whatsapp" onclick="sendToTeacher()">Send Score to KK Sir via WhatsApp 💬</button>
         
         <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()" disabled>Take Another Test (Locked 🔒)</button>
         <div id="lock-notice" style="text-align:center; font-size:12px; color:#e74c3c; margin-top:5px; font-weight:bold;">
             You must click the green WhatsApp button above to unlock this app!
-        </div>
-    </div>
-
-    <div id="teacher-box" class="teacher-panel" style="display: none;">
-        <h2 style="color: #2c3e50; margin-top: 0;">📋 KK Sir's Central Dashboard</h2>
-        
-        <div class="input-group" style="background: #eef2f7; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1;">
-            <label for="compressed-input" style="color: #2c3e50;">📥 Paste Student's WhatsApp Report Code Here:</label>
-            <textarea id="compressed-input" rows="3" placeholder="Paste the text code sent by the student on WhatsApp here..." style="font-family: monospace; font-size: 13px; resize: none; margin-bottom: 10px;"></textarea>
-            <button class="btn btn-submit" style="width: 100%;" onclick="importStudentCode()">Decode & Add to Evaluation Log</button>
-        </div>
-
-        <h3 style="color: #2c3e50; margin-top: 20px; border-bottom: 2px solid #2c3e50; padding-bottom: 5px;">Student Grading Log</h3>
-        <div id="teacher-logs-container" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
-            </div>
-
-        <div style="display: flex; gap: 10px;">
-            <button class="btn btn-prev" style="width: 50%;" onclick="closeTeacherDashboard()">Exit Dashboard</button>
-            <button class="btn btn-danger" style="width: 50%; color: white;" onclick="clearTeacherLogs()">Clear Dashboard Data</button>
         </div>
     </div>
 </div>
@@ -136,7 +176,7 @@
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "adminkksir"; 
 
-    const CLASS_PASSWORDS = {
+    const INSTITUTION_REG_CODES = {
         "class10": "pass10",
         "class11": "pass11",
         "class12": "pass12"
@@ -156,54 +196,156 @@
     let timerInterval = null;
     let isTimeOver = false;
     let hasSentReport = false;
+    let isQuizActive = false; // Flag to track when a test session is hot
 
-    // Prefetch database structure to handle validation routing later
     window.onload = async function() {
         try {
             const response = await fetch('questions.json');
             allClassData = await response.json();
-        } catch(e) { console.error("Database connection initialization failure.", e); }
+        } catch(e) { console.error(e); }
     }
 
-    async function verifyAndStart() {
-        studentName = document.getElementById("student-name").value.trim();
-        studentRoll = document.getElementById("student-roll").value.trim();
+    
+    
+    
+    document.addEventListener("visibilitychange", function() {
+        if (document.hidden && isQuizActive) {
+            triggerSecurityCheatingLogout("App was minimized, closed, or device was locked.");
+        }
+    });
+
+    
+    window.addEventListener("blur", function() {
+        if (isQuizActive) {
+            document.getElementById("app-visibility-wrapper").classList.add("secure-blur-overlay");
+        }
+    });
+    
+    window.addEventListener("focus", function() {
+        document.getElementById("app-visibility-wrapper").classList.remove("secure-blur-overlay");
+    });
+
+    function triggerSecurityCheatingLogout(reason) {
+        clearInterval(timerInterval);
+        isQuizActive = false;
+        isTimeOver = false;
+        userAnswers = [];
+        currentQuestionIdx = 0;
+        
+        alert(`⚠️ SECURITY ALERT!\n\nYour session was terminated because: ${reason}\nThis attempt has been logged against your allowance limits.`);
+        
+        
+        document.getElementById("quiz-box").style.display = "none";
+        document.getElementById("result-box").style.display = "none";
+        document.getElementById("navigation-tabs-hub").style.display = "flex";
+        
+        document.getElementById("login-roll").value = "";
+        document.getElementById("login-password").value = "";
+        switchPortalView('student');
+    }
+
+    function switchPortalView(targetView) {
+        document.getElementById("tab-student").classList.remove("active");
+        document.getElementById("tab-admin").classList.remove("active");
+        
+        if(targetView === 'student') {
+            document.getElementById("tab-student").classList.add("active");
+            document.getElementById("student-portal-section").style.display = "block";
+            document.getElementById("admin-portal-section").style.display = "none";
+        } else {
+            document.getElementById("tab-admin").classList.add("active");
+            document.getElementById("student-portal-section").style.display = "block";
+            document.getElementById("student-portal-section").style.display = "none";
+            document.getElementById("admin-portal-section").style.display = "block";
+            document.getElementById("admin-master-key").value = "";
+            document.getElementById("admin-lockscreen").style.display = "block";
+            document.getElementById("teacher-box").style.display = "none";
+        }
+    }
+
+    function switchFrame(frameId) {
+        document.getElementById("login-box").style.display = "none";
+        document.getElementById("register-box").style.display = "none";
+        document.getElementById(frameId).style.display = "block";
+    }
+
+    function verifyAdminLogin() {
+        const key = document.getElementById("admin-master-key").value.trim();
+        if(key === MASTER_TEACHER_PASSWORD) {
+            document.getElementById("admin-lockscreen").style.display = "none";
+            document.getElementById("teacher-box").style.display = "block";
+            renderTeacherLogs();
+        } else {
+            alert("❌ Incorrect Admin Password Code!");
+        }
+    }
+
+    function handleRegistration() {
+        const name = document.getElementById("reg-name").value.trim();
+        const roll = document.getElementById("reg-roll").value.trim();
+        const cKey = document.getElementById("reg-class").value;
+        const schoolCode = document.getElementById("reg-school-code").value.trim();
+        const password = document.getElementById("reg-password").value.trim();
+
+        if(!name || !roll || !schoolCode || !password) {
+            alert("Please input details across all standard configuration lines!");
+            return;
+        }
+
+        if(schoolCode !== INSTITUTION_REG_CODES[cKey]) {
+            alert("❌ Invalid Registration Verification Key!");
+            return;
+        }
+
+        let globalAccountKey = `account_${roll.replace(/\s+/g, '_')}`;
+        if(localStorage.getItem(globalAccountKey)) {
+            alert("⚠️ Account already mapped to this Roll No on this machine!");
+            switchFrame('login-box');
+            return;
+        }
+
+        let userAccountProfile = { name: name, roll: roll, classKey: cKey, password: password };
+        localStorage.setItem(globalAccountKey, JSON.stringify(userAccountProfile));
+        alert("🎉 Registration Successful!");
+        document.getElementById("login-roll").value = roll;
+        switchFrame('login-box');
+    }
+
+    async function handleLogin() {
+        const inputRoll = document.getElementById("login-roll").value.trim();
+        const inputPass = document.getElementById("login-password").value.trim();
         selectedClassKey = document.getElementById("student-class").value;
-        const enteredPassword = document.getElementById("class-password").value.trim();
         
         const classSelectElement = document.getElementById("student-class");
         selectedClassLabel = classSelectElement.options[classSelectElement.selectedIndex].text;
 
-        if (studentName === "") {
-            alert("Please complete your identity inputs!");
+        if(!inputRoll || !inputPass) {
+            alert("Please complete fields!");
             return;
         }
 
-        if (studentName.toUpperCase() === "ADMIN") {
-            if (enteredPassword === MASTER_TEACHER_PASSWORD) {
-                openTeacherDashboard();
-                return;
-            } else {
-                alert("❌ Incorrect Admin Password!");
-                return;
-            }
-        }
+        let targetAccountKey = `account_${inputRoll.replace(/\s+/g, '_')}`;
+        let matchedProfileString = localStorage.getItem(targetAccountKey);
 
-        if (studentRoll === "" || enteredPassword === "") {
-            alert("Please complete all profile details and enter your access security password!");
+        if(!matchedProfileString) {
+            alert("❌ No registered account found with this Roll Number!");
             return;
         }
 
-        if (enteredPassword !== CLASS_PASSWORDS[selectedClassKey]) {
-            alert("❌ Invalid Class Security Password!");
+        let profile = JSON.parse(matchedProfileString);
+        if(profile.password !== inputPass) {
+            alert("❌ Incorrect Password!");
             return;
         }
+
+        studentName = profile.name;
+        studentRoll = profile.roll;
 
         let attemptTrackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
         let pastAttemptsCount = parseInt(localStorage.getItem(attemptTrackingKey)) || 0;
 
         if (pastAttemptsCount >= 2) {
-            alert(`⛔ Access Denied!\nRoll No ${studentRoll} has already exhausted the maximum limit of 2 test attempts allowed for ${selectedClassLabel}.`);
+            alert(`⛔ Access Denied!\nRoll No ${studentRoll} has exhausted the maximum limit of 2 test attempts allowed.`);
             return;
         }
 
@@ -213,17 +355,18 @@
             try {
                 const response = await fetch('questions.json');
                 allClassData = await response.json();
-            } catch(e) {
-                alert("Database transmission offline.");
-                return;
-            }
+            } catch(e) { alert("Data pipeline connectivity offline."); return; }
         }
         
         quizData = allClassData[selectedClassKey];
         userAnswers = new Array(quizData.length).fill(null);
         totalTimeInSeconds = quizData.length * 60;
         
-        document.getElementById("login-box").style.display = "none";
+        // Arms security flag
+        isQuizActive = true; 
+
+        document.getElementById("navigation-tabs-hub").style.display = "none";
+        document.getElementById("student-portal-section").style.display = "none";
         document.getElementById("quiz-box").style.display = "block";
         
         loadQuestion();
@@ -235,11 +378,10 @@
         timerInterval = setInterval(() => {
             totalTimeInSeconds--;
             updateTimerDisplay();
-
             if (totalTimeInSeconds <= 0) {
                 clearInterval(timerInterval);
                 isTimeOver = true;
-                alert("⏱️ Time is up! Compiling answers...");
+                alert("⏱️ Time is up!");
                 calculateAndShowResults(true);
             }
         }, 1000);
@@ -253,7 +395,6 @@
 
     function loadQuestion() {
         if (isTimeOver) return;
-
         const currentQuiz = quizData[currentQuestionIdx];
         document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
         document.getElementById("question-text").innerText = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
@@ -261,9 +402,7 @@
         const codeContainer = document.getElementById("code-container");
         if (currentQuiz.code) {
             codeContainer.innerHTML = `<div class="code-box">${currentQuiz.code}</div>`;
-        } else {
-            codeContainer.innerHTML = "";
-        }
+        } else { codeContainer.innerHTML = ""; }
 
         const optionsContainer = document.getElementById("options-container");
         optionsContainer.innerHTML = "";
@@ -278,7 +417,6 @@
             radio.name = "quiz-option";
             radio.id = `opt-${index}`;
             radio.value = index;
-            
             if (userAnswers[currentQuestionIdx] === index) radio.checked = true;
 
             const label = document.createElement("label");
@@ -311,24 +449,19 @@
     }
 
     function goPrevious() {
-        if (currentQuestionIdx > 0 && !isTimeOver) {
-            currentQuestionIdx--;
-            loadQuestion();
-        }
+        if (currentQuestionIdx > 0 && !isTimeOver) { currentQuestionIdx--; loadQuestion(); }
     }
 
     function goNext() {
         if (isTimeOver) return;
-        if (currentQuestionIdx < quizData.length - 1) {
-            currentQuestionIdx++;
-            loadQuestion();
-        } else {
-            calculateAndShowResults(false);
-        }
+        if (currentQuestionIdx < quizData.length - 1) { currentQuestionIdx++; loadQuestion(); }
+        else { calculateAndShowResults(false); }
     }
 
     function calculateAndShowResults(forced) {
         clearInterval(timerInterval);
+        isQuizActive = false; // Disarm anti-cheat logic safely
+        
         let score = 0;
         let unansweredCount = 0;
 
@@ -339,10 +472,7 @@
 
         if (unansweredCount > 0 && !forced) {
             const confirmSubmit = confirm(`You have left ${unansweredCount} question(s) unselected. Submit performance anyway?`);
-            if (!confirmSubmit) {
-                startTimer();
-                return;
-            }
+            if (!confirmSubmit) { isQuizActive = true; startTimer(); return; }
         }
 
         finalScore = score;
@@ -354,16 +484,13 @@
     }
 
     function sendToTeacher() {
-        // COMPRESS ANSWERS ARRAY INTO A SINGLE STRING CODE: e.g., "1,0,3,null"
         let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
-        
-        // BUILD SECURITY PACKET TRANSMISSION STRING
-        let reportText = `*QUIZ DATA PACKET*\n`;
-        reportText += `Name: ${studentName}\n`;
-        reportText += `Roll: ${studentRoll}\n`;
-        reportText += `ClassKey: ${selectedClassKey}\n`;
-        reportText += `Score: ${finalScore}/${quizData.length}\n`;
-        reportText += `DataKey: [${answersString}]`;
+        let reportText = `*QUIZ DATA PACKET*\n` +
+                         `Name: ${studentName}\n` +
+                         `Roll: ${studentRoll}\n` +
+                         `ClassKey: ${selectedClassKey}\n` +
+                         `Score: ${finalScore}/${quizData.length}\n` +
+                         `DataKey: [${answersString}]`;
 
         const encodedMessage = encodeURIComponent(reportText);
         const whatsappUrl = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodedMessage}`;
@@ -371,7 +498,6 @@
         hasSentReport = true;
         document.getElementById("reset-app-btn").disabled = false;
         document.getElementById("lock-notice").style.display = "none";
-
         window.location.href = whatsappUrl; 
     }
 
@@ -382,36 +508,22 @@
         isTimeOver = false;
         hasSentReport = false;
         
-        document.getElementById("student-name").value = "";
-        document.getElementById("student-roll").value = "";
-        document.getElementById("class-password").value = "";
+        document.getElementById("login-roll").value = "";
+        document.getElementById("login-password").value = "";
         document.getElementById("reset-app-btn").disabled = true;
         document.getElementById("lock-notice").style.display = "block";
         
         document.getElementById("result-box").style.display = "none";
-        document.getElementById("login-box").style.display = "block";
+        document.getElementById("navigation-tabs-hub").style.display = "flex";
+        switchPortalView('student');
     }
 
-    // --- TEACHER ENGINE PROTOCOLS ---
-    function openTeacherDashboard() {
-        document.getElementById("login-box").style.display = "none";
-        document.getElementById("teacher-box").style.display = "block";
-        renderTeacherLogs();
-    }
-
-    function closeTeacherDashboard() {
-        document.getElementById("teacher-box").style.display = "none";
-        document.getElementById("login-box").style.display = "block";
-        document.getElementById("student-name").value = "";
-        document.getElementById("class-password").value = "";
-    }
-
+    // --- ADMIN CENTRAL FUNCTIONS ---
     function importStudentCode() {
         const rawInput = document.getElementById("compressed-input").value.trim();
         if(!rawInput) return;
 
         try {
-            // Parse out variables using line parsing techniques
             const lines = rawInput.split('\n');
             let name = lines.find(l => l.startsWith("Name:")).replace("Name:", "").trim();
             let roll = lines.find(l => l.startsWith("Roll:")).replace("Roll:", "").trim();
@@ -420,7 +532,6 @@
             let rawDataKey = lines.find(l => l.startsWith("DataKey:")).match(/\[(.*?)\]/)[1];
             
             let parsedAnswersArray = rawDataKey.split(',').map(x => x === 'X' ? null : parseInt(x));
-            
             let referenceQuizSet = allClassData[cKey];
             let constructedSheet = [];
 
@@ -429,49 +540,32 @@
                 let studentAnsText = studentAnsIndex !== null && studentAnsIndex !== undefined ? item.options[studentAnsIndex] : "Not Attempted";
                 let isCorrect = (studentAnsIndex === item.correct);
 
-                constructedSheet.push({
-                    qNum: index + 1,
-                    qText: item.question,
-                    ticked: studentAnsText,
-                    correctOption: item.options[item.correct],
-                    status: isCorrect
-                });
+                constructedSheet.push({ qNum: index + 1, qText: item.question, ticked: studentAnsText, correctOption: item.options[item.correct], status: isCorrect });
             });
 
             let sharedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
-            
-            // Avoid duplicate additions of identical student evaluations
             sharedLogs = sharedLogs.filter(log => !(log.roll === roll && log.classKey === cKey));
             
             sharedLogs.push({
-                name: name,
-                roll: roll,
-                classKey: cKey,
+                name: name, roll: roll, classKey: cKey,
                 className: cKey === "class12" ? "Class 12th" : cKey === "class11" ? "Class 11th" : "Class 10th",
-                score: score,
-                timestamp: new Date().toLocaleString(),
-                sheet: constructedSheet
+                score: score, timestamp: new Date().toLocaleString(), sheet: constructedSheet
             });
 
             localStorage.setItem("teacher_central_database", JSON.stringify(sharedLogs));
             document.getElementById("compressed-input").value = "";
             renderTeacherLogs();
-            alert(`✅ Successfully imported and decoded report sheet for ${name} (Roll No: ${roll})!`);
-
-        } catch(err) {
-            alert("❌ Invalid Data Code Format! Please make sure you copy the entire text message exactly as sent on WhatsApp.");
-            console.error(err);
-        }
+            alert(`✅ Successfully Decoded Report Sheet for ${name}!`);
+        } catch(err) { alert("❌ Invalid Data Code Format!"); }
     }
 
     function renderTeacherLogs() {
         const logsContainer = document.getElementById("teacher-logs-container");
         logsContainer.innerHTML = "";
-        
         let storedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
         
         if(storedLogs.length === 0) {
-            logsContainer.innerHTML = `<p style="text-align:center; color:#7f8c8d; font-style:italic; padding:20px;">No student records imported yet. Paste a WhatsApp code above to parse results!</p>`;
+            logsContainer.innerHTML = `<p style="text-align:center; color:#7f8c8d; font-style:italic; padding:20px;">No student records imported yet.</p>`;
             return;
         }
 
@@ -492,15 +586,14 @@
             card.innerHTML = `<strong>👤 Name:</strong> ${log.name} <br>` +
                              `<strong>🔢 Roll No:</strong> ${log.roll} | <strong>📚 Course:</strong> ${log.className}<br>` +
                              `<strong>🏆 Score:</strong> <span class="txt-success">${log.score}</span><br>` +
-                             `<strong>🕒 Decoded At:</strong> ${log.timestamp}<br>` +
+                             `<strong>🕒 Decoded:</strong> ${log.timestamp}<br>` +
                              `<details style="margin-top:5px; cursor:pointer;"><summary style="font-weight:bold; color:#3498db;">View Detailed Answer Sheet</summary>${sheetHtml}</details>`;
-            
             logsContainer.appendChild(card);
         }
     }
 
     function clearTeacherLogs() {
-        if(confirm("Clear your entire imported central dashboard log?")) {
+        if(confirm("Clear your entire dashboard data log?")) {
             localStorage.removeItem("teacher_central_database");
             renderTeacherLogs();
         }

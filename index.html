@@ -6,7 +6,7 @@
     <title>Krishna's IP Masterclass</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* CRITICAL SYSTEM CONTROL CODES */
+        /* GLOBAL SELECTION PROTECTION */
         * {
             -webkit-user-select: none !important; 
             -moz-user-select: none !important;
@@ -16,7 +16,7 @@
         }
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
-        .quiz-container { max-width: 650px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
+        .quiz-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 6px 15 rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
         .teacher-brand { text-align: center; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #7f8c8d; font-weight: bold; }
         h1 { color: #2c3e50; text-align: center; font-size: 26px; margin-top: 0; margin-bottom: 25px; }
         
@@ -32,28 +32,60 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
         
-        /* OBFUSCATED IMAGE RENDER LAYER SHELLS */
-        .secure-raster-img {
-            display: block;
+        /* HARDENED CODE BLOCK SHIELD */
+        .code-box { 
+            background: #272822; 
+            color: #f8f8f2; 
+            padding: 14px; 
+            border-radius: 6px; 
+            font-family: 'Consolas', 'Courier New', Courier, monospace; 
+            white-space: pre-wrap; 
+            margin: 15px 0; 
+            overflow-x: auto; 
+            font-size: 15px; 
+            border-left: 4px solid #3498db;
+            display: inline-block;
             width: 100%;
-            height: auto;
-            pointer-events: none;
-            margin: 4px 0;
-            image-rendering: -webkit-optimize-contrast; 
+            box-sizing: border-box;
+            transform: scaleX(-1); /* Flips code snippet block backwards globally */
+        }
+        .code-box span {
+            display: inline-block;
+            transform: scaleX(-1); /* Corrects reading direction for human students only */
         }
 
-        .code-box-wrapper {
-            background: #1e1e1e;
-            padding: 14px;
-            border-radius: 6px;
+        /* ANTI-OCR GEOMETRIC DECEPTION SYSTEM */
+        .secure-text-render {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            line-height: 1.7;
             margin: 15px 0;
-            border-left: 5px solid #3498db;
+            display: inline-block;
+            width: 100%;
+            transform: scaleX(-1); /* Complete directional inversion across horizontal layout axis */
         }
 
-        .option-container { display: flex; align-items: center; padding: 14px 16px; margin: 14px 0; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .option-container:hover { background: #f1f7fa; border-color: #3498db; }
-        .option-container input[type="radio"] { margin-right: 18px; width: 26px; height: 26px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
-        .option-label-wrapper { width: 100%; display: flex; align-items: center; overflow: hidden; }
+        /* Human reading re-alignment sub-token engine */
+        .lens-blind-word {
+            display: inline-block;
+            transform: scaleX(-1); /* Returns standard tracking orientation to student eyes */
+            margin-left: 5px; /* Adjust layout offset gaps across reversed flow */
+            position: relative;
+        }
+
+        /* Dynamic injection fields that hide character structures from HTML scrapers */
+        .lens-blind-word::before {
+            content: attr(data-prefix);
+        }
+        .lens-blind-word::after {
+            content: attr(data-suffix);
+        }
+
+        .option-container { display: flex; align-items: center; padding: 12px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
+        .option-container:hover { background: #e8f1f5; border-color: #3498db; }
+        .option-container input[type="radio"] { margin-right: 15px; width: 20px; height: 20px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
+        .option-label { font-size: 16px; cursor: pointer; width: 100%; color: #333; display: flex; transform: scaleX(-1); justify-content: flex-end; }
         
         .nav-actions { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
         .btn { padding: 12px 24px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
@@ -79,7 +111,7 @@
         .txt-danger { color: #e74c3c; font-weight: bold; }
 
         .lockdown-container { text-align: center; padding: 20px; }
-        .lockdown-title { color: #c0392b; font-size: 26px; font-weight: bold; margin-bottom: 15px; }
+        .lockdown-title { color: #c0392b; font-size: 28px; font-weight: bold; margin-bottom: 15px; }
         .lockdown-desc { font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 25px; }
 
         #anti-cheat-blindfold {
@@ -95,15 +127,11 @@
             font-size: 22px;
             font-weight: bold;
         }
-
-        #hidden-raster-canvas { display: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div id="anti-cheat-blindfold">⚠️ SECURITY ALERT: LOGGING OUT SESSION...</div>
-
-<canvas id="hidden-raster-canvas"></canvas>
+<div id="anti-cheat-blindfold">⚠️ SECURITY BREACH DETECTION: RE-ROUTING TERMINAL...</div>
 
 <div class="quiz-container" id="app-visibility-wrapper">
     <div class="teacher-brand">Krishna Kumar Presents</div>
@@ -133,10 +161,6 @@
                     <option value="class12" selected>Class 12th (Informatics Practices)</option>
                 </select>
             </div>
-            <div class="input-group">
-                <label for="class-login-password">Enter Class Entrance Password:</label>
-                <input type="password" id="class-login-password" placeholder="Enter password for chosen class">
-            </div>
             <button class="btn btn-next" style="width:100%; margin-top:10px;" onclick="handleLogin()">Verify Identity & Begin Test</button>
         </div>
     </div>
@@ -144,9 +168,9 @@
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
         <div class="lockdown-title">⛔ ATTEMPTS EXCEEDED / LOCKED OUT</div>
         <p class="lockdown-desc">
-            This account profile has consumed all **3 allowed login sessions** or violated active display validation bounds. 
+            This individual student profile has consumed all **3 allowed login entry sessions** or dropped out of the active validation sequence layout panel views.
             <br><br>
-            <span style="color:#c0392b; font-weight: bold;">To unlock or bypass this limit, KK Sir must authorize a reset manually below.</span>
+            <span style="color:#c0392b; font-weight: bold;">To clear this specific profile data log and re-grant test entry, KK Sir must authorize a reset below.</span>
         </p>
         <div class="input-group" style="max-width: 400px; margin: 0 auto 15px auto;">
             <label for="unlock-master-key">Enter Teacher Unlock Code:</label>
@@ -187,7 +211,8 @@
             <div id="timer-box">Time Left: --:--</div>
         </div>
         
-        <div id="secure-question-host"></div>
+        <div id="secure-question-host" class="secure-text-render"></div>
+        
         <div id="code-container"></div>
         <div id="options-container"></div>
         
@@ -205,7 +230,7 @@
         
         <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()" disabled>Log Out & Close Core Session 🔒</button>
         <div id="lock-notice" style="text-align:center; font-size:12px; color:#e74c3c; margin-top:8px; font-weight:bold;">
-            WARNING: You must submit your score via WhatsApp above to register your performance record.
+            WARNING: You must submit your score via WhatsApp above to cleanly clear your performance token records.
         </div>
     </div>
 </div>
@@ -213,12 +238,6 @@
 <script>
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
-
-    const CLASS_PASSWORDS = {
-        "class10": "10th@KK",
-        "class11": "11th@KK",
-        "class12": "12th@KK"
-    };
 
     let allClassData = null;
     let quizData = []; 
@@ -243,7 +262,7 @@
         } catch(e) { console.error(e); }
     }
 
-    // --- TRACK SEPARATION LOGOUT MATRIX ---
+    // --- SEGMENTED LOGOUT RE-TRIGGER FOR MINIMIZING / EXITING APPS ---
     document.addEventListener("visibilitychange", function() {
         if (isProtectionLoopActive && document.hidden) {
             executeAutoLogoutAction();
@@ -260,6 +279,7 @@
         isProtectionLoopActive = false;
         clearInterval(timerInterval);
         
+        // Flash blindfold overlay text dynamically on the screen
         document.getElementById("anti-cheat-blindfold").style.display = "block";
         
         setTimeout(() => {
@@ -268,10 +288,11 @@
             document.getElementById("navigation-tabs-hub").style.display = "flex";
             document.getElementById("student-portal-section").style.display = "block";
             
+            // Wipe running tracking variables
             userAnswers = [];
             currentQuestionIdx = 0;
             
-            alert("⚠️ SYSTEM LOGOUT STRIKE: You exited the quiz screen or attempted an OCR shortcut scan. Your active data has been erased. This counts as 1 total entry session usage!");
+            alert("⚠️ SECURITY SIGNAL: You exited or minimized the running window layout without a WhatsApp submit handshake code. Your active workspace progress has been terminated. This usage consumes 1 full entry ticket!");
         }, 1200);
     }
 
@@ -286,9 +307,10 @@
 
     function handleDeviceUnlock() {
         if (document.getElementById("unlock-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
-            const trackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
-            localStorage.setItem(trackingKey, 0);
-            alert("✅ Entry profile history cleared successfully!");
+            // Target precise individual parameters inside local storage to clear that specific student signature row
+            let trackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
+            localStorage.setItem(trackingKey, "0");
+            alert("✅ Individual account tracking limit variables cleared successfully.");
             location.reload();
         } else {
             alert("❌ Incorrect Teacher Unlock Code!");
@@ -315,20 +337,13 @@
     async function handleLogin() {
         const inputName = document.getElementById("login-name").value.trim();
         const inputRoll = document.getElementById("login-roll").value.trim();
-        const inputPassword = document.getElementById("class-login-password").value.trim();
         selectedClassKey = document.getElementById("student-class").value;
         selectedClassLabel = document.getElementById("student-class").options[document.getElementById("student-class").selectedIndex].text;
 
-        // FIXED: Extract information FIRST before evaluating locks
-        if(!inputName || !inputRoll || !inputPassword) { return alert("Please fill out all identification fields!"); }
-        
-        if(inputPassword !== CLASS_PASSWORDS[selectedClassKey]) {
-            return alert("❌ Invalid password for the selected class section!");
-        }
-
+        if(!inputName || !inputRoll) { return alert("Fill out credentials!"); }
         studentName = inputName; studentRoll = inputRoll;
 
-        // CRITICAL 3-ATTEMPT TRACKING BOUNDARY KEY
+        // CALCULATE INDIVIDUAL LOGIN STRUCTURAL STRIKES (MAXIMUM 3 CHECKS PER DATASET KEY)
         let trackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
         let attempts = parseInt(localStorage.getItem(trackingKey)) || 0;
         
@@ -372,67 +387,33 @@
         }, 1000);
     }
 
-    // --- RE-ENGINEERED DEFENSIVE OBFUSCATION MATRIX (BLINDS GOOGLE LENS OCR COMPLETELY) ---
-    function rasterizeTextToImage(plainText, fontColor, isCode, customBgColor) {
-        if(!plainText) return "";
-        
-        const canvas = document.getElementById("hidden-raster-canvas");
-        const ctx = canvas.getContext("2d");
+    // --- MATRIX STRUCTURAL OBFUSCATION ENGINE (BLINDS GOOGLE LENS OCR) ---
+    function transformToAntiLensLayout(plainText) {
+        const rawWordsArray = plainText.split(" ");
+        let combinedStringOutput = "";
 
-        const lineWrapLimit = isCode ? 38 : 32;
-        let rawWords = plainText.split(" ");
-        let computedRows = [];
-        let workingRow = "";
-
-        rawWords.forEach(word => {
-            if ((workingRow + " " + word).trim().length > lineWrapLimit) {
-                computedRows.push(workingRow.trim());
-                workingRow = word;
-            } else { workingRow += " " + word; }
-        });
-        if(workingRow.trim().length > 0) computedRows.push(workingRow.trim());
-
-        const baseRowHeight = isCode ? 36 : 42;
-        const totalBaseHeight = computedRows.length * baseRowHeight + 30;
-        
-        const scaleFactor = 3;
-        canvas.width = 650 * scaleFactor;
-        canvas.height = totalBaseHeight * scaleFactor;
-
-        ctx.scale(scaleFactor, scaleFactor);
-
-        ctx.fillStyle = customBgColor || "#fcfdfe";
-        ctx.fillRect(0, 0, 650, totalBaseHeight);
-        
-        // Anti-OCR background disturbance hashes
-        ctx.strokeStyle = isCode ? "rgba(255,255,255,0.06)" : "rgba(44,62,80,0.04)";
-        ctx.lineWidth = 1.5;
-        for (let j = 5; j < totalBaseHeight; j += 15) {
-            ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(650, j + 5); ctx.stroke();
-        }
-
-        ctx.textBaseline = "top";
-        ctx.fillStyle = fontColor;
-        
-        ctx.font = isCode ? "bold 24px 'Courier New', monospace" : "bold 26px system-ui, -apple-system, sans-serif";
-
-        computedRows.forEach((rowString, index) => {
-            let yOffset = index * baseRowHeight + 15;
-            let xOffset = 15;
+        rawWordsArray.forEach((word) => {
+            if(word.length === 0) return;
             
-            for(let i = 0; i < rowString.length; i++) {
-                ctx.save();
-                let jitterY = (Math.sin(i + index) * 0.3); 
-                
-                ctx.translate(xOffset, yOffset + jitterY);
-                ctx.fillText(rowString[i], 0, 0);
-                ctx.restore();
-                
-                xOffset += ctx.measureText(rowString[i]).width + 0.5; 
-            }
-        });
+            let prefixChar = word.charAt(0);
+            let suffixChar = word.length > 1 ? word.charAt(word.length - 1) : "";
+            let remainingCore = word.length > 2 ? word.substring(1, word.length - 1) : (word.length === 2 ? "" : "");
 
-        return `<img src="${canvas.toDataURL("image/png")}" class="secure-raster-img" alt="Shielded Quiz Block">`;
+            if (word.length === 1) {
+                prefixChar = ""; suffixChar = ""; remainingCore = word;
+            }
+
+            combinedStringOutput += `<span class="lens-blind-word" data-prefix="${prefixChar}" data-suffix="${suffixChar}">${remainingCore}</span>`;
+        });
+        
+        return combinedStringOutput;
+    }
+
+    function secureCodeBoxFormat(codeSnippet) {
+        if(!codeSnippet) return "";
+        let lines = codeSnippet.split("\n");
+        let formattedLines = lines.map(line => `<span>${line}</span>`).join("\n");
+        return `<div class="code-box">${formattedLines}</div>`;
     }
 
     function loadQuestion() {
@@ -440,16 +421,154 @@
         const currentQuiz = quizData[currentQuestionIdx];
         document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
         
-        const plainTextTarget = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
-        document.getElementById("secure-question-host").innerHTML = rasterizeTextToImage(plainTextTarget, "#1a252f", false, "#ffffff");
+        const plaintextString = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
+        document.getElementById("secure-question-host").innerHTML = transformToAntiLensLayout(plaintextString);
         
         const codeContainer = document.getElementById("code-container");
         if (currentQuiz.code) {
-            let codeLines = currentQuiz.code.split("\n");
-            let fullCodeRasterBlock = `<div class="code-box-wrapper">`;
-            codeLines.forEach(line => {
-                if(line.trim() === "") { fullCodeRasterBlock += `<div style="height:18px;"></div>`; return; }
-                fullCodeRasterBlock += rasterizeTextToImage(line, "#a6e22e", true, "#1e1e1e");
+            codeContainer.innerHTML = secureCodeBoxFormat(currentQuiz.code);
+        } else { codeContainer.innerHTML = ""; }
+
+        const optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = "";
+
+        currentQuiz.options.forEach((option, index) => {
+            const container = document.createElement("div");
+            container.className = "option-container";
+            container.onclick = () => selectOption(index);
+
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = "quiz-option";
+            radio.id = `opt-${index}`;
+            if (userAnswers[currentQuestionIdx] === index) radio.checked = true;
+
+            const label = document.createElement("label");
+            label.className = "option-label";
+            label.innerHTML = transformToAntiLensLayout(option);
+
+            container.appendChild(radio);
+            container.appendChild(label);
+            optionsContainer.appendChild(container);
+        });
+
+        document.getElementById("prev-btn").disabled = (currentQuestionIdx === 0);
+        const nextBtn = document.getElementById("next-btn");
+        if (currentQuestionIdx === quizData.length - 1) {
+            nextBtn.innerText = "Submit Quiz";
+            nextBtn.className = "btn btn-submit";
+        } else {
+            nextBtn.innerText = "Next";
+            nextBtn.className = "btn btn-next";
+        }
+    }
+
+    function selectOption(index) {
+        if (isTimeOver) return;
+        userAnswers[currentQuestionIdx] = index;
+        const r = document.getElementById(`opt-${index}`);
+        if(r) r.checked = true;
+    }
+
+    function goPrevious() { if (currentQuestionIdx > 0 && !isTimeOver) { currentQuestionIdx--; loadQuestion(); } }
+    
+    function goNext() {
+        if (isTimeOver) return;
+        if (currentQuestionIdx < quizData.length - 1) { currentQuestionIdx++; loadQuestion(); }
+        else { calculateAndShowResults(false); }
+    }
+
+    function calculateAndShowResults(forced) {
+        clearInterval(timerInterval);
+        isProtectionLoopActive = false;
+        let score = 0;
+        userAnswers.forEach((ans, index) => { if (ans === quizData[index].correct) score++; });
+
+        finalScore = score;
+        document.getElementById("quiz-box").style.display = "none";
+        document.getElementById("result-box").style.display = "block";
+        document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nStudent: ${studentName}\nRoll No: ${studentRoll}\nFinal Score: ${score} / ${quizData.length}`;
+    }
+
+    function sendToTeacher() {
+        let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
+        let reportText = `*QUIZ DATA PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nDataKey: [${answersString}]`;
+        isProtectionLoopActive = false; 
+        hasSentReport = true;
+        document.getElementById("reset-app-btn").disabled = false;
+        document.getElementById("lock-notice").style.display = "none";
+        window.location.href = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodeURIComponent(reportText)}`; 
+    }
+
+    function restartQuiz() {
+        if (!hasSentReport) return;
+        location.reload();
+    }
+
+    function verifyAdminLogin() {
+        if(document.getElementById("admin-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
+            document.getElementById("admin-lockscreen").style.display = "none";
+            document.getElementById("teacher-box").style.display = "block";
+            renderTeacherLogs();
+        } else {
+            alert("❌ Incorrect Admin Password Code!");
+        }
+    }
+
+    function importStudentCode() {
+        const rawInput = document.getElementById("compressed-input").value.trim();
+        if(!rawInput) return;
+        try {
+            const lines = rawInput.split('\n');
+            let name = lines.find(l => l.startsWith("Name:")).replace("Name:", "").trim();
+            let roll = lines.find(l => l.startsWith("Roll:")).replace("Roll:", "").trim();
+            let cKey = lines.find(l => l.startsWith("ClassKey:")).replace("ClassKey:", "").trim();
+            let score = lines.find(l => l.startsWith("Score:")).replace("Score:", "").trim();
+            let rawDataKey = lines.find(l => l.startsWith("DataKey:")).match(/\[(.*?)\]/)[1];
+            
+            let parsedAnswersArray = rawDataKey.split(',').map(x => x === 'X' ? null : parseInt(x));
+            let referenceQuizSet = allClassData[cKey];
+            let constructedSheet = [];
+
+            referenceQuizSet.forEach((item, index) => {
+                let studentAnsIndex = parsedAnswersArray[index];
+                let isCorrect = (studentAnsIndex === item.correct);
+                constructedSheet.push({ qNum: index + 1, qText: item.question, ticked: studentAnsIndex !== null ? item.options[studentAnsIndex] : "Not Attempted", correctOption: item.options[item.correct], status: isCorrect });
             });
-            fullCodeRasterBlock += `</div>`;
-            codeContainer.innerHTML = fullCodeRaster
+
+            let sharedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
+            sharedLogs = sharedLogs.filter(log => !(log.roll === roll && log.classKey === cKey));
+            sharedLogs.push({ name: name, roll: roll, classKey: cKey, className: cKey === "class12" ? "Class 12th" : "Class 10th", score: score, timestamp: new Date().toLocaleString(), sheet: constructedSheet });
+            localStorage.setItem("teacher_central_database", JSON.stringify(sharedLogs));
+            document.getElementById("compressed-input").value = "";
+            renderTeacherLogs();
+            alert(`✅ Successfully Decoded Report Sheet for ${name}!`);
+        } catch(err) { alert("❌ Format Error"); }
+    }
+
+    function renderTeacherLogs() {
+        const container = document.getElementById("teacher-logs-container");
+        container.innerHTML = "";
+        let storedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
+        if(storedLogs.length === 0) {
+            container.innerHTML = `<p style="text-align:center; color:#7f8c8d; font-style:italic; padding:20px;">No student records imported yet.</p>`;
+            return;
+        }
+
+        for(let i = storedLogs.length - 1; i >= 0; i--) {
+            let log = storedLogs[i];
+            let card = document.createElement("div");
+            card.className = "student-log-card";
+            let sheetHtml = "";
+            log.sheet.forEach(item => {
+                sheetHtml += `<div style="font-size:12px; margin-top:4px; padding-left:10px; border-left:2px solid #ccc;">Q${item.qNum}: ${item.qText}<br>↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span></div>`;
+            });
+            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
+            container.appendChild(card);
+        }
+    }
+
+    function clearTeacherLogs() { localStorage.removeItem("teacher_central_database"); renderTeacherLogs(); }
+</script>
+</body>
+</html>

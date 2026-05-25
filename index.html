@@ -6,7 +6,7 @@
     <title>Krishna's IP Masterclass</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* CRITICAL SECURITY: Disables all text copying, highlighting, and context menus for Google Lens protection */
+       
         * {
             -webkit-user-select: none; /* Safari */
             -ms-user-select: none; /* IE 10 and Consumer Edge */
@@ -64,7 +64,8 @@
         .lockdown-title { color: #c0392b; font-size: 28px; font-weight: bold; margin-bottom: 15px; }
         .lockdown-desc { font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 25px; }
 
-        /* ANTI-LENS / ANTI-SCREENSHOT BLINDING LAYER */
+      
+        
         #anti-cheat-blindfold {
             display: none;
             position: fixed;
@@ -216,9 +217,7 @@
         } catch(e) { console.error(e); }
     }
 
-    // --- ENHANCED SECURITY ENGINES: CAPTURE DISRUPTION AND CHEATING LOCKDOWN ---
-    
-    // Monitors visibility state changes (Toggling away from active tab window)
+   
     document.addEventListener("visibilitychange", function() {
         if (isQuizActive) {
             if (document.hidden) {
@@ -229,13 +228,13 @@
         }
     });
 
-    // Monitors Focus Loss (Triggers instantly during Screenshots, Google Lens overlay expansions, or hardware split-screens)
+   
     window.addEventListener("blur", function() {
         if (isQuizActive) {
-            // Drop a complete black cover layer over the window instantly
+           
             document.getElementById("anti-cheat-blindfold").style.display = "block";
             
-            // Execute permanent block immediately behind the scenes
+           
             activatePermanentLockdown();
         }
     });
@@ -322,7 +321,7 @@
 
         localStorage.setItem(attemptTrackingKey, pastAttemptsCount + 1);
 
-        // Arm the device lockdown immediately upon test launch
+       
         localStorage.setItem("device_fraud_lockdown", "true");
 
         if(!allClassData) {
@@ -346,7 +345,7 @@
         startTimer();
     }
 
-    // --- PRE-EXISTING CORE QUIZ OPERATIONS LOGIC ---
+    
     function startTimer() {
         updateTimerDisplay();
         timerInterval = setInterval(() => {
@@ -468,7 +467,7 @@
         const encodedMessage = encodeURIComponent(reportText);
         const whatsappUrl = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodedMessage}`;
         
-        // SAFE EXIT DISARM: Clear lock status only after genuine WhatsApp click triggered
+        
         localStorage.removeItem("device_fraud_lockdown");
         isQuizActive = false; 
         
@@ -497,7 +496,7 @@
         switchPortalView('student');
     }
 
-    // --- ADMIN CENTRAL FUNCTIONS ---
+    
     function verifyAdminLogin() {
         const key = document.getElementById("admin-master-key").value.trim();
         if(key === MASTER_TEACHER_PASSWORD) {

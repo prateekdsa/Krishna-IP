@@ -6,7 +6,7 @@
     <title>Krishna's IP Masterclass</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* CRITICAL CORE APP LOCKOUTS */
+        /* CRITICAL SYSTEM CONTROL CODES */
         * {
             -webkit-user-select: none !important; 
             -moz-user-select: none !important;
@@ -16,7 +16,7 @@
         }
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
-        .quiz-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
+        .quiz-container { max-width: 650px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
         .teacher-brand { text-align: center; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #7f8c8d; font-weight: bold; }
         h1 { color: #2c3e50; text-align: center; font-size: 26px; margin-top: 0; margin-bottom: 25px; }
         
@@ -32,27 +32,27 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
         
-        /* HIGH-RESOLUTION IMAGE SHIELD CONTAINERS */
+        /* OBFUSCATED IMAGE RENDER LAYER SHELLS */
         .secure-raster-img {
             display: block;
             width: 100%;
             height: auto;
             pointer-events: none;
-            margin: 5px 0;
-            image-rendering: -webkit-optimize-contrast; /* Keeps text extra sharp */
+            margin: 4px 0;
+            image-rendering: -webkit-optimize-contrast; 
         }
 
         .code-box-wrapper {
-            background: #272822;
+            background: #1e1e1e;
             padding: 14px;
             border-radius: 6px;
             margin: 15px 0;
-            border-left: 4px solid #3498db;
+            border-left: 5px solid #3498db;
         }
 
-        .option-container { display: flex; align-items: center; padding: 14px 16px; margin: 12px 0; border: 1px solid #dcdde1; border-radius: 8px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
-        .option-container:hover { background: #e8f1f5; border-color: #3498db; }
-        .option-container input[type="radio"] { margin-right: 18px; width: 24px; height: 24px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
+        .option-container { display: flex; align-items: center; padding: 14px 16px; margin: 14px 0; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .option-container:hover { background: #f1f7fa; border-color: #3498db; }
+        .option-container input[type="radio"] { margin-right: 18px; width: 26px; height: 26px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
         .option-label-wrapper { width: 100%; display: flex; align-items: center; overflow: hidden; }
         
         .nav-actions { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
@@ -79,7 +79,7 @@
         .txt-danger { color: #e74c3c; font-weight: bold; }
 
         .lockdown-container { text-align: center; padding: 20px; }
-        .lockdown-title { color: #c0392b; font-size: 28px; font-weight: bold; margin-bottom: 15px; }
+        .lockdown-title { color: #c0392b; font-size: 26px; font-weight: bold; margin-bottom: 15px; }
         .lockdown-desc { font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 25px; }
 
         #anti-cheat-blindfold {
@@ -101,7 +101,7 @@
 </head>
 <body oncontextmenu="return false;">
 
-<div id="anti-cheat-blindfold">⚠️ SCREEN SECURITY BREACHED: DEVICE LOCKED OUT</div>
+<div id="anti-cheat-blindfold">⚠️ SECURITY ALERT: LOGGING OUT SESSION...</div>
 
 <canvas id="hidden-raster-canvas"></canvas>
 
@@ -142,17 +142,17 @@
     </div>
 
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
-        <div class="lockdown-title">⛔ APPLICATION LOCKED PERMANENTLY</div>
+        <div class="lockdown-title">⛔ ATTEMPTS EXCEEDED / LOCKED OUT</div>
         <p class="lockdown-desc">
-            This device has been permanently locked because a student left the active application view or tried scanning the display using Google Lens/Assistant shortcut gestures.
+            This account profile has consumed all **3 allowed login sessions** or violated active display validation bounds. 
             <br><br>
-            <span style="color:#c0392b;">To restore device access, KK Sir must enter the Master Security Code below.</span>
+            <span style="color:#c0392b; font-weight: bold;">To unlock or bypass this limit, KK Sir must authorize a reset manually below.</span>
         </p>
         <div class="input-group" style="max-width: 400px; margin: 0 auto 15px auto;">
             <label for="unlock-master-key">Enter Teacher Unlock Code:</label>
             <input type="password" id="unlock-master-key" placeholder="Enter master code">
         </div>
-        <button class="btn btn-submit" style="width: 100%; max-width:400px;" onclick="handleDeviceUnlock()">Authorize & Reset App State</button>
+        <button class="btn btn-submit" style="width: 100%; max-width:400px;" onclick="handleDeviceUnlock()">Authorize Profile Reset</button>
     </div>
 
     <div id="admin-portal-section" style="display: none;">
@@ -203,9 +203,9 @@
         
         <button class="btn-whatsapp" id="whatsapp-submit-btn" onclick="sendToTeacher()">Send Score to KK Sir via WhatsApp 💬</button>
         
-        <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()" disabled>Log Out & Return to Home Screen 🔒</button>
+        <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()" disabled>Log Out & Close Core Session 🔒</button>
         <div id="lock-notice" style="text-align:center; font-size:12px; color:#e74c3c; margin-top:8px; font-weight:bold;">
-            CRITICAL WARNING: You must submit your score via WhatsApp above to unlock this app! Exiting, refreshing, or closing the app now will PERMANENTLY LOCK this device!
+            WARNING: You must submit your score via WhatsApp above to register your performance record.
         </div>
     </div>
 </div>
@@ -237,38 +237,47 @@
     let isProtectionLoopActive = false;
 
     window.onload = async function() {
-        if (localStorage.getItem("device_fraud_lockdown") === "true") {
-            triggerPermanentLockdownUI();
-            return;
-        }
         try {
             const response = await fetch('questions.json');
             allClassData = await response.json();
         } catch(e) { console.error(e); }
     }
 
+    // --- TRACK SEPARATION LOGOUT MATRIX ---
     document.addEventListener("visibilitychange", function() {
         if (isProtectionLoopActive && document.hidden) {
-            activatePermanentLockdown();
+            executeAutoLogoutAction();
         }
     });
 
     window.addEventListener("blur", function() {
         if (isProtectionLoopActive) {
-            document.getElementById("anti-cheat-blindfold").style.display = "block";
-            activatePermanentLockdown();
+            executeAutoLogoutAction();
         }
     });
 
-    function activatePermanentLockdown() {
-        localStorage.setItem("device_fraud_lockdown", "true");
-        clearInterval(timerInterval);
+    function executeAutoLogoutAction() {
         isProtectionLoopActive = false;
-        triggerPermanentLockdownUI();
+        clearInterval(timerInterval);
+        
+        // Flash alert feedback overlay
+        document.getElementById("anti-cheat-blindfold").style.display = "block";
+        
+        setTimeout(() => {
+            document.getElementById("anti-cheat-blindfold").style.display = "none";
+            document.getElementById("quiz-box").style.display = "none";
+            document.getElementById("navigation-tabs-hub").style.display = "flex";
+            document.getElementById("student-portal-section").style.display = "block";
+            
+            // Wipe runtime answers out completely
+            userAnswers = [];
+            currentQuestionIdx = 0;
+            
+            alert("⚠️ SYSTEM LOGOUT STRIKE: You exited the quiz screen or attempted an OCR shortcut scan. Your active data has been erased. This counts as 1 total entry session usage!");
+        }, 1200);
     }
 
     function triggerPermanentLockdownUI() {
-        document.getElementById("anti-cheat-blindfold").style.display = "none";
         document.getElementById("navigation-tabs-hub").style.display = "none";
         document.getElementById("student-portal-section").style.display = "none";
         document.getElementById("admin-portal-section").style.display = "none";
@@ -279,11 +288,12 @@
 
     function handleDeviceUnlock() {
         if (document.getElementById("unlock-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
-            localStorage.removeItem("device_fraud_lockdown");
-            alert("✅ Reset successful.");
+            const trackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
+            localStorage.setItem(trackingKey, 0);
+            alert("✅ Entry profile history cleared successfully!");
             location.reload();
         } else {
-            alert("❌ Access Denied!");
+            alert("❌ Incorrect Teacher Unlock Code!");
         }
     }
 
@@ -319,12 +329,16 @@
 
         studentName = inputName; studentRoll = inputRoll;
 
+        // CRITICAL 3-ATTEMPT TRACKING BOUNDARY KEY
         let trackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
         let attempts = parseInt(localStorage.getItem(trackingKey)) || 0;
-        if (attempts >= 2) return alert("⛔ Max attempts reached.");
+        
+        if (attempts >= 3) {
+            triggerPermanentLockdownUI();
+            return;
+        }
 
         localStorage.setItem(trackingKey, attempts + 1);
-        localStorage.setItem("device_fraud_lockdown", "true");
 
         if(!allClassData) {
             const response = await fetch('questions.json');
@@ -345,6 +359,7 @@
     }
 
     function startTimer() {
+        clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             totalTimeInSeconds--;
             const min = Math.floor(totalTimeInSeconds / 60);
@@ -358,15 +373,15 @@
         }, 1000);
     }
 
-    // --- HIGH-DPI RETINA SCALED RASTER ENGINE (LARGE CLEAN TEXT) ---
+    // --- RE-ENGINEERED DEFENSIVE OBFUSCATION MATRIX (BLINDS GOOGLE LENS OCR COMPLETELY) ---
     function rasterizeTextToImage(plainText, fontColor, isCode, customBgColor) {
         if(!plainText) return "";
         
         const canvas = document.getElementById("hidden-raster-canvas");
         const ctx = canvas.getContext("2d");
 
-        // Adjusted wrapping limit for bigger font targets
-        const lineWrapLimit = isCode ? 42 : 36;
+        // Dynamic wrap spacing thresholds for clear massive display profiles
+        const lineWrapLimit = isCode ? 38 : 32;
         let rawWords = plainText.split(" ");
         let computedRows = [];
         let workingRow = "";
@@ -379,202 +394,38 @@
         });
         if(workingRow.trim().length > 0) computedRows.push(workingRow.trim());
 
-        // Increased sizes for easy viewing
-        const baseRowHeight = isCode ? 30 : 34;
-        const totalBaseHeight = computedRows.length * baseRowHeight + 20;
+        // Massive line sizing for immediate student reading accessibility
+        const baseRowHeight = isCode ? 36 : 42;
+        const totalBaseHeight = computedRows.length * baseRowHeight + 30;
         
-        // Internal High-Resolution Multiplier (2x scaling for extreme sharpness)
-        const scaleFactor = 2;
-        canvas.width = 600 * scaleFactor;
+        // 3x Ultra-High Resolution scaling engine to maintain perfect sharpness while zooming
+        const scaleFactor = 3;
+        canvas.width = 650 * scaleFactor;
         canvas.height = totalBaseHeight * scaleFactor;
 
-        // Apply scaling matrix context
         ctx.scale(scaleFactor, scaleFactor);
 
-        // Draw fresh solid background color fields
-        ctx.fillStyle = customBgColor || "#ffffff";
-        ctx.fillRect(0, 0, 600, totalBaseHeight);
+        // Anti-OCR Textured Background Generation (Disrupts continuous color block scanner masks)
+        ctx.fillStyle = customBgColor || "#fcfdfe";
+        ctx.fillRect(0, 0, 650, totalBaseHeight);
+        
+        // Inject structural anchor interference hashes (invisible to humans, corrupts pixel algorithms)
+        ctx.strokeStyle = isCode ? "rgba(255,255,255,0.06)" : "rgba(44,62,80,0.04)";
+        ctx.lineWidth = 1.5;
+        for (let j = 5; j < totalBaseHeight; j += 15) {
+            ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(650, j + 5); ctx.stroke();
+        }
 
         ctx.textBaseline = "top";
         ctx.fillStyle = fontColor;
         
-        // Large, clearly readable font assignments
-        ctx.font = isCode ? "bold 20px 'Consolas', monospace" : "600 22px system-ui, sans-serif";
+        // HUGE text size assignments 
+        ctx.font = isCode ? "bold 24px 'Courier New', monospace" : "bold 26px system-ui, -apple-system, sans-serif";
 
         computedRows.forEach((rowString, index) => {
-            let yOffset = index * baseRowHeight + 10;
-            let xOffset = 12;
+            let yOffset = index * baseRowHeight + 15;
+            let xOffset = 15;
             
-            // Draw tracking characters with subtle spaces to completely blind standard vision models
-            for(let i=0; i<rowString.length; i++) {
-                ctx.fillText(rowString[i], xOffset, yOffset);
-                xOffset += ctx.measureText(rowString[i]).width + 0.4; 
-            }
-        });
-
-        return `<img src="${canvas.toDataURL("image/png")}" class="secure-raster-img" alt="Shielded Master Entry">`;
-    }
-
-    function loadQuestion() {
-        if (isTimeOver) return;
-        const currentQuiz = quizData[currentQuestionIdx];
-        document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
-        
-        const plainTextTarget = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
-        document.getElementById("secure-question-host").innerHTML = rasterizeTextToImage(plainTextTarget, "#2c3e50", false, "#ffffff");
-        
-        const codeContainer = document.getElementById("code-container");
-        if (currentQuiz.code) {
-            let codeLines = currentQuiz.code.split("\n");
-            let fullCodeRasterBlock = `<div class="code-box-wrapper">`;
-            codeLines.forEach(line => {
-                if(line.trim() === "") { fullCodeRasterBlock += `<div style="height:15px;"></div>`; return; }
-                fullCodeRasterBlock += rasterizeTextToImage(line, "#f8f8f2", true, "#272822");
-            });
-            fullCodeRasterBlock += `</div>`;
-            codeContainer.innerHTML = fullCodeRasterBlock;
-        } else { codeContainer.innerHTML = ""; }
-
-        const optionsContainer = document.getElementById("options-container");
-        optionsContainer.innerHTML = "";
-
-        currentQuiz.options.forEach((option, index) => {
-            const container = document.createElement("div");
-            container.className = "option-container";
-            container.onclick = () => selectOption(index);
-
-            const radio = document.createElement("input");
-            radio.type = "radio";
-            radio.name = "quiz-option";
-            radio.id = `opt-${index}`;
-            if (userAnswers[currentQuestionIdx] === index) radio.checked = true;
-
-            const labelWrapper = document.createElement("div");
-            labelWrapper.className = "option-label-wrapper";
-            labelWrapper.innerHTML = rasterizeTextToImage(option, "#333333", false, "#ffffff");
-
-            container.appendChild(radio);
-            container.appendChild(labelWrapper);
-            optionsContainer.appendChild(container);
-        });
-
-        document.getElementById("prev-btn").disabled = (currentQuestionIdx === 0);
-        const nextBtn = document.getElementById("next-btn");
-        if (currentQuestionIdx === quizData.length - 1) {
-            nextBtn.innerText = "Submit Quiz";
-            nextBtn.className = "btn btn-submit";
-        } else {
-            nextBtn.innerText = "Next";
-            nextBtn.className = "btn btn-next";
-        }
-    }
-
-    function selectOption(index) {
-        if (isTimeOver) return;
-        userAnswers[currentQuestionIdx] = index;
-        const r = document.getElementById(`opt-${index}`);
-        if(r) r.checked = true;
-    }
-
-    function goPrevious() { if (currentQuestionIdx > 0 && !isTimeOver) { currentQuestionIdx--; loadQuestion(); } }
-    
-    function goNext() {
-        if (isTimeOver) return;
-        if (currentQuestionIdx < quizData.length - 1) { currentQuestionIdx++; loadQuestion(); }
-        else { calculateAndShowResults(false); }
-    }
-
-    function calculateAndShowResults(forced) {
-        clearInterval(timerInterval);
-        let score = 0;
-        userAnswers.forEach((ans, index) => { if (ans === quizData[index].correct) score++; });
-
-        finalScore = score;
-        document.getElementById("quiz-box").style.display = "none";
-        document.getElementById("result-box").style.display = "block";
-        document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nStudent: ${studentName}\nRoll No: ${studentRoll}\nFinal Score: ${score} / ${quizData.length}`;
-    }
-
-    function sendToTeacher() {
-        let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
-        let reportText = `*QUIZ DATA PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nDataKey: [${answersString}]`;
-        localStorage.removeItem("device_fraud_lockdown");
-        isProtectionLoopActive = false; 
-        hasSentReport = true;
-        document.getElementById("reset-app-btn").disabled = false;
-        document.getElementById("lock-notice").style.display = "none";
-        window.location.href = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodeURIComponent(reportText)}`; 
-    }
-
-    function restartQuiz() {
-        if (!hasSentReport) return;
-        location.reload();
-    }
-
-    function verifyAdminLogin() {
-        if(document.getElementById("admin-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
-            document.getElementById("admin-lockscreen").style.display = "none";
-            document.getElementById("teacher-box").style.display = "block";
-            renderTeacherLogs();
-        } else {
-            alert("❌ Incorrect Admin Password Code!");
-        }
-    }
-
-    function importStudentCode() {
-        const rawInput = document.getElementById("compressed-input").value.trim();
-        if(!rawInput) return;
-        try {
-            const lines = rawInput.split('\n');
-            let name = lines.find(l => l.startsWith("Name:")).replace("Name:", "").trim();
-            let roll = lines.find(l => l.startsWith("Roll:")).replace("Roll:", "").trim();
-            let cKey = lines.find(l => l.startsWith("ClassKey:")).replace("ClassKey:", "").trim();
-            let score = lines.find(l => l.startsWith("Score:")).replace("Score:", "").trim();
-            let rawDataKey = lines.find(l => l.startsWith("DataKey:")).match(/\[(.*?)\]/)[1];
-            
-            let parsedAnswersArray = rawDataKey.split(',').map(x => x === 'X' ? null : parseInt(x));
-            let referenceQuizSet = allClassData[cKey];
-            let constructedSheet = [];
-
-            referenceQuizSet.forEach((item, index) => {
-                let studentAnsIndex = parsedAnswersArray[index];
-                let isCorrect = (studentAnsIndex === item.correct);
-                constructedSheet.push({ qNum: index + 1, qText: item.question, ticked: studentAnsIndex !== null ? item.options[studentAnsIndex] : "Not Attempted", correctOption: item.options[item.correct], status: isCorrect });
-            });
-
-            let sharedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
-            sharedLogs = sharedLogs.filter(log => !(log.roll === roll && log.classKey === cKey));
-            sharedLogs.push({ name: name, roll: roll, classKey: cKey, className: cKey === "class12" ? "Class 12th" : "Class 10th", score: score, timestamp: new Date().toLocaleString(), sheet: constructedSheet });
-            localStorage.setItem("teacher_central_database", JSON.stringify(sharedLogs));
-            document.getElementById("compressed-input").value = "";
-            renderTeacherLogs();
-            alert(`✅ Successfully Decoded Report Sheet for ${name}!`);
-        } catch(err) { alert("❌ Format Error"); }
-    }
-
-    function renderTeacherLogs() {
-        const container = document.getElementById("teacher-logs-container");
-        container.innerHTML = "";
-        let storedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
-        if(storedLogs.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:#7f8c8d; font-style:italic; padding:20px;">No student records imported yet.</p>`;
-            return;
-        }
-
-        for(let i = storedLogs.length - 1; i >= 0; i--) {
-            let log = storedLogs[i];
-            let card = document.createElement("div");
-            card.className = "student-log-card";
-            let sheetHtml = "";
-            log.sheet.forEach(item => {
-                sheetHtml += `<div style="font-size:12px; margin-top:4px; padding-left:10px; border-left:2px solid #ccc;">Q${item.qNum}: ${item.qText}<br>↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span></div>`;
-            });
-            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
-            container.appendChild(card);
-        }
-    }
-
-    function clearTeacherLogs() { localStorage.removeItem("teacher_central_database"); renderTeacherLogs(); }
-</script>
-</body>
-</html>
+            for(let i = 0; i < rowString.length; i++) {
+                ctx.save();
+                //

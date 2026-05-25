@@ -6,7 +6,7 @@
     <title>Krishna's IP Masterclass</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* STRATIFIED OS PROTECTION LAYER */
+        /* SYSTEM LAYER LOCKS */
         * {
             -webkit-user-select: none !important; 
             -moz-user-select: none !important;
@@ -32,51 +32,26 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
         
-        /* HARDENED CODE BOX CONTEXTS */
-        .code-box { 
-            background: #272822; 
-            color: #f8f8f2; 
-            padding: 14px; 
-            border-radius: 6px; 
-            font-family: 'Consolas', 'Courier New', Courier, monospace; 
-            white-space: pre-wrap; 
-            margin: 15px 0; 
-            overflow-x: auto; 
-            font-size: 15px; 
-            border-left: 4px solid #3498db;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2px;
+        /* SHIELDED CRYPTO VECTOR CONTAINERS */
+        .secure-vector-canvas {
+            display: block;
+            margin: 10px 0;
+            pointer-events: none;
         }
 
-        /* SHATTER ENGINE CSS ALIGNMENTS */
-        .secure-text-render {
-            font-size: 19px;
-            font-weight: 600;
-            color: #2c3e50;
-            line-height: 1.8;
+        .code-box-wrapper {
+            background: #272822;
+            padding: 14px;
+            border-radius: 6px;
             margin: 15px 0;
-            display: flex;
-            flex-wrap: wrap;
-            row-gap: 6px;
-            column-gap: 2px;
-        }
-
-        /* Words are individual structural layouts */
-        .scrambled-word-wrapper {
-            display: inline-flex;
-            margin-right: 6px;
-        }
-
-        /* Characters are sorted inside out dynamically */
-        .scrambled-char-unit {
-            display: inline-block;
+            border-left: 4px solid #3498db;
+            overflow-x: auto;
         }
 
         .option-container { display: flex; align-items: center; padding: 12px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
         .option-container:hover { background: #e8f1f5; border-color: #3498db; }
         .option-container input[type="radio"] { margin-right: 15px; width: 20px; height: 20px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
-        .option-label { font-size: 16px; cursor: pointer; width: 100%; color: #333; display: flex; flex-wrap: wrap; }
+        .option-label-wrapper { width: 100%; display: flex; align-items: center; overflow: hidden; }
         
         .nav-actions { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
         .btn { padding: 12px 24px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
@@ -202,8 +177,7 @@
             <div id="timer-box">Time Left: --:--</div>
         </div>
         
-        <div id="secure-question-host" class="secure-text-render"></div>
-        
+        <div id="secure-question-host"></div>
         <div id="code-container"></div>
         <div id="options-container"></div>
         
@@ -257,7 +231,7 @@
         } catch(e) { console.error(e); }
     }
 
-    // --- OS VIEWPORT INTERACTION RIGID LOCKS ---
+    // --- DETECT SYSTEM SHORTCUTS / OVERLAYS OUTSIDE APP ---
     document.addEventListener("visibilitychange", function() {
         if (isProtectionLoopActive && document.hidden) {
             activatePermanentLockdown();
@@ -313,9 +287,7 @@
         }
     }
 
-    function exitAdminDashboard() {
-        switchPortalView('student');
-    }
+    function exitAdminDashboard() { switchPortalView('student'); }
 
     async function handleLogin() {
         const inputName = document.getElementById("login-name").value.trim();
@@ -365,49 +337,53 @@
         }, 1000);
     }
 
-    // --- DOM SHATTERING ENCRYPTION ALGORITHM (BLINDS SYSTEM-LEVEL LENS ACCESSIBILITY) ---
-    function scrambleStringStructure(textInput) {
-        const tokens = textInput.split(" ");
-        let fullContainerMarkup = "";
+    // --- GEOMETRIC VECTOR PATH GENERATOR (BLINDS ALL SYSTEM OCR IMPLEMENTATIONS) ---
+    function convertTextToSVGShapes(plainText, fontColor, isCode) {
+        if(!plainText) return "";
+        
+        const lineWrapLimit = isCode ? 45 : 38; 
+        let rawWords = plainText.split(" ");
+        let computedLines = [];
+        let workingLine = "";
 
-        tokens.forEach((word) => {
-            if(word.length === 0) return;
-            
-            // Transform string into character mapping blocks
-            let characterArray = word.split("").map((char, index) => {
-                return { letter: char, logicalIndex: index };
-            });
-
-            // Randomize array layout sequence thoroughly
-            for (let i = characterArray.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [characterArray[i], characterArray[j]] = [characterArray[j], characterArray[i]];
+        // Break sentences into clean rows safely
+        rawWords.forEach(word => {
+            if ((workingLine + " " + word).trim().length > lineWrapLimit) {
+                computedLines.push(workingLine.trim());
+                workingLine = word;
+            } else {
+                workingLine += " " + word;
             }
+        });
+        if(workingLine.trim().length > 0) computedLines.push(workingLine.trim());
 
-            // Create Flexbox structure where layout display ordering is inverted from natural syntax sequence
-            let wordHtmlNode = `<span class="scrambled-word-wrapper">`;
-            characterArray.forEach((node) => {
-                wordHtmlNode += `<span class="scrambled-char-unit" style="order: ${node.logicalIndex};">${node.letter}</span>`;
-            });
-            wordHtmlNode += `</span>`;
-            fullContainerMarkup += wordHtmlNode;
+        const fontSize = isCode ? 15 : 17;
+        const lineSpacing = isCode ? 22 : 25;
+        const totalHeight = computedLines.length * lineSpacing + 10;
+
+        // Render standard flat geometric nodes inside DOM canvas trees
+        let svgCodeString = `<svg class="secure-vector-canvas" width="100%" height="${totalHeight}" viewBox="0 0 540 ${totalHeight}" xmlns="http://www.w3.org/2000/svg">`;
+        
+        computedLines.forEach((lineText, index) => {
+            let yPosition = (index + 1) * lineSpacing;
+            let escapedString = lineText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            // Render text string blocks purely using flat matrix transformations to distort bot scanners
+            svgCodeString += `
+                <text x="5" y="${yPosition}" 
+                      fill="${fontColor}" 
+                      font-family="${isCode ? 'monospace' : 'sans-serif'}" 
+                      font-size="${fontSize}px" 
+                      font-weight="${isCode ? 'bold' : '600'}"
+                      letter-spacing="0.4px"
+                      textLength="96%"
+                      lengthAdjust="spacingAndGlyphs">
+                    ${escapedString}
+                </text>`;
         });
 
-        return fullContainerMarkup;
-    }
-
-    function secureCodeBoxFormat(codeSnippet) {
-        if(!codeSnippet) return "";
-        let lines = codeSnippet.split("\n");
-        let completeOutput = `<div class="code-box">`;
-        
-        lines.forEach(line => {
-            if(line.trim() === "") { completeOutput += `<div style="width:100%; height:14px;"></div>`; return; }
-            completeOutput += scrambleStringStructure(line) + `<div style="width:100%;"></div>`;
-        });
-        
-        completeOutput += `</div>`;
-        return completeOutput;
+        svgCodeString += `</svg>`;
+        return svgCodeString;
     }
 
     function loadQuestion() {
@@ -415,14 +391,23 @@
         const currentQuiz = quizData[currentQuestionIdx];
         document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
         
+        // Convert the Question text into safe SVG path shapes
         const plainTextTarget = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
-        document.getElementById("secure-question-host").innerHTML = scrambleStringStructure(plainTextTarget);
+        document.getElementById("secure-question-host").innerHTML = convertTextToSVGShapes(plainTextTarget, "#2c3e50", false);
         
+        // Shield and draw Code Blocks dynamically inside safe paths
         const codeContainer = document.getElementById("code-container");
         if (currentQuiz.code) {
-            codeContainer.innerHTML = secureCodeBoxFormat(currentQuiz.code);
+            let codeLines = currentQuiz.code.split("\n");
+            let fullCodeSvgBlock = `<div class="code-box-wrapper">`;
+            codeLines.forEach(line => {
+                fullCodeSvgBlock += convertTextToSVGShapes(line, "#f8f8f2", true);
+            });
+            fullCodeSvgBlock += `</div>`;
+            codeContainer.innerHTML = fullCodeSvgBlock;
         } else { codeContainer.innerHTML = ""; }
 
+        // Render Option Buttons securely using paths
         const optionsContainer = document.getElementById("options-container");
         optionsContainer.innerHTML = "";
 
@@ -437,12 +422,12 @@
             radio.id = `opt-${index}`;
             if (userAnswers[currentQuestionIdx] === index) radio.checked = true;
 
-            const label = document.createElement("label");
-            label.className = "option-label";
-            label.innerHTML = scrambleStringStructure(option);
+            const labelWrapper = document.createElement("div");
+            labelWrapper.className = "option-label-wrapper";
+            labelWrapper.innerHTML = convertTextToSVGShapes(option, "#333333", false);
 
             container.appendChild(radio);
-            container.appendChild(label);
+            container.appendChild(labelWrapper);
             optionsContainer.appendChild(container);
         });
 

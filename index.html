@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishna's IP Masterclass</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
+        .quiz-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; }
+        .teacher-brand { text-align: center; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #7f8c8d; font-weight: bold; }
+        h1 { color: #2c3e50; text-align: center; font-size: 26px; margin-top: 0; margin-bottom: 25px; }
+        .code-box { background: #272822; color: #f8f8f2; padding: 14px; border-radius: 6px; font-family: 'Consolas', 'Courier New', Courier, monospace; white-space: pre-wrap; margin: 15px 0; overflow-x: auto; font-size: 15px; border-left: 4px solid #3498db; }
+        .option-btn { display: block; width: 100%; text-align: left; padding: 14px; margin: 12px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; font-size: 16px; transition: all 0.2s ease; box-sizing: border-box; }
+        .option-btn:hover { background: #e8f1f5; border-color: #3498db; padding-left: 18px; }
+        .score-box { text-align: center; font-size: 22px; font-weight: bold; color: #2ecc71; }
+        .nav-btn { display: block; width: 100%; padding: 14px; background: #2c3e50; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 20px; font-weight: bold; transition: background 0.2s; }
+        .nav-btn:hover { background: #1a252f; }
+        #question-text { font-size: 18px; line-height: 1.5; color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="teacher-brand">Krishna Kumar Presents</div>
+    <h1>Class XII IP Masterclass</h1>
+    
+    <div id="quiz-box">
+        <h3 id="question-text">Loading question...</h3>
+        <div id="code-container"></div>
+        <div id="options-container"></div>
+    </div>
+    
+    <div id="result-box" style="display: none;">
+        <p class="score-box">🎉 Quiz Completed! 🎉</p>
+        <p id="score-text" style="text-align: center; font-size: 18px; color: #555;"></p>
+        <button class="nav-btn" onclick="restartQuiz()">Try Again</button>
+    </div>
+</div>
+
+<script>
+    // --- UPDATE YOUR INFORMATICS PRACTICES QUESTIONS HERE ---
+    const quizData = [
+        {
+            question: "What will be the output of the following Python Pandas code?",
+            code: "import pandas as pd\ns = pd.Series([10, 20, 30], index=['a', 'b', 'c'])\nprint(s['b'])",
+            options: ["10", "20", "30", "IndexError"],
+            correct: 1
+        },
+        {
+            question: "Which SQL command is used to remove duplicate rows from a SELECT query result?",
+            code: "SELECT ______ column_name FROM table_name;",
+            options: ["UNIQUE", "DISTINCT", "REMOVE", "DROP"],
+            correct: 1
+        },
+        {
+            question: "In Pandas, which method is used to display the first 5 rows of a DataFrame?",
+            code: "df._______()",
+            options: ["tail()", "first()", "head()", "show()"],
+            correct: 2
+        }
+    ];
+
+    let currentQuestionIdx = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        if (currentQuestionIdx >= quizData.length) {
+            showResults();
+            return;
+        }
+
+        const currentQuiz = quizData[currentQuestionIdx];
+        document.getElementById("question-text").innerText = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
+        
+        const codeContainer = document.getElementById("code-container");
+        if (currentQuiz.code) {
+            codeContainer.innerHTML = `<div class="code-box">${currentQuiz.code}</div>`;
+        } else {
+            codeContainer.innerHTML = "";
+        }
+
+        const optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = "";
+
+        currentQuiz.options.forEach((option, index) => {
+            const button = document.createElement("button");
+            button.className = "option-btn";
+            button.innerText = option;
+            button.onclick = () => checkAnswer(index);
+            optionsContainer.appendChild(button);
+        });
+    }
+
+    function checkAnswer(selectedIndex) {
+        if (selectedIndex === quizData[currentQuestionIdx].correct) {
+            score++;
+            alert("Correct Answer! 🌟");
+        } else {
+            const correctText = quizData[currentQuestionIdx].options[quizData[currentQuestionIdx].correct];
+            alert(`Incorrect! ❌\nCorrect answer is: ${correctText}`);
+        }
+        currentQuestionIdx++;
+        loadQuestion();
+    }
+
+    function showResults() {
+        document.getElementById("quiz-box").style.display = "none";
+        document.getElementById("result-box").style.display = "block";
+        document.getElementById("score-text").innerText = `Great effort! You scored ${score} out of ${quizData.length}.\nKeep practicing with Krishna Kumar's Masterclass!`;
+    }
+
+    function restartQuiz() {
+        score = 0;
+        currentQuestionIdx = 0;
+        document.getElementById("quiz-box").style.display = "block";
+        document.getElementById("result-box").style.display = "none";
+        loadQuestion();
+    }
+
+    loadQuestion();
+
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => console.log('App registered under Krishna Kumar configuration.'))
+                .catch(err => console.log('Registration failed', err));
+        });
+    }
+</script>
+</body>
+</html>

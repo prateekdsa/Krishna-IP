@@ -567,4 +567,115 @@
     }
 
     function selectOption(index) {
-        if (isTimeOver) return
+        if (isTimeOver) return;
+        userAnswers[currentQuestionIdx] = index;
+        const r = document.getElementById(`opt-${index}`);
+        if(r) r.checked = true;
+    }
+
+    function goPrevious() { if (currentQuestionIdx > 0 && !isTimeOver) { currentQuestionIdx--; loadQuestion(); } }
+    
+    function goNext() {
+        if (isTimeOver) return;
+        if (currentQuestionIdx < quizData.length - 1) { currentQuestionIdx++; loadQuestion(); }
+        else { calculateAndShowResults(false); }
+    }
+
+    function calculateAndShowResults(forced) {
+        clearInterval(timerInterval);
+        isProtectionLoopActive = false;
+        let score = 0;
+        userAnswers.forEach((ans, index) => { if (ans === quizData[index].correct) score++; });
+
+        finalScore = score;
+        document.getElementById("quiz-box").style.display = "none";
+        document.getElementById("result-box").style.display = "block";
+        document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nStudent: ${studentName}\nRoll No: ${studentRoll}\nFinal Score: ${score} / ${quizData.length}`;
+    }
+
+    function sendToTeacher() {
+        let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
+        let reportText = `*QUIZ DATA PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nDataKey: [${answersString}]`;
+        
+        // Safely wipe out current lock on submission
+        let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
+        localStorage.removeItem(trackingKey);
+        
+        isProtectionLoopActive = false; 
+        hasSentReport = true;
+        document.getElementById("reset-app-btn").disabled = false;
+        document.getElementById("lock-notice").style.display = "none";
+        window.location.href = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodeURIComponent(reportText)}`; 
+    }
+
+    function restartQuiz() {
+        if (!hasSentReport) return;
+        location.reload();
+    }
+
+    function verifyAdminLogin() {
+        if(document.getElementById("admin-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
+            document.getElementById("admin-lockscreen").style.display = "none";
+            document.getElementById("teacher-box").style.display = "block";
+            renderTeacherLogs();
+        } else { alert("❌ Incorrect Admin Password Code!"); }
+    }
+
+    function importStudentCode() {
+        const rawInput = document.getElementById("compressed-input").value.trim();
+        if(!rawInput) return;
+        try {
+            const lines = rawInput.split('\n');
+            let name = lines.find(l => l.startsWith("Name:")).replace("Name:", "").trim();
+            let roll = lines.find(l => l.startsWith("Roll:")).replace("Roll:", "").trim();
+            let cKey = lines.find(l => l.startsWith("ClassKey:")).replace("ClassKey:", "").trim();
+            let score = lines.find(l => l.startsWith("Score:")).replace("Score:", "").trim();
+            let rawDataKey = lines.find(l => l.startsWith("DataKey:")).match(/\[(.*?)\]/)[1];
+            
+            let parsedAnswersArray = rawDataKey.split(',').map(x => x === 'X' ? null : parseInt(x));
+            let referenceQuizSet = allClassData[cKey];
+            let constructedSheet = [];
+
+            referenceQuizSet.forEach((item, index) => {
+                let studentAnsIndex = parsedAnswersArray[index];
+                let isCorrect = (studentAnsIndex === item.correct);
+                constructedSheet.push({ qNum: index + 1, qText: item.question, ticked: studentAnsIndex !== null ? item.options[studentAnsIndex] : "Not Attempted", correctOption: item.options[item.correct], status: isCorrect });
+            });
+
+            let sharedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
+            sharedLogs = sharedLogs.filter(log => !(log.roll === roll && log.classKey === cKey));
+            sharedLogs.push({ name: name, roll: roll, classKey: cKey, className: cKey === "class12" ? "Class 12th" : cKey === "class11" ? "Class 11th" : "Class 10th", score: score, timestamp: new Date().toLocaleString(), sheet: constructedSheet });
+            localStorage.setItem("teacher_central_database", JSON.stringify(sharedLogs));
+            document.getElementById("compressed-input").value = "";
+            renderTeacherLogs();
+            alert(`✅ Successfully Decoded Report Sheet for ${name}!`);
+        } catch(err) { alert("❌ Format Error"); }
+    }
+
+    function renderTeacherLogs() {
+        const container = document.getElementById("teacher-logs-container");
+        container.innerHTML = "";
+        let storedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
+        if(storedLogs.length === 0) {
+            container.innerHTML = `<p style="text-align:center; color:#7f8c8d; font-style:italic; padding:20px;">No student records imported yet.</p>`;
+            return;
+        }
+
+        for(let i = storedLogs.length - 1; i >= 0; i--) {
+            let log = storedLogs[i];
+            let card = document.createElement("div");
+            card.className = "student-log-card";
+            let sheetHtml = "";
+            log.sheet.forEach(item => {
+                sheetHtml += `<div style="font-size:12px; margin-top:4px; padding-left:10px; border-left:2px solid #ccc;">Q${item.qNum}: ${item.qText}<br>↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span></div>`;
+            });
+            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (${log.className} - Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
+            container.appendChild(card);
+        }
+    }
+
+    document.getElementById("compressed-input").addEventListener("keydown", function(e) { e.stopPropagation(); });
+    function clearTeacherLogs() { localStorage.removeItem("teacher_central_database"); renderTeacherLogs(); }
+</script>
+</body>
+</html>

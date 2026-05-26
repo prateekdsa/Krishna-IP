@@ -15,15 +15,14 @@
             -webkit-touch-callout: none !important;
         }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 15px; color: #333; }
+        /* NEW VERY LIGHT BLUE BACKGROUND */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef6fc; margin: 0; padding: 15px; color: #333; }
         .quiz-container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
-        .teacher-brand { text-align: center; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #7f8c8d; font-weight: bold; }
         
-        /* PROMINENT SCHOOL HEADER SYSTEM */
-        .school-header { color: #1e3a8a; text-align: center; font-size: 28px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; line-height: 1.2; }
-        
-        /* REDUCED CHAMPIONSHIP TITLE STYLING */
-        h1 { color: #2c3e50; text-align: center; font-size: 21px; margin-top: 0; margin-bottom: 20px; line-height: 1.3; font-weight: 700; }
+        /* NEW RE-ORDERED HEADER SYSTEM */
+        .school-header { color: #1e3a8a; text-align: center; font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; line-height: 1.2; }
+        h1 { color: #2c3e50; text-align: center; font-size: 19px; margin-top: 0; margin-bottom: 4px; line-height: 1.3; font-weight: 700; }
+        .teacher-brand { text-align: center; margin-bottom: 20px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #7f8c8d; font-weight: bold; }
         
         .portal-tabs { display: flex; background: #e2e8f0; border-radius: 8px; padding: 4px; margin-bottom: 20px; gap: 4px; }
         .tab-btn { flex: 1; padding: 8px; border: none; background: transparent; font-size: 14px; font-weight: bold; color: #64748b; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
@@ -37,42 +36,43 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 4px; color: #2c3e50; font-size: 13px; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 15px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
         
+        /* UPDATED SYNTAX CODE BOX: CREAM BACKGROUND AND LARGER FONTS */
         .code-box { 
-            background: #272822; 
-            color: #f8f8f2; 
-            padding: 12px; 
+            background: #fdfbf7; 
+            color: #23241f; 
+            padding: 14px; 
             border-radius: 6px; 
             font-family: 'Consolas', 'Courier New', Courier, monospace; 
             white-space: pre-wrap; 
-            margin: 12px 0; 
+            margin: 14px 0; 
             overflow-x: auto; 
-            font-size: 14px; 
-            border-left: 4px solid #3498db;
-            text-shadow: 0 0 1px rgba(248,248,242,0.3);
-            letter-spacing: 0.3px;
+            font-size: 17px; 
+            font-weight: bold;
+            border: 1px solid #e6dfd3;
+            border-left: 5px solid #3498db;
+            letter-spacing: 0.4px;
         }
 
-        /* INCREASED QUESTION FONT SIZE */
+        /* BALANCED QUESTION FONT SIZE (-15%) */
         .secure-text-render {
-            font-size: 20px;
+            font-size: 17px;
             font-weight: 700;
             color: #2c3e50;
-            line-height: 1.5;
+            line-height: 1.4;
             text-shadow: 0px 0px 0px #2c3e50, 0.3px 0px 0px rgba(0,0,0,0.1);
             letter-spacing: -0.1px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .lens-poison { display: inline-block; width: 0; height: 0; overflow: hidden; color: transparent; font-size: 0; }
 
-        .option-container { display: flex; align-items: center; padding: 14px 12px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
+        .option-container { display: flex; align-items: center; padding: 12px 12px; margin: 8px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
         .option-container:hover { background: #e8f1f5; border-color: #3498db; }
         
-        /* LARGER RADIO BUTTON FOR BETTER ACCESSIBILITY */
-        .option-container input[type="radio"] { margin-right: 14px; width: 22px; height: 22px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
+        .option-container input[type="radio"] { margin-right: 12px; width: 18px; height: 18px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
         
-        /* INCREASED OPTIONS/ANSWERS FONT SIZE */
-        .option-label { font-size: 18px; cursor: pointer; width: 100%; color: #222; font-weight: 500; line-height: 1.4; }
+        /* BALANCED OPTIONS/ANSWERS FONT SIZE (-15%) */
+        .option-label { font-size: 15px; cursor: pointer; width: 100%; color: #222; font-weight: 500; line-height: 1.4; }
         
         .nav-actions { display: flex; justify-content: space-between; margin-top: 20px; gap: 10px; }
         .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
@@ -119,10 +119,9 @@
 <div id="anti-cheat-blindfold">⚠️ SECURITY SHIELD: PROCESSING AUTO-LOGOUT ACTION...</div>
 
 <div class="quiz-container" id="app-visibility-wrapper">
-    <div class="teacher-brand">Krishna Kumar Presents</div>
-    
     <div class="school-header">City Public School, Najibabad</div>
     <h1>The Computer Brainiac Bowl</h1>
+    <div class="teacher-brand">By KK</div>
     
     <div id="navigation-tabs-hub" class="portal-tabs">
         <button id="tab-student" class="tab-btn active" onclick="switchPortalView('student')">👨‍🎓 Student Portal</button>

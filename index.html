@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishna's IP Masterclass</title>
+    <title>The Computer Brainiac Bowl by Krishna Kr</title>
     <link rel="manifest" href="manifest.json">
     <style>
         /* CRITICAL ANTI-LENS SECURITY: Strict global text defense */
@@ -18,7 +18,7 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
         .quiz-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
         .teacher-brand { text-align: center; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #7f8c8d; font-weight: bold; }
-        h1 { color: #2c3e50; text-align: center; font-size: 26px; margin-top: 0; margin-bottom: 25px; }
+        h1 { color: #2c3e50; text-align: center; font-size: 24px; margin-top: 0; margin-bottom: 25px; line-height: 1.3; }
         
         .portal-tabs { display: flex; background: #e2e8f0; border-radius: 8px; padding: 4px; margin-bottom: 25px; gap: 4px; }
         .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 15px; font-weight: bold; color: #64748b; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
@@ -121,7 +121,7 @@
 
 <div class="quiz-container" id="app-visibility-wrapper">
     <div class="teacher-brand">Krishna Kumar Presents</div>
-    <h1>Class XII IP Masterclass</h1>
+    <h1>The Computer Brainiac Bowl by Krishna Kr</h1>
     
     <div id="navigation-tabs-hub" class="portal-tabs">
         <button id="tab-student" class="tab-btn active" onclick="switchPortalView('student')">👨‍🎓 Student Portal</button>
@@ -136,8 +136,8 @@
                 <input type="text" id="login-name" placeholder="Enter your full name">
             </div>
             <div class="input-group">
-                <label for="login-roll">Roll Number / ID:</label>
-                <input type="text" id="login-roll" placeholder="Enter your official roll number">
+                <label for="login-roll">Roll Number (Integer 1 to 60):</label>
+                <input type="number" id="login-roll" min="1" max="60" step="1" placeholder="Enter roll number (e.g., 12)">
             </div>
             <div class="input-group">
                 <label for="student-class">Select Quiz Target Class:</label>
@@ -147,6 +147,10 @@
                     <option value="class12" selected>Class 12th (Informatics Practices)</option>
                 </select>
             </div>
+            <div class="input-group">
+                <label for="class-password">Class Access Password:</label>
+                <input type="password" id="class-password" placeholder="Enter password for chosen class">
+            </div>
             <button class="btn btn-next" style="width:100%; margin-top:10px;" onclick="handleLogin()">Verify Identity & Begin Test</button>
         </div>
     </div>
@@ -154,7 +158,7 @@
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
         <div class="lockdown-title">⛔ ATTEMPT QUOTA DELETED</div>
         <p class="lockdown-desc">
-            This student account entry has reached the limit of 3 validation login sequences.
+            This student account entry has reached the maximum limit of 3 validations.
             <br><br>
             <span style="color:#c0392b;">To release or unlock this attempt limit, KK Sir must authorize a profile state refresh below.</span>
         </p>
@@ -222,9 +226,16 @@
 </div>
 
 <script>
-    // ROUTING ROUTINE INTEGRATION VALUES
+    // --- SERVER ACCESS AND GATEWAY CONFIGURATIONS ---
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
+
+    // CLASS DISTINCT ACCESS PASSWORDS Registry
+    const CLASS_PASSWORDS = {
+        "class10": "Pass10@Bowl",
+        "class11": "Pass11@Bowl",
+        "class12": "IPSir@7055"
+    };
 
     let allClassData = null;
     let quizData = []; 
@@ -266,7 +277,6 @@
         isProtectionLoopActive = false;
         clearInterval(timerInterval);
         
-        // Brief security overlay display
         document.getElementById("anti-cheat-blindfold").style.display = "block";
         
         setTimeout(() => {
@@ -275,9 +285,9 @@
             document.getElementById("navigation-tabs-hub").style.display = "flex";
             document.getElementById("student-portal-section").style.display = "block";
             
-            // Clean up session states and answers
             userAnswers = [];
             currentQuestionIdx = 0;
+            document.getElementById("class-password").value = ""; // Force re-entry
             
             alert("⚠️ SECURITY SIGNAL: Window minimized or exited. Active exam token destroyed. 1 entry ticket consumed!");
         }, 1200);
@@ -297,10 +307,9 @@
         const masterKeyInput = document.getElementById("unlock-master-key").value.trim();
         if (masterKeyInput === MASTER_TEACHER_PASSWORD) {
             if (studentRoll && selectedClassKey) {
-                let trackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
+                let trackingKey = `attempts_${studentRoll}_${selectedClassKey}`;
                 localStorage.removeItem(trackingKey);
             } else {
-                // FALLBACK BYPASS: Wipe all validation attempts if browser states are lost
                 Object.keys(localStorage).forEach(key => {
                     if (key.startsWith("attempts_")) {
                         localStorage.removeItem(key);
@@ -310,7 +319,7 @@
             document.getElementById("permanent-lockdown-box").style.display = "none";
             document.getElementById("navigation-tabs-hub").style.display = "flex";
             document.getElementById("student-portal-section").style.display = "block";
-            alert("✅ Authorization accepted. Matching student access entries successfully reset.");
+            alert("✅ Authorization accepted. Student quota counts updated.");
             location.reload();
         } else {
             alert("❌ Incorrect Teacher Unlock Code!");
@@ -336,15 +345,39 @@
 
     async function handleLogin() {
         const inputName = document.getElementById("login-name").value.trim();
-        const inputRoll = document.getElementById("login-roll").value.trim();
+        const inputRollRaw = document.getElementById("login-roll").value.trim();
+        const inputPassword = document.getElementById("class-password").value.trim();
+        
         selectedClassKey = document.getElementById("student-class").value;
         selectedClassLabel = document.getElementById("student-class").options[document.getElementById("student-class").selectedIndex].text;
 
-        if(!inputName || !inputRoll) { return alert("Fill out credentials!"); }
-        studentName = inputName; studentRoll = inputRoll;
+        // Basic fields check
+        if(!inputName || !inputRollRaw || !inputPassword) { 
+            return alert("Error: All entry fields (Name, Roll No, and Password) are required!"); 
+        }
 
-        // Configuration of up to 3 entry allowance states per ID configuration profile
-        let trackingKey = `attempts_${studentRoll.replace(/\s+/g, '_')}_${selectedClassKey}`;
+        // Integer verification logic
+        const rollInt = parseInt(inputRollRaw, 10);
+        if (isNaN(rollInt) || String(rollInt) !== inputRollRaw) {
+            return alert("❌ Invalid Roll Number! Must be a whole integer number only (No letters, dots, or spaces).");
+        }
+
+        // Range boundary enforcement (1 to 60)
+        if (rollInt < 1 || rollInt > 60) {
+            return alert("❌ Roll Number Range Error! Allowed ID parameters must sit between 1 and 60.");
+        }
+
+        // Dynamic Class Password Match validation
+        const correctClassPassword = CLASS_PASSWORDS[selectedClassKey];
+        if (inputPassword !== correctClassPassword) {
+            return alert(`❌ Incorrect Access Password for ${selectedClassLabel}! Please check with KK Sir.`);
+        }
+
+        studentName = inputName; 
+        studentRoll = String(rollInt);
+
+        // Limit tracking routine verification
+        let trackingKey = `attempts_${studentRoll}_${selectedClassKey}`;
         let attempts = parseInt(localStorage.getItem(trackingKey)) || 0;
         
         if (attempts >= 3) {
@@ -373,7 +406,7 @@
     }
 
     function startTimer() {
-        clearInterval(timerInterval); // Prevent layout intervals piling leaks
+        clearInterval(timerInterval); 
         timerInterval = setInterval(() => {
             totalTimeInSeconds--;
             const min = Math.floor(totalTimeInSeconds / 60);
@@ -557,7 +590,7 @@
             log.sheet.forEach(item => {
                 sheetHtml += `<div style="font-size:12px; margin-top:4px; padding-left:10px; border-left:2px solid #ccc;">Q${item.qNum}: ${item.qText}<br>↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span></div>`;
             });
-            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (Roll: ${log.roll})br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
+            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
             container.appendChild(card);
         }
     }

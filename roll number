@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>"The Computer Brainiac Bowl"</title>
+    <title>The Computer Brainiac Bowl by Krishna Kr</title>
     <link rel="manifest" href="manifest.json">
     <style>
         /* CRITICAL ANTI-LENS SECURITY: Strict global text defense */
@@ -32,7 +32,7 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
         
-        /* OCR CONFUSION LAYER: Blurs code fragments slightly to break bot extraction while remaining readable to students */
+        /* OCR CONFUSION LAYER */
         .code-box { 
             background: #272822; 
             color: #f8f8f2; 
@@ -48,7 +48,6 @@
             letter-spacing: 0.3px;
         }
 
-        /* ANTI-LENS TEXT SHIELD */
         .secure-text-render {
             font-size: 18px;
             font-weight: 600;
@@ -58,15 +57,7 @@
             letter-spacing: -0.2px;
         }
 
-        /* Invisible text injection system to poison Google Lens OCR dataset arrays */
-        .lens-poison {
-            display: inline-block;
-            width: 0;
-            height: 0;
-            overflow: hidden;
-            color: transparent;
-            font-size: 0;
-        }
+        .lens-poison { display: inline-block; width: 0; height: 0; overflow: hidden; color: transparent; font-size: 0; }
 
         .option-container { display: flex; align-items: center; padding: 12px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
         .option-container:hover { background: #e8f1f5; border-color: #3498db; }
@@ -95,6 +86,9 @@
 
         .txt-success { color: #2ecc71; font-weight: bold; }
         .txt-danger { color: #e74c3c; font-weight: bold; }
+        
+        /* Password roster text support */
+        .roster-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 13px; max-height: 200px; overflow-y: auto; text-align: left; -webkit-user-select: text !important; user-select: text !important; }
 
         .lockdown-container { text-align: center; padding: 20px; }
         .lockdown-title { color: #c0392b; font-size: 28px; font-weight: bold; margin-bottom: 15px; }
@@ -136,20 +130,20 @@
                 <input type="text" id="login-name" placeholder="Enter your full name">
             </div>
             <div class="input-group">
-                <label for="login-roll">Roll Number / ID:</label>
-                <input type="number" id="login-roll" min="ST01" max="ST200" step="1" placeholder="Enter roll number (e.g., 12)">
-            </div>
-            <div class="input-group">
                 <label for="student-class">Select Quiz Target Class:</label>
-                <select id="student-class">
-                    <option value="class10">Class 10th</option>
-                    <option value="class11">Class 11th</option>
-                    <option value="class12" selected>Class 12th (Informatics Practices)</option>
+                <select id="student-class" onchange="updateRollLimits()">
+                    <option value="class10">Class 10th (Roll 1-100)</option>
+                    <option value="class11">Class 11th (Roll 1-20)</option>
+                    <option value="class12" selected>Class 12th (Informatics Practices) (Roll 1-15)</option>
                 </select>
             </div>
             <div class="input-group">
-                <label for="class-password">Class Access Password:</label>
-                <input type="password" id="class-password" placeholder="Enter password for chosen class">
+                <label for="login-roll" id="roll-label">Roll Number (Integer 1 to 15):</label>
+                <input type="number" id="login-roll" min="1" max="15" step="1" placeholder="Enter roll number">
+            </div>
+            <div class="input-group">
+                <label for="class-password">Personal Roll Password:</label>
+                <input type="password" id="class-password" placeholder="Enter unique secure password code">
             </div>
             <button class="btn btn-next" style="width:100%; margin-top:10px;" onclick="handleLogin()">Verify Identity & Begin Test</button>
         </div>
@@ -184,6 +178,17 @@
                 <h2 style="color: #2c3e50; margin: 0;">📋 KK Sir's Dashboard</h2>
                 <button class="btn btn-prev" style="padding: 6px 14px; font-size:14px;" onclick="exitAdminDashboard()">← Exit Admin</button>
             </div>
+            
+            <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h4 style="margin: 0 0 10px 0; color: #1e293b;">📋 View Student Password Roster</h4>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <button class="btn btn-next" style="padding: 6px 12px; font-size: 13px;" onclick="displayClassRoster('class10')">Class 10th List</button>
+                    <button class="btn btn-next" style="padding: 6px 12px; font-size: 13px;" onclick="displayClassRoster('class11')">Class 11th List</button>
+                    <button class="btn btn-next" style="padding: 6px 12px; font-size: 13px;" onclick="displayClassRoster('class12')">Class 12th List</button>
+                </div>
+                <div id="roster-output-window" class="roster-box">Select a class above to print current randomized student passwords...</div>
+            </div>
+
             <div class="input-group" style="background: #eef2f7; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1;">
                 <label for="compressed-input" style="color: #2c3e50; font-weight: bold;">📥 Paste Student's WhatsApp Report Code Here:</label>
                 <textarea id="compressed-input" rows="3" placeholder="Paste entire raw text packet message here..."></textarea>
@@ -230,12 +235,37 @@
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
 
-    // CLASS DISTINCT ACCESS PASSWORDS Registry
-    const CLASS_PASSWORDS = {
-        "class10": "Pass10@Bowl",
-        "class11": "Pass11@Bowl",
-        "class12": "IPSir@7055"
+    const CLASS_CONFIGS = {
+        "class10": { maxRoll: 100, seedValue: 1023 },
+        "class11": { maxRoll: 20,  seedValue: 4401 },
+        "class12": { maxRoll: 15,  seedValue: 7055 }
     };
+
+    const STUDENT_REGISTRY = { "class10": {}, "class11": {}, "class12": {} };
+
+    // PSEUDO-RANDOM CRYPTO SEED SYSTEM (Generates unguessable but consistent token strings)
+    function generatePseudoRandomString(seed, rollNum) {
+        let combinedSeed = seed + (rollNum * 31);
+        const chars = "23456789abcdefghkmnpqrstuvwxyzABCDEFGHKMNPQRSTUVWXYZ"; // Removed confusing symbols/chars (o, 0, 1, l, I)
+        let token = "";
+        for (let i = 0; i < 4; i++) {
+            combinedSeed = (combinedSeed * 9301 + 49297) % 233280;
+            let idx = Math.floor((combinedSeed / 233280) * chars.length);
+            token += chars[idx];
+        }
+        return token;
+    }
+
+    function initializeSecureRegistry() {
+        Object.keys(CLASS_CONFIGS).forEach(classKey => {
+            const config = CLASS_CONFIGS[classKey];
+            for (let r = 1; r <= config.maxRoll; r++) {
+                let shortToken = generatePseudoRandomString(config.seedValue, r);
+                // Final unique unguessable password assigned: e.g., c12-7kX2
+                STUDENT_REGISTRY[classKey][String(r)] = `${classKey === 'class10' ? 'c10' : classKey === 'class11' ? 'c11' : 'c12'}-${shortToken}`;
+            }
+        });
+    }
 
     let allClassData = null;
     let quizData = []; 
@@ -254,29 +284,49 @@
     let isProtectionLoopActive = false;
 
     window.onload = async function() {
+        initializeSecureRegistry();
+        updateRollLimits(); 
         try {
             const response = await fetch('questions.json');
             allClassData = await response.json();
         } catch(e) { console.error(e); }
     }
 
+    function updateRollLimits() {
+        const classSelect = document.getElementById("student-class").value;
+        const rollInput = document.getElementById("login-roll");
+        const rollLabel = document.getElementById("roll-label");
+        const maxLimit = CLASS_CONFIGS[classSelect].maxRoll;
+
+        rollInput.max = maxLimit;
+        rollLabel.innerText = `Roll Number (Integer 1 to ${maxLimit}):`;
+        if(parseInt(rollInput.value) > maxLimit) { rollInput.value = ""; }
+    }
+
+    function displayClassRoster(classKey) {
+        const out = document.getElementById("roster-output-window");
+        let label = classKey === 'class10' ? 'Class 10th' : classKey === 'class11' ? 'Class 11th' : 'Class 12th';
+        let registryData = STUDENT_REGISTRY[classKey];
+        let htmlStr = `<strong>🔑 ${label} UNIQUE PASSWORD REGISTRY:</strong><br><br>`;
+        
+        Object.keys(registryData).forEach(roll => {
+            htmlStr += `Roll No ${roll.padStart(2, '0')} ➔ Password: <span style="color:#e74c3c; font-weight:bold;">${registryData[roll]}</span><br>`;
+        });
+        out.innerHTML = htmlStr;
+    }
+
     // --- AUTOMATIC SESSION TERMINATION ENGINE ---
     document.addEventListener("visibilitychange", function() {
-        if (isProtectionLoopActive && document.hidden) {
-            executeAutoLogoutAction();
-        }
+        if (isProtectionLoopActive && document.hidden) { executeAutoLogoutAction(); }
     });
 
     window.addEventListener("blur", function() {
-        if (isProtectionLoopActive) {
-            executeAutoLogoutAction();
-        }
+        if (isProtectionLoopActive) { executeAutoLogoutAction(); }
     });
 
     function executeAutoLogoutAction() {
         isProtectionLoopActive = false;
         clearInterval(timerInterval);
-        
         document.getElementById("anti-cheat-blindfold").style.display = "block";
         
         setTimeout(() => {
@@ -287,8 +337,7 @@
             
             userAnswers = [];
             currentQuestionIdx = 0;
-            document.getElementById("class-password").value = ""; // Force re-entry
-            
+            document.getElementById("class-password").value = ""; 
             alert("⚠️ SECURITY SIGNAL: Window minimized or exited. Active exam token destroyed. 1 entry ticket consumed!");
         }, 1200);
     }
@@ -302,7 +351,6 @@
         document.getElementById("permanent-lockdown-box").style.display = "block";
     }
 
-    // --- MASTER ACCOUNT RESET CONTROLLER ---
     function handleDeviceUnlock() {
         const masterKeyInput = document.getElementById("unlock-master-key").value.trim();
         if (masterKeyInput === MASTER_TEACHER_PASSWORD) {
@@ -311,9 +359,7 @@
                 localStorage.removeItem(trackingKey);
             } else {
                 Object.keys(localStorage).forEach(key => {
-                    if (key.startsWith("attempts_")) {
-                        localStorage.removeItem(key);
-                    }
+                    if (key.startsWith("attempts_")) { localStorage.removeItem(key); }
                 });
             }
             document.getElementById("permanent-lockdown-box").style.display = "none";
@@ -321,9 +367,7 @@
             document.getElementById("student-portal-section").style.display = "block";
             alert("✅ Authorization accepted. Student quota counts updated.");
             location.reload();
-        } else {
-            alert("❌ Incorrect Teacher Unlock Code!");
-        }
+        } else { alert("❌ Incorrect Teacher Unlock Code!"); }
     }
 
     function switchPortalView(targetView) {
@@ -350,33 +394,29 @@
         
         selectedClassKey = document.getElementById("student-class").value;
         selectedClassLabel = document.getElementById("student-class").options[document.getElementById("student-class").selectedIndex].text;
+        const limitConfig = CLASS_CONFIGS[selectedClassKey];
 
-        // Basic fields check
         if(!inputName || !inputRollRaw || !inputPassword) { 
             return alert("Error: All entry fields (Name, Roll No, and Password) are required!"); 
         }
 
-        // Integer verification logic
         const rollInt = parseInt(inputRollRaw, 10);
         if (isNaN(rollInt) || String(rollInt) !== inputRollRaw) {
-            return alert("❌ Invalid Roll Number! Must be a whole integer number only (No letters, dots, or spaces).");
+            return alert("❌ Invalid Roll Number! Must be a whole integer number only.");
         }
 
-        // Range boundary enforcement (1 to 60)
-        if (rollInt < 1 || rollInt > 60) {
-            return alert("❌ Roll Number Range Error! Allowed ID parameters must sit between 1 and 60.");
-        }
-
-        // Dynamic Class Password Match validation
-        const correctClassPassword = CLASS_PASSWORDS[selectedClassKey];
-        if (inputPassword !== correctClassPassword) {
-            return alert(`❌ Incorrect Access Password for ${selectedClassLabel}! Please check with KK Sir.`);
+        if (rollInt < 1 || rollInt > limitConfig.maxRoll) {
+            return alert(`❌ Roll Number Range Error! For this class, allowed rolls must sit between 1 and ${limitConfig.maxRoll}.`);
         }
 
         studentName = inputName; 
         studentRoll = String(rollInt);
 
-        // Limit tracking routine verification
+        const assignedRollPassword = STUDENT_REGISTRY[selectedClassKey][studentRoll];
+        if (inputPassword !== assignedRollPassword) {
+            return alert(`❌ Incorrect Password details matching Roll No ${studentRoll} for ${selectedClassLabel}! Check credentials.`);
+        }
+
         let trackingKey = `attempts_${studentRoll}_${selectedClassKey}`;
         let attempts = parseInt(localStorage.getItem(trackingKey)) || 0;
         
@@ -420,12 +460,10 @@
         }, 1000);
     }
 
-    // --- VISUAL ENCRYPTION ENGINE TO BLIND GOOGLE LENS ---
     function encryptTextForHumanEyes(plainText) {
         const words = plainText.split(" ");
         let compositeHtml = "";
         const poisonDict = ["@", "#", "$", "%", "&", "x", "z", "q", "9", "4"];
-
         words.forEach((word) => {
             let wordBlock = "<span style='display:inline-block; margin-right:5px;'>";
             for (let i = 0; i < word.length; i++) {
@@ -535,12 +573,9 @@
             document.getElementById("admin-lockscreen").style.display = "none";
             document.getElementById("teacher-box").style.display = "block";
             renderTeacherLogs();
-        } else {
-            alert("❌ Incorrect Admin Password Code!");
-        }
+        } else { alert("❌ Incorrect Admin Password Code!"); }
     }
 
-    // --- EVALUATION MANAGEMENT ARCHIVE ---
     function importStudentCode() {
         const rawInput = document.getElementById("compressed-input").value.trim();
         if(!rawInput) return;
@@ -564,7 +599,7 @@
 
             let sharedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
             sharedLogs = sharedLogs.filter(log => !(log.roll === roll && log.classKey === cKey));
-            sharedLogs.push({ name: name, roll: roll, classKey: cKey, className: cKey === "class12" ? "Class 12th" : "Class 10th", score: score, timestamp: new Date().toLocaleString(), sheet: constructedSheet });
+            sharedLogs.push({ name: name, roll: roll, classKey: cKey, className: cKey === "class12" ? "Class 12th" : cKey === "class11" ? "Class 11th" : "Class 10th", score: score, timestamp: new Date().toLocaleString(), sheet: constructedSheet });
             localStorage.setItem("teacher_central_database", JSON.stringify(sharedLogs));
             document.getElementById("compressed-input").value = "";
             renderTeacherLogs();
@@ -572,7 +607,6 @@
         } catch(err) { alert("❌ Format Error"); }
     }
 
-    // --- RENDERING MANAGEMENT PIPELINES ---
     function renderTeacherLogs() {
         const container = document.getElementById("teacher-logs-container");
         container.innerHTML = "";
@@ -590,11 +624,12 @@
             log.sheet.forEach(item => {
                 sheetHtml += `<div style="font-size:12px; margin-top:4px; padding-left:10px; border-left:2px solid #ccc;">Q${item.qNum}: ${item.qText}<br>↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span></div>`;
             });
-            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
+            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (${log.className} - Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
             container.appendChild(card);
         }
     }
 
+    document.getElementById("compressed-input").addEventListener("keydown", function(e) { e.stopPropagation(); });
     function clearTeacherLogs() { localStorage.removeItem("teacher_central_database"); renderTeacherLogs(); }
 </script>
 </body>

@@ -6,13 +6,18 @@
     <title> City Public School - Brainiac Bowl </title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* CRITICAL ANTI-LENS SECURITY */
+        /* CRITICAL ANTI-LENS & ANTI-SCREENSHOT SECURITY */
         * {
             -webkit-user-select: none !important; 
             -moz-user-select: none !important;
             -ms-user-select: none !important; 
             user-select: none !important; 
             -webkit-touch-callout: none !important;
+        }
+
+        /* SCREENSHOT & PRINT OVERRIDE PROTECTION */
+        @media print {
+            body { display: none !important; }
         }
 
         /* NEW VERY LIGHT BLUE BACKGROUND */
@@ -53,7 +58,7 @@
             letter-spacing: 0.4px;
         }
 
-        /* BALANCED QUESTION FONT SIZE (-15%) */
+        /* BALANCED QUESTION FONT SIZE */
         .secure-text-render {
             font-size: 17px;
             font-weight: 700;
@@ -71,7 +76,7 @@
         
         .option-container input[type="radio"] { margin-right: 12px; width: 18px; height: 18px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
         
-        /* BALANCED OPTIONS/ANSWERS FONT SIZE (-15%) */
+        /* BALANCED OPTIONS/ANSWERS FONT SIZE */
         .option-label { font-size: 15px; cursor: pointer; width: 100%; color: #222; font-weight: 500; line-height: 1.4; }
         
         .nav-actions { display: flex; justify-content: space-between; margin-top: 20px; gap: 10px; }
@@ -89,10 +94,15 @@
         .restart-btn { display: block; width: 100%; padding: 12px; background: #2c3e50; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; margin-top: 12px; font-weight: bold; }
         .restart-btn:disabled { background: #bdc3c7; cursor: not-allowed; opacity: 0.6; }
         
-        .score-box { text-align: center; font-size: 20px; font-weight: bold; color: #2ecc71; }
+        .score-box { text-align: center; font-size: 20px; font-weight: bold; color: #2ecc71; margin-bottom: 5px; }
         .student-log-card { background: #f1f2f6; padding: 10px; margin-bottom: 8px; border-radius: 6px; border-left: 5px solid #2c3e50; text-align: left; font-size: 14px; }
         .btn-danger { background: #e74c3c; color: white; }
         .btn-danger:hover { background: #c0392b; }
+
+        /* WRONG QUESTION FEEDBACK BOX */
+        .wrong-review-panel { background: #fff5f5; border: 1px solid #fecaca; border-radius: 8px; padding: 15px; margin: 15px 0; text-align: left; max-height: 220px; overflow-y: auto; }
+        .wrong-review-title { color: #dc2626; font-size: 15px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #fca5a5; padding-bottom: 4px; }
+        .wrong-item { font-size: 14px; color: #4b5563; margin-bottom: 8px; padding-left: 10px; border-left: 3px solid #ef4444; font-weight: 500; }
 
         .roster-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 12px; max-height: 180px; overflow-y: auto; text-align: left; -webkit-user-select: text !important; user-select: text !important; }
         .lockdown-container { text-align: center; padding: 15px; }
@@ -225,7 +235,9 @@
     
     <div id="result-box" style="display: none;">
         <p class="score-box">🎉 Quiz Completed! 🎉</p>
-        <p id="score-text" style="text-align: center; font-size: 16px; color: #555; line-height: 1.5; font-weight: bold;"></p>
+        <p id="score-text" style="text-align: center; font-size: 16px; color: #555; line-height: 1.5; font-weight: bold; margin-bottom: 10px;"></p>
+        
+        <div id="wrong-questions-review-zone"></div>
         
         <button class="btn-whatsapp" id="whatsapp-submit-btn" onclick="sendToTeacher()">Send Score to KK Sir via WhatsApp 💬</button>
         
@@ -318,6 +330,19 @@
         updateRollLimits(); 
         await fetchFreshQuestions(); 
         renderTeacherLogs();
+
+        // Check if device was locked from a previous session check on startup
+        let lastUser = localStorage.getItem("last_active_user");
+        let lastClass = localStorage.getItem("last_active_class");
+        if(lastUser && lastClass) {
+            let trackingKey = `lockTime_${lastUser}_${lastClass}`;
+            let lockoutTime = localStorage.getItem(trackingKey);
+            if(lockoutTime && (Date.now() - parseInt(lockoutTime) < LOCKOUT_DURATION_MS)) {
+                studentRoll = lastUser;
+                selectedClassKey = lastClass;
+                triggerLockoutUI(lockoutTime);
+            }
+        }
     }
 
     function updateRollLimits() {
@@ -343,6 +368,7 @@
         out.innerHTML = htmlStr;
     }
 
+    /* 12-HOUR PENALTY TRIGGER LOCKOUTS */
     document.addEventListener("visibilitychange", function() {
         if (isProtectionLoopActive && document.hidden) { executeAutoLogoutAction(); }
     });
@@ -360,15 +386,15 @@
         
         setTimeout(() => {
             document.getElementById("anti-cheat-blindfold").style.display = "none";
-            document.getElementById("quiz-box").style.display = "none";
-            document.getElementById("navigation-tabs-hub").style.display = "flex";
-            document.getElementById("student-portal-section").style.display = "block";
-            
-            userAnswers = [];
-            currentQuestionIdx = 0;
-            document.getElementById("class-password").value = ""; 
-            alert("⚠️ SECURITY CRITICAL LOGOUT: Access frozen for 12 Hours!");
-        }, 1200);
+            let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
+            let registeredLockTime = localStorage.getItem(trackingKey);
+            if(!registeredLockTime) {
+                localStorage.setItem(trackingKey, Date.now());
+                registeredLockTime = Date.now();
+            }
+            triggerLockoutUI(registeredLockTime);
+            alert("⚠️ ANTICHEAT ACTION DETECTED:\nYou exited or minimized the running interface!\nYour system profile is now blocked for 12 hours.");
+        }, 1000);
     }
 
     function runLockoutCountdown(lockoutTime) {
@@ -383,6 +409,8 @@
                 clearInterval(liveLockoutInterval);
                 let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
                 localStorage.removeItem(trackingKey);
+                localStorage.removeItem("last_active_user");
+                localStorage.removeItem("last_active_class");
                 document.getElementById("permanent-lockdown-box").style.display = "none";
                 document.getElementById("navigation-tabs-hub").style.display = "flex";
                 document.getElementById("student-portal-section").style.display = "block";
@@ -413,14 +441,10 @@
         const masterKeyInput = document.getElementById("unlock-master-key").value.trim();
         if (masterKeyInput === MASTER_TEACHER_PASSWORD) {
             clearInterval(liveLockoutInterval);
-            if (studentRoll && selectedClassKey) {
-                let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
-                localStorage.removeItem(trackingKey);
-            } else {
-                Object.keys(localStorage).forEach(key => {
-                    if (key.startsWith("lockTime_")) { localStorage.removeItem(key); }
-                });
-            }
+            let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
+            localStorage.removeItem(trackingKey);
+            localStorage.removeItem("last_active_user");
+            localStorage.removeItem("last_active_class");
             document.getElementById("permanent-lockdown-box").style.display = "none";
             document.getElementById("navigation-tabs-hub").style.display = "flex";
             document.getElementById("student-portal-section").style.display = "block";
@@ -516,7 +540,10 @@
             }
         }
 
+        // Write lockdown target parameters immediately
         localStorage.setItem(trackingKey, Date.now());
+        localStorage.setItem("last_active_user", studentRoll);
+        localStorage.setItem("last_active_class", selectedClassKey);
         
         let baseQuestions = allClassData[selectedClassKey];
         quizData = shuffleQuestionsByRoll(baseQuestions, config.seedValue, studentRoll);
@@ -635,14 +662,41 @@
 
     function calculateAndShowResults(forced) {
         clearInterval(timerInterval);
-        isProtectionLoopActive = false;
+        isProtectionLoopActive = false; // Turn off early abandonment sensor safely now that they completed it
+        
         let score = 0;
-        userAnswers.forEach((ans, index) => { if (ans === quizData[index].correct) score++; });
+        let wrongQuestionsHtml = "";
+        let wrongCount = 0;
+
+        userAnswers.forEach((ans, index) => { 
+            if (ans === quizData[index].correct) {
+                score++; 
+            } else {
+                wrongCount++;
+                wrongQuestionsHtml += `<div class="wrong-item">❌ Q. ${quizData[index].question}</div>`;
+            }
+        });
 
         finalScore = score;
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
         document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nUser Group: ${studentName}\nRoll Identifier: ${studentRoll}\nFinal Score: ${score} / ${quizData.length}`;
+
+        // Inject the Wrong Question Review Box above the submit action item
+        const reviewZone = document.getElementById("wrong-questions-review-zone");
+        if (wrongCount > 0) {
+            reviewZone.innerHTML = `
+                <div class="wrong-review-panel">
+                    <div class="wrong-review-title">⚠️ Wrong Questions Review (${wrongCount} Missed)</div>
+                    ${wrongQuestionsHtml}
+                </div>`;
+        } else {
+            reviewZone.innerHTML = `
+                <div class="wrong-review-panel" style="background:#f0fdf4; border-color:#bbf7d0;">
+                    <div class="wrong-review-title" style="color:#16a34a; border-color:#86efac;">🎯 Excellent Job!</div>
+                    <div style="color:#16a34a; font-size:14px; font-weight:bold;">You answered all questions correctly!</div>
+                </div>`;
+        }
     }
 
     function sendToTeacher() {
@@ -650,8 +704,11 @@
         let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
         let reportText = `*QUIZ DATA PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nDataKey: [${answersString}]`;
         
+        // Safely destroy session tracking traces upon proper completion submission
         let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
         localStorage.removeItem(trackingKey);
+        localStorage.removeItem("last_active_user");
+        localStorage.removeItem("last_active_class");
         
         document.getElementById("reset-app-btn").disabled = false;
         document.getElementById("lock-notice").style.display = "none";

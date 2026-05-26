@@ -108,7 +108,7 @@
 <div id="anti-cheat-blindfold">⚠️ SECURITY SHIELD: PROCESSING AUTO-LOGOUT ACTION...</div>
 
 <div class="quiz-container" id="app-visibility-wrapper">
-    <div class="teacher-brand">City Public School</div>
+    <div class="teacher-brand">City Public School Najibabad</div>
     <h1>The Computer Brainiac Bowl by Krishna Kr</h1>
     
     <div id="navigation-tabs-hub" class="portal-tabs">
@@ -126,9 +126,9 @@
             <div class="input-group">
                 <label for="student-class">Select Quiz Target Class:</label>
                 <select id="student-class" onchange="updateRollLimits()">
-                    <option value="class10">Class 10th (Information Technology)</option>
-                    <option value="class11">Class 11th (Informatics Practices)</option>
-                    <option value="class12" selected>Class 12th (Informatics Practices)</option>
+                    <option value="class10">Class 10th (Information Technology)(1-100)</option>
+                    <option value="class11">Class 11th (Informatics Practices) (1-20)</option>
+                    <option value="class12" selected>Class 12th (Informatics Practices) (1-15)</option>
                 </select>
             </div>
             <div class="input-group">
@@ -250,7 +250,6 @@
         return token;
     }
 
-    // --- SEED-BASED SHUFFLER FOR ANTI-CHEAT ORDERING ---
     function shuffleQuestionsByRoll(array, classSeed, rollNum) {
         let shuffleSeed = classSeed + (parseInt(rollNum, 10) * 73); 
         let shuffled = [...array];
@@ -258,7 +257,6 @@
         for (let i = shuffled.length - 1; i > 0; i--) {
             shuffleSeed = (shuffleSeed * 9301 + 49297) % 233280;
             let j = Math.floor((shuffleSeed / 233280) * (i + 1));
-            // Swap elements
             let temp = shuffled[i];
             shuffled[i] = shuffled[j];
             shuffled[j] = temp;
@@ -291,13 +289,24 @@
     let isTimeOver = false;
     let isProtectionLoopActive = false;
 
+    // Helper function to pull the absolute newest JSON directly from server
+    async function fetchFreshQuestions() {
+        try {
+            // CACHE BUSTER: Appending timestamp prevents browser storage from giving old data
+            const cacheBusterUrl = `questions.json?v=${Date.now()}`;
+            const response = await fetch(cacheBusterUrl);
+            allClassData = await response.json();
+            return true;
+        } catch(e) {
+            console.error("Error refreshing data structure:", e);
+            return false;
+        }
+    }
+
     window.onload = async function() {
         initializeSecureRegistry();
         updateRollLimits(); 
-        try {
-            const response = await fetch('questions.json');
-            allClassData = await response.json();
-        } catch(e) { console.error(e); }
+        await fetchFreshQuestions(); // Load immediately on load
         renderTeacherLogs();
     }
 
@@ -308,7 +317,7 @@
         const maxLimit = CLASS_CONFIGS[classSelect].maxRoll;
 
         rollInput.max = maxLimit;
-        rollLabel.innerText = `Roll Number (Integer 1 to ${maxLimit}):`;
+        rollLabel.innerText = `Roll Number (1 to ${maxLimit}):`;
         if(parseInt(rollInput.value) > maxLimit) { rollInput.value = ""; }
     }
 
@@ -433,11 +442,10 @@
         selectedClassLabel = document.getElementById("student-class").options[document.getElementById("student-class").selectedIndex].text;
         const config = CLASS_CONFIGS[selectedClassKey];
 
-        if(!allClassData) {
-            try {
-                const response = await fetch('questions.json');
-                allClassData = await response.json();
-            } catch(e) { return alert("Error loading question bank configurations."); }
+        // FORCE A REAL-TIME SYNC CHECK right when login button is pressed!
+        const loadSuccess = await fetchFreshQuestions();
+        if(!loadSuccess || !allClassData) {
+            return alert("Error syncing question data. Please check your internet connection.");
         }
 
         // --- TEACHER TEST MODE BYPASS (NO SHUFFLE) ---
@@ -445,7 +453,7 @@
             studentName = "TEACHERS";
             studentRoll = "Teacher Mode";
             
-            quizData = allClassData[selectedClassKey]; // Keeps original clean sorting for review
+            quizData = allClassData[selectedClassKey]; 
             userAnswers = new Array(quizData.length).fill(null);
             totalTimeInSeconds = quizData.length * 60;
             isProtectionLoopActive = false; 
@@ -503,7 +511,6 @@
 
         localStorage.setItem(trackingKey, Date.now());
         
-        // --- SEED SHUFFLE ACTIVATED SPECIFICALLY PER ROLL NUMBER ---
         let baseQuestions = allClassData[selectedClassKey];
         quizData = shuffleQuestionsByRoll(baseQuestions, config.seedValue, studentRoll);
         

@@ -87,7 +87,6 @@
         .txt-success { color: #2ecc71; font-weight: bold; }
         .txt-danger { color: #e74c3c; font-weight: bold; }
         
-        /* Password roster text support */
         .roster-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 13px; max-height: 200px; overflow-y: auto; text-align: left; -webkit-user-select: text !important; user-select: text !important; }
 
         .lockdown-container { text-align: center; padding: 20px; }
@@ -150,17 +149,18 @@
     </div>
 
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
-        <div class="lockdown-title">⛔ ATTEMPT QUOTA DELETED</div>
+        <div class="lockdown-title">⛔ LOGIN ATTEMPT DISABLED</div>
         <p class="lockdown-desc">
-            This student account entry has reached the maximum limit of 3 validations.
+            Your login identity has been frozen for safety reasons. You cannot rejoin immediately after starting, refreshing, or abandoning an ongoing session.
             <br><br>
-            <span style="color:#c0392b;">To release or unlock this attempt limit, KK Sir must authorize a profile state refresh below.</span>
+            <span id="lockout-time-left" style="font-size:20px; color:#e74c3c; font-weight:bold; display:block; margin: 15px 0;">Time Remaining: --:--:--</span>
+            <span style="color:#555;">To bypass this security cooldown rule, KK Sir must authorize an appraisal refresh below.</span>
         </p>
         <div class="input-group" style="max-width: 400px; margin: 0 auto 15px auto;">
-            <label for="unlock-master-key">Enter Teacher Unlock Code:</label>
+            <label for="unlock-master-key">Enter Teacher Bypass Code:</label>
             <input type="password" id="unlock-master-key" placeholder="Enter master code">
         </div>
-        <button class="btn btn-submit" style="width: 100%; max-width:400px;" onclick="handleDeviceUnlock()">Authorize & Reset App State</button>
+        <button class="btn btn-submit" style="width: 100%; max-width:400px;" onclick="handleDeviceUnlock()">Authorize Override & Clear Lockout</button>
     </div>
 
     <div id="admin-portal-section" style="display: none;">
@@ -225,7 +225,7 @@
         
         <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()" disabled>Log Out & Return to Home Screen 🔒</button>
         <div id="lock-notice" style="text-align:center; font-size:12px; color:#e74c3c; margin-top:8px; font-weight:bold;">
-            CRITICAL WARNING: You must submit your score via WhatsApp above to unlock this app! Exiting, refreshing, or closing the app now will consume 1 login ticket attempt.
+            CRITICAL WARNING: You must submit your score via WhatsApp above to unlock this app! Exiting, refreshing, or closing the app now will trigger a 12-hour session block penalty.
         </div>
     </div>
 </div>
@@ -234,6 +234,7 @@
     // --- SERVER ACCESS AND GATEWAY CONFIGURATIONS ---
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
+    const LOCKOUT_DURATION_MS = 12 * 60 * 60 * 1000; // Exactly 12 Hours in Milliseconds
 
     const CLASS_CONFIGS = {
         "class10": { maxRoll: 100, seedValue: 1023 },
@@ -242,11 +243,11 @@
     };
 
     const STUDENT_REGISTRY = { "class10": {}, "class11": {}, "class12": {} };
+    let liveLockoutInterval = null;
 
-    // PSEUDO-RANDOM CRYPTO SEED SYSTEM (Generates unguessable but consistent token strings)
     function generatePseudoRandomString(seed, rollNum) {
         let combinedSeed = seed + (rollNum * 31);
-        const chars = "23456789abcdefghkmnpqrstuvwxyzABCDEFGHKMNPQRSTUVWXYZ"; // Removed confusing symbols/chars (o, 0, 1, l, I)
+        const chars = "23456789abcdefghkmnpqrstuvwxyzABCDEFGHKMNPQRSTUVWXYZ"; 
         let token = "";
         for (let i = 0; i < 4; i++) {
             combinedSeed = (combinedSeed * 9301 + 49297) % 233280;
@@ -261,7 +262,6 @@
             const config = CLASS_CONFIGS[classKey];
             for (let r = 1; r <= config.maxRoll; r++) {
                 let shortToken = generatePseudoRandomString(config.seedValue, r);
-                // Final unique unguessable password assigned: e.g., c12-7kX2
                 STUDENT_REGISTRY[classKey][String(r)] = `${classKey === 'class10' ? 'c10' : classKey === 'class11' ? 'c11' : 'c12'}-${shortToken}`;
             }
         });
@@ -338,36 +338,69 @@
             userAnswers = [];
             currentQuestionIdx = 0;
             document.getElementById("class-password").value = ""; 
-            alert("⚠️ SECURITY SIGNAL: Window minimized or exited. Active exam token destroyed. 1 entry ticket consumed!");
+            alert("⚠️ SECURITY CRITICAL LOGOUT: Tab minimized, device switched, or exit logged. Access frozen for 12 Hours!");
         }, 1200);
     }
 
-    function triggerPermanentLockdownUI() {
+    // --- DYNAMIC LOCKOUT TIMER CALCULATIONS ---
+    function runLockoutCountdown(lockoutTime) {
+        clearInterval(liveLockoutInterval);
+        const display = document.getElementById("lockout-time-left");
+        
+        function updateClock() {
+            const now = Date.now();
+            const difference = (parseInt(lockoutTime) + LOCKOUT_DURATION_MS) - now;
+            
+            if (difference <= 0) {
+                clearInterval(liveLockoutInterval);
+                let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
+                localStorage.removeItem(trackingKey);
+                document.getElementById("permanent-lockdown-box").style.display = "none";
+                document.getElementById("navigation-tabs-hub").style.display = "flex";
+                document.getElementById("student-portal-section").style.display = "block";
+                return;
+            }
+            
+            const hours = Math.floor(difference / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            
+            display.innerText = `Time Remaining: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        
+        updateClock();
+        liveLockoutInterval = setInterval(updateClock, 1000);
+    }
+
+    function triggerLockoutUI(lockoutTime) {
         document.getElementById("navigation-tabs-hub").style.display = "none";
         document.getElementById("student-portal-section").style.display = "none";
         document.getElementById("admin-portal-section").style.display = "none";
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "none";
         document.getElementById("permanent-lockdown-box").style.display = "block";
+        runLockoutCountdown(lockoutTime);
     }
 
+    // --- MASTER AUTH OVERRIDE CONTROLLER ---
     function handleDeviceUnlock() {
         const masterKeyInput = document.getElementById("unlock-master-key").value.trim();
         if (masterKeyInput === MASTER_TEACHER_PASSWORD) {
+            clearInterval(liveLockoutInterval);
             if (studentRoll && selectedClassKey) {
-                let trackingKey = `attempts_${studentRoll}_${selectedClassKey}`;
+                let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
                 localStorage.removeItem(trackingKey);
             } else {
                 Object.keys(localStorage).forEach(key => {
-                    if (key.startsWith("attempts_")) { localStorage.removeItem(key); }
+                    if (key.startsWith("lockTime_")) { localStorage.removeItem(key); }
                 });
             }
             document.getElementById("permanent-lockdown-box").style.display = "none";
             document.getElementById("navigation-tabs-hub").style.display = "flex";
             document.getElementById("student-portal-section").style.display = "block";
-            alert("✅ Authorization accepted. Student quota counts updated.");
+            alert("✅ Lockout bypass accepted. Student profile unlocked.");
             location.reload();
-        } else { alert("❌ Incorrect Teacher Unlock Code!"); }
+        } else { alert("❌ Incorrect Teacher Code!"); }
     }
 
     function switchPortalView(targetView) {
@@ -406,7 +439,7 @@
         }
 
         if (rollInt < 1 || rollInt > limitConfig.maxRoll) {
-            return alert(`❌ Roll Number Range Error! For this class, allowed rolls must sit between 1 and ${limitConfig.maxRoll}.`);
+            return alert(`❌ Roll Number Range Error! Allowed parameters are between 1 and ${limitConfig.maxRoll}.`);
         }
 
         studentName = inputName; 
@@ -414,18 +447,25 @@
 
         const assignedRollPassword = STUDENT_REGISTRY[selectedClassKey][studentRoll];
         if (inputPassword !== assignedRollPassword) {
-            return alert(`❌ Incorrect Password details matching Roll No ${studentRoll} for ${selectedClassLabel}! Check credentials.`);
+            return alert(`❌ Incorrect Password details matching Roll No ${studentRoll} for ${selectedClassLabel}!`);
         }
 
-        let trackingKey = `attempts_${studentRoll}_${selectedClassKey}`;
-        let attempts = parseInt(localStorage.getItem(trackingKey)) || 0;
+        // Check for 12-Hour Active Lockout Constraints
+        let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
+        let lockoutTime = localStorage.getItem(trackingKey);
         
-        if (attempts >= 3) {
-            triggerPermanentLockdownUI();
-            return;
+        if (lockoutTime) {
+            const timePassed = Date.now() - parseInt(lockoutTime);
+            if (timePassed < LOCKOUT_DURATION_MS) {
+                triggerLockoutUI(lockoutTime);
+                return;
+            } else {
+                localStorage.removeItem(trackingKey);
+            }
         }
 
-        localStorage.setItem(trackingKey, attempts + 1);
+        // Lock individual session instantly upon verified authentication entry
+        localStorage.setItem(trackingKey, Date.now());
 
         if(!allClassData) {
             const response = await fetch('questions.json');
@@ -527,110 +567,4 @@
     }
 
     function selectOption(index) {
-        if (isTimeOver) return;
-        userAnswers[currentQuestionIdx] = index;
-        const r = document.getElementById(`opt-${index}`);
-        if(r) r.checked = true;
-    }
-
-    function goPrevious() { if (currentQuestionIdx > 0 && !isTimeOver) { currentQuestionIdx--; loadQuestion(); } }
-    
-    function goNext() {
-        if (isTimeOver) return;
-        if (currentQuestionIdx < quizData.length - 1) { currentQuestionIdx++; loadQuestion(); }
-        else { calculateAndShowResults(false); }
-    }
-
-    function calculateAndShowResults(forced) {
-        clearInterval(timerInterval);
-        isProtectionLoopActive = false;
-        let score = 0;
-        userAnswers.forEach((ans, index) => { if (ans === quizData[index].correct) score++; });
-
-        finalScore = score;
-        document.getElementById("quiz-box").style.display = "none";
-        document.getElementById("result-box").style.display = "block";
-        document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nStudent: ${studentName}\nRoll No: ${studentRoll}\nFinal Score: ${score} / ${quizData.length}`;
-    }
-
-    function sendToTeacher() {
-        let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
-        let reportText = `*QUIZ DATA PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nDataKey: [${answersString}]`;
-        isProtectionLoopActive = false; 
-        hasSentReport = true;
-        document.getElementById("reset-app-btn").disabled = false;
-        document.getElementById("lock-notice").style.display = "none";
-        window.location.href = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodeURIComponent(reportText)}`; 
-    }
-
-    function restartQuiz() {
-        if (!hasSentReport) return;
-        location.reload();
-    }
-
-    function verifyAdminLogin() {
-        if(document.getElementById("admin-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
-            document.getElementById("admin-lockscreen").style.display = "none";
-            document.getElementById("teacher-box").style.display = "block";
-            renderTeacherLogs();
-        } else { alert("❌ Incorrect Admin Password Code!"); }
-    }
-
-    function importStudentCode() {
-        const rawInput = document.getElementById("compressed-input").value.trim();
-        if(!rawInput) return;
-        try {
-            const lines = rawInput.split('\n');
-            let name = lines.find(l => l.startsWith("Name:")).replace("Name:", "").trim();
-            let roll = lines.find(l => l.startsWith("Roll:")).replace("Roll:", "").trim();
-            let cKey = lines.find(l => l.startsWith("ClassKey:")).replace("ClassKey:", "").trim();
-            let score = lines.find(l => l.startsWith("Score:")).replace("Score:", "").trim();
-            let rawDataKey = lines.find(l => l.startsWith("DataKey:")).match(/\[(.*?)\]/)[1];
-            
-            let parsedAnswersArray = rawDataKey.split(',').map(x => x === 'X' ? null : parseInt(x));
-            let referenceQuizSet = allClassData[cKey];
-            let constructedSheet = [];
-
-            referenceQuizSet.forEach((item, index) => {
-                let studentAnsIndex = parsedAnswersArray[index];
-                let isCorrect = (studentAnsIndex === item.correct);
-                constructedSheet.push({ qNum: index + 1, qText: item.question, ticked: studentAnsIndex !== null ? item.options[studentAnsIndex] : "Not Attempted", correctOption: item.options[item.correct], status: isCorrect });
-            });
-
-            let sharedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
-            sharedLogs = sharedLogs.filter(log => !(log.roll === roll && log.classKey === cKey));
-            sharedLogs.push({ name: name, roll: roll, classKey: cKey, className: cKey === "class12" ? "Class 12th" : cKey === "class11" ? "Class 11th" : "Class 10th", score: score, timestamp: new Date().toLocaleString(), sheet: constructedSheet });
-            localStorage.setItem("teacher_central_database", JSON.stringify(sharedLogs));
-            document.getElementById("compressed-input").value = "";
-            renderTeacherLogs();
-            alert(`✅ Successfully Decoded Report Sheet for ${name}!`);
-        } catch(err) { alert("❌ Format Error"); }
-    }
-
-    function renderTeacherLogs() {
-        const container = document.getElementById("teacher-logs-container");
-        container.innerHTML = "";
-        let storedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
-        if(storedLogs.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:#7f8c8d; font-style:italic; padding:20px;">No student records imported yet.</p>`;
-            return;
-        }
-
-        for(let i = storedLogs.length - 1; i >= 0; i--) {
-            let log = storedLogs[i];
-            let card = document.createElement("div");
-            card.className = "student-log-card";
-            let sheetHtml = "";
-            log.sheet.forEach(item => {
-                sheetHtml += `<div style="font-size:12px; margin-top:4px; padding-left:10px; border-left:2px solid #ccc;">Q${item.qNum}: ${item.qText}<br>↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span></div>`;
-            });
-            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (${log.className} - Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
-            container.appendChild(card);
-        }
-    }
-
-    document.getElementById("compressed-input").addEventListener("keydown", function(e) { e.stopPropagation(); });
-    function clearTeacherLogs() { localStorage.removeItem("teacher_central_database"); renderTeacherLogs(); }
-</script>
-</body>
-</html>
+        if (isTimeOver) return

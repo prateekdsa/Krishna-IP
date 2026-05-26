@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>"The Computer Brainiac Bowl"</title>
+    <title> The Computer Brainiac Bowl </title>
     <link rel="manifest" href="manifest.json">
     <style>
         /* CRITICAL ANTI-LENS SECURITY: Strict global text defense */
@@ -237,19 +237,21 @@
     const LOCKOUT_DURATION_MS = 12 * 60 * 60 * 1000; // Exactly 12 Hours in Milliseconds
 
     const CLASS_CONFIGS = {
-        "class10": { maxRoll: 100, seedValue: 1023 },
-        "class11": { maxRoll: 20,  seedValue: 4401 },
-        "class12": { maxRoll: 15,  seedValue: 7055 }
+        "class10": { maxRoll: 100, seedValue: 1023, prefix: "C10" },
+        "class11": { maxRoll: 20,  seedValue: 4401, prefix: "C11" },
+        "class12": { maxRoll: 15,  seedValue: 7055, prefix: "C12" }
     };
 
     const STUDENT_REGISTRY = { "class10": {}, "class11": {}, "class12": {} };
     let liveLockoutInterval = null;
 
-    function generatePseudoRandomString(seed, rollNum) {
+    // Generates a exact remaining string length in ALL CAPS using an adjusted seed pattern
+    function generatePseudoRandomString(seed, rollNum, targetLength) {
         let combinedSeed = seed + (rollNum * 31);
-        const chars = "23456789abcdefghkmnpqrstuvwxyzABCDEFGHKMNPQRSTUVWXYZ"; 
+        // Strict Alphanumeric pool forced to Uppercase
+        const chars = "23456789ABCDEFGHJKMNPQRSTUVWXYZ"; 
         let token = "";
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < targetLength; i++) {
             combinedSeed = (combinedSeed * 9301 + 49297) % 233280;
             let idx = Math.floor((combinedSeed / 233280) * chars.length);
             token += chars[idx];
@@ -257,12 +259,14 @@
         return token;
     }
 
+    // Instantiates registry where every key values pair is exactly 6 structural alpha characters (e.g. C12KWF)
     function initializeSecureRegistry() {
         Object.keys(CLASS_CONFIGS).forEach(classKey => {
             const config = CLASS_CONFIGS[classKey];
             for (let r = 1; r <= config.maxRoll; r++) {
-                let shortToken = generatePseudoRandomString(config.seedValue, r);
-                STUDENT_REGISTRY[classKey][String(r)] = `${classKey === 'class10' ? 'c10' : classKey === 'class11' ? 'c11' : 'c12'}-${shortToken}`;
+                // Config prefix is 3 chars (e.g., C10, C11, C12), so we need 3 random characters to reach 6 characters total
+                let randomToken = generatePseudoRandomString(config.seedValue, r, 3);
+                STUDENT_REGISTRY[classKey][String(r)] = `${config.prefix}${randomToken}`;
             }
         });
     }
@@ -290,6 +294,7 @@
             const response = await fetch('questions.json');
             allClassData = await response.json();
         } catch(e) { console.error(e); }
+        renderTeacherLogs();
     }
 
     function updateRollLimits() {
@@ -446,7 +451,8 @@
         studentRoll = String(rollInt);
 
         const assignedRollPassword = STUDENT_REGISTRY[selectedClassKey][studentRoll];
-        if (inputPassword !== assignedRollPassword) {
+        // Enforce safe case-insensitive checking for structural inputs 
+        if (inputPassword.toUpperCase() !== assignedRollPassword) {
             return alert(`❌ Incorrect Password details matching Roll No ${studentRoll} for ${selectedClassLabel}!`);
         }
 
@@ -621,6 +627,26 @@
         } else { alert("❌ Incorrect Admin Password Code!"); }
     }
 
+    function renderTeacherLogs() {
+        const container = document.getElementById("teacher-logs-container");
+        let archive = JSON.parse(localStorage.getItem("quiz_teacher_archive") || "[]");
+        if(archive.length === 0) {
+            container.innerHTML = `<p style="color:#7f8c8d; text-align:center; font-style:italic;">No decoded student packets found in storage hardware storage.</p>`;
+            return;
+        }
+        let html = "";
+        archive.forEach((item, index) => {
+            html += `
+            <div class="student-log-card">
+                <strong>👤 Student:</strong> ${item.name} | <strong>🔢 Roll No:</strong> ${item.roll}<br>
+                <strong>📚 Course Group:</strong> ${item.classKey.toUpperCase()}<br>
+                <strong>📊 Grade Score:</strong> ${item.score} <br>
+                <small style="color:#7f8c8d;">Packet Trace ID: ${item.dataKey}</small>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
     function importStudentCode() {
         const rawInput = document.getElementById("compressed-input").value.trim();
         if(!rawInput) return;
@@ -628,54 +654,28 @@
             const lines = rawInput.split('\n');
             let name = lines.find(l => l.startsWith("Name:")).replace("Name:", "").trim();
             let roll = lines.find(l => l.startsWith("Roll:")).replace("Roll:", "").trim();
-            let cKey = lines.find(l => l.startsWith("ClassKey:")).replace("ClassKey:", "").trim();
+            let classKey = lines.find(l => l.startsWith("ClassKey:")).replace("ClassKey:", "").trim();
             let score = lines.find(l => l.startsWith("Score:")).replace("Score:", "").trim();
-            let rawDataKey = lines.find(l => l.startsWith("DataKey:")).match(/\[(.*?)\]/)[1];
+            let dataKey = lines.find(l => l.startsWith("DataKey:")).replace("DataKey:", "").trim();
+
+            let archive = JSON.parse(localStorage.getItem("quiz_teacher_archive") || "[]");
+            archive.unshift({ name, roll, classKey, score, dataKey });
+            localStorage.setItem("quiz_teacher_archive", JSON.stringify(archive));
             
-            let parsedAnswersArray = rawDataKey.split(',').map(x => x === 'X' ? null : parseInt(x));
-            let referenceQuizSet = allClassData[cKey];
-            let constructedSheet = [];
-
-            referenceQuizSet.forEach((item, index) => {
-                let studentAnsIndex = parsedAnswersArray[index];
-                let isCorrect = (studentAnsIndex === item.correct);
-                constructedSheet.push({ qNum: index + 1, qText: item.question, ticked: studentAnsIndex !== null ? item.options[studentAnsIndex] : "Not Attempted", correctOption: item.options[item.correct], status: isCorrect });
-            });
-
-            let sharedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
-            sharedLogs = sharedLogs.filter(log => !(log.roll === roll && log.classKey === cKey));
-            sharedLogs.push({ name: name, roll: roll, classKey: cKey, className: cKey === "class12" ? "Class 12th" : cKey === "class11" ? "Class 11th" : "Class 10th", score: score, timestamp: new Date().toLocaleString(), sheet: constructedSheet });
-            localStorage.setItem("teacher_central_database", JSON.stringify(sharedLogs));
             document.getElementById("compressed-input").value = "";
             renderTeacherLogs();
-            alert(`✅ Successfully Decoded Report Sheet for ${name}!`);
-        } catch(err) { alert("❌ Format Error"); }
-    }
-
-    function renderTeacherLogs() {
-        const container = document.getElementById("teacher-logs-container");
-        container.innerHTML = "";
-        let storedLogs = JSON.parse(localStorage.getItem("teacher_central_database")) || [];
-        if(storedLogs.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:#7f8c8d; font-style:italic; padding:20px;">No student records imported yet.</p>`;
-            return;
-        }
-
-        for(let i = storedLogs.length - 1; i >= 0; i--) {
-            let log = storedLogs[i];
-            let card = document.createElement("div");
-            card.className = "student-log-card";
-            let sheetHtml = "";
-            log.sheet.forEach(item => {
-                sheetHtml += `<div style="font-size:12px; margin-top:4px; padding-left:10px; border-left:2px solid #ccc;">Q${item.qNum}: ${item.qText}<br>↳ Ticked: <span class="${item.status ? 'txt-success' : 'txt-danger'}">${item.ticked}</span></div>`;
-            });
-            card.innerHTML = `<strong>👤 Student:</strong> ${log.name} (${log.className} - Roll: ${log.roll})<br><strong>🏆 Score:</strong> ${log.score}<br><details><summary style="font-weight:bold; color:#3498db; cursor:pointer;">View Answer Details</summary>${sheetHtml}</details>`;
-            container.appendChild(card);
+            alert("✅ Student packet imported successfully!");
+        } catch(e) {
+            alert("❌ Invalid Packet Data String Configuration format structure!");
         }
     }
 
-    document.getElementById("compressed-input").addEventListener("keydown", function(e) { e.stopPropagation(); });
-    function clearTeacherLogs() { localStorage.removeItem("teacher_central_database"); renderTeacherLogs(); }
+    function clearTeacherLogs() {
+        if(confirm("Are you certain you wish to completely drop local dashboard logs? This is irreversible.")) {
+            localStorage.removeItem("quiz_teacher_archive");
+            renderTeacherLogs();
+        }
+    }
 </script>
 </body>
 </html>

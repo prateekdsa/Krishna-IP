@@ -6,13 +6,22 @@
     <title> City Public School - Brainiac Bowl </title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* CRITICAL ANTI-LENS & ANTI-SCREENSHOT SECURITY */
-        * {
+        /* CRITICAL ANTI-LENS & ANTI-SCREENSHOT SECURITY (Student Default) */
+        body.student-mode * {
             -webkit-user-select: none !important; 
             -moz-user-select: none !important;
             -ms-user-select: none !important; 
             user-select: none !important; 
             -webkit-touch-callout: none !important;
+        }
+
+        /* Fully allow text interaction when admin mode is loaded */
+        body.admin-mode * {
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+            -webkit-touch-callout: default !important;
         }
 
         /* SCREENSHOT & PRINT OVERRIDE PROTECTION */
@@ -39,7 +48,15 @@
         
         .input-group { margin-bottom: 12px; }
         .input-group label { display: block; font-weight: bold; margin-bottom: 4px; color: #2c3e50; font-size: 13px; }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 15px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 15px; box-sizing: border-box; background: #fff; }
+        
+        /* Enable interactions for specific inputs in student mode if necessary */
+        body.student-mode .input-group input, 
+        body.student-mode .input-group select, 
+        body.student-mode .input-group textarea { 
+            -webkit-user-select: text !important; 
+            user-select: text !important; 
+        }
         
         /* UPDATED SYNTAX CODE BOX: CREAM BACKGROUND AND LARGER FONTS */
         .code-box { 
@@ -95,7 +112,7 @@
         .restart-btn:disabled { background: #bdc3c7; cursor: not-allowed; opacity: 0.6; }
         
         .score-box { text-align: center; font-size: 20px; font-weight: bold; color: #2ecc71; margin-bottom: 5px; }
-        .student-log-card { background: #f1f2f6; padding: 10px; margin-bottom: 8px; border-radius: 6px; border-left: 5px solid #2c3e50; text-align: left; font-size: 14px; }
+        .student-log-card { background: #f1f2f6; padding: 12px; margin-bottom: 10px; border-radius: 6px; border-left: 5px solid #2c3e50; text-align: left; font-size: 14px; white-space: pre-wrap; font-family: inherit; line-height: 1.5; }
         .btn-danger { background: #e74c3c; color: white; }
         .btn-danger:hover { background: #c0392b; }
 
@@ -104,7 +121,7 @@
         .wrong-review-title { color: #dc2626; font-size: 15px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #fca5a5; padding-bottom: 4px; }
         .wrong-item { font-size: 14px; color: #4b5563; margin-bottom: 8px; padding-left: 10px; border-left: 3px solid #ef4444; font-weight: 500; }
 
-        .roster-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 12px; max-height: 180px; overflow-y: auto; text-align: left; -webkit-user-select: text !important; user-select: text !important; }
+        .roster-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 12px; max-height: 180px; overflow-y: auto; text-align: left; }
         .lockdown-container { text-align: center; padding: 15px; }
         .lockdown-title { color: #c0392b; font-size: 24px; font-weight: bold; margin-bottom: 12px; }
         .lockdown-desc { font-size: 15px; color: #555; line-height: 1.5; margin-bottom: 20px; }
@@ -124,7 +141,7 @@
         }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body class="student-mode" oncontextmenu="return handleContextMenu(event);">
 
 <div id="anti-cheat-blindfold">⚠️ SECURITY SHIELD: PROCESSING AUTO-LOGOUT ACTION...</div>
 
@@ -206,9 +223,9 @@
             </div>
 
             <div class="input-group" style="background: #eef2f7; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
-                <label for="compressed-input" style="color: #2c3e50; font-weight: bold; font-size:13px;">📥 Paste Student's WhatsApp Report Code Here:</label>
-                <textarea id="compressed-input" rows="3" placeholder="Paste entire raw text packet message here..."></textarea>
-                <button class="btn btn-submit" style="width: 100%; margin-top: 8px; font-size:14px;" onclick="importStudentCode()">Decode & Add to Evaluation Log</button>
+                <label for="compressed-input" style="color: #2c3e50; font-weight: bold; font-size:13px;">📥 Paste Student's WhatsApp Report Summary Here:</label>
+                <textarea id="compressed-input" rows="5" placeholder="Paste entire human-readable summary report layout here..."></textarea>
+                <button class="btn btn-submit" style="width: 100%; margin-top: 8px; font-size:14px;" onclick="importStudentCode()">Save Report to Evaluation Log</button>
             </div>
             <h3 style="color: #2c3e50; margin-top: 15px; border-bottom: 2px solid #2c3e50; padding-bottom: 5px; font-size:15px;">Student Evaluation Logs</h3>
             <div id="teacher-logs-container" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;"></div>
@@ -239,7 +256,7 @@
         
         <div id="wrong-questions-review-zone"></div>
         
-        <button class="btn-whatsapp" id="whatsapp-submit-btn" onclick="sendToTeacher()">Send Score to KK Sir via WhatsApp 💬</button>
+        <button class="btn-whatsapp" id="whatsapp-submit-btn" onclick="sendToTeacher()">Send Summary to KK Sir via WhatsApp 💬</button>
         
         <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()">Log Out & Return to Home Screen 🔒</button>
         <div id="lock-notice" style="text-align:center; font-size:11px; color:#e74c3c; margin-top:8px; font-weight:bold;">
@@ -261,6 +278,16 @@
 
     const STUDENT_REGISTRY = { "class10": {}, "class11": {}, "class12": {} };
     let liveLockoutInterval = null;
+    let currentActiveMode = "student"; // tracks active user mode context
+
+    function handleContextMenu(event) {
+        // If teacher is looking at the dashboard, completely allow context menus
+        if (currentActiveMode === "admin") {
+            return true;
+        }
+        event.preventDefault();
+        return false;
+    }
 
     function generatePseudoRandomString(seed, rollNum, targetLength) {
         let combinedSeed = seed + (rollNum * 31);
@@ -456,11 +483,16 @@
     function switchPortalView(targetView) {
         document.getElementById("tab-student").classList.remove("active");
         document.getElementById("tab-admin").classList.remove("active");
+        
         if(targetView === 'student') {
+            currentActiveMode = "student";
+            document.body.className = "student-mode";
             document.getElementById("tab-student").classList.add("active");
             document.getElementById("student-portal-section").style.display = "block";
             document.getElementById("admin-portal-section").style.display = "none";
         } else {
+            currentActiveMode = "admin";
+            document.body.className = "admin-mode";
             document.getElementById("tab-admin").classList.add("active");
             document.getElementById("student-portal-section").style.display = "none";
             document.getElementById("admin-portal-section").style.display = "block";
@@ -662,7 +694,7 @@
 
     function calculateAndShowResults(forced) {
         clearInterval(timerInterval);
-        isProtectionLoopActive = false; // Turn off early abandonment sensor safely now that they completed it
+        isProtectionLoopActive = false; 
         
         let score = 0;
         let wrongQuestionsHtml = "";
@@ -682,7 +714,6 @@
         document.getElementById("result-box").style.display = "block";
         document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nUser Group: ${studentName}\nRoll Identifier: ${studentRoll}\nFinal Score: ${score} / ${quizData.length}`;
 
-        // Inject the Wrong Question Review Box above the submit action item
         const reviewZone = document.getElementById("wrong-questions-review-zone");
         if (wrongCount > 0) {
             reviewZone.innerHTML = `
@@ -701,10 +732,27 @@
 
     function sendToTeacher() {
         if (studentName === "TEACHERS") return;
-        let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
-        let reportText = `*QUIZ DATA PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nDataKey: [${answersString}]`;
         
-        // Safely destroy session tracking traces upon proper completion submission
+        let reportText = `EXAM REPORT SUMMARY\n`;
+        reportText += `-----------------------------\n`;
+        reportText += ` Student: ${studentName}\n`;
+        reportText += ` Roll No: ${studentRoll}\n`;
+        reportText += ` Class: ${selectedClassLabel}\n`;
+        reportText += ` Final Score: ${finalScore} / ${quizData.length}\n`;
+        reportText += `-----------------------------\n\n`;
+        reportText += `DETAILED RESPONSES\n`;
+
+        quizData.forEach((q, index) => {
+            let selectedAnsIndex = userAnswers[index];
+            let answerText = selectedAnsIndex !== null ? q.options[selectedAnsIndex] : "Unanswered / Skipped";
+            let pointsEarned = (selectedAnsIndex === q.correct) ? "1 mark" : "0 marks";
+            
+            reportText += `Q${index + 1}: ${q.question}\n`;
+            reportText += ` Ticked: ${answerText} [${pointsEarned}]\n\n`;
+        });
+
+        reportText += `Submitted via Krishna Kumar's Master App.`;
+        
         let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
         localStorage.removeItem(trackingKey);
         localStorage.removeItem("last_active_user");
@@ -731,42 +779,29 @@
         const container = document.getElementById("teacher-logs-container");
         let archive = JSON.parse(localStorage.getItem("quiz_teacher_archive") || "[]");
         if(archive.length === 0) {
-            container.innerHTML = `<p style="color:#7f8c8d; text-align:center; font-style:italic; font-size:13px;">No decoded student packets found in storage hardware storage.</p>`;
+            container.innerHTML = `<p style="color:#7f8c8d; text-align:center; font-style:italic; font-size:13px;">No student summary reports found in hardware storage.</p>`;
             return;
         }
         let html = "";
         archive.forEach((item, index) => {
-            html += `
-            <div class="student-log-card">
-                <strong>👤 Student:</strong> ${item.name} | <strong>🔢 Roll No:</strong> ${item.roll}<br>
-                <strong>📚 Course Group:</strong> ${item.classKey.toUpperCase()}<br>
-                <strong>📊 Grade Score:</strong> ${item.score} <br>
-                <small style="color:#7f8c8d;">Packet Trace ID: ${item.dataKey}</small>
-            </div>`;
+            html += `<div class="student-log-card">${item.rawReport}</div>`;
         });
         container.innerHTML = html;
     }
 
     function importStudentCode() {
-        const rawInput = document.getElementById("compressed-input").value.trim();
-        if(!rawInput) return;
+        const rawReport = document.getElementById("compressed-input").value.trim();
+        if(!rawReport) return;
         try {
-            const lines = rawInput.split('\n');
-            let name = lines.find(l => l.startsWith("Name:")).replace("Name:", "").trim();
-            let roll = lines.find(l => l.startsWith("Roll:")).replace("Roll:", "").trim();
-            let classKey = lines.find(l => l.startsWith("ClassKey:")).replace("ClassKey:", "").trim();
-            let score = lines.find(l => l.startsWith("Score:")).replace("Score:", "").trim();
-            let dataKey = lines.find(l => l.startsWith("DataKey:")).replace("DataKey:", "").trim();
-
             let archive = JSON.parse(localStorage.getItem("quiz_teacher_archive") || "[]");
-            archive.unshift({ name, roll, classKey, score, dataKey });
+            archive.unshift({ rawReport });
             localStorage.setItem("quiz_teacher_archive", JSON.stringify(archive));
             
             document.getElementById("compressed-input").value = "";
             renderTeacherLogs();
-            alert("✅ Student packet imported successfully!");
+            alert("✅ Student summary report saved successfully!");
         } catch(e) {
-            alert("❌ Invalid Packet Data String Configuration format structure!");
+            alert("❌ Error processing summary layout data!");
         }
     }
 

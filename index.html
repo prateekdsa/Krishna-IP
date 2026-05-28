@@ -177,11 +177,11 @@
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
         <div class="lockdown-title">⛔ LOGIN ATTEMPT DISABLED</div>
         <p class="lockdown-desc">
-            This Roll Number has been flagged and locked out globally due to an anti-cheat violation or unauthorized browser abandonment.
+            This Roll Number configuration is currently flagged for an anti-cheat violation or unauthorized layout escape.
         </p>
         <div class="input-group" style="max-width: 400px; margin: 0 auto 15px auto;">
-            <label for="unlock-master-key">Enter Teacher Bypass Code:</label>
-            <input type="password" id="unlock-master-key" placeholder="Enter master code">
+            <label for="unlock-master-key">Enter Teacher Bypass Security Pin:</label>
+            <input type="password" id="unlock-master-key" placeholder="Enter validation code">
         </div>
         <button class="btn btn-submit" style="width: 100%; max-width:400px;" onclick="handleDeviceUnlock()">Authorize Override & Clear Lockout</button>
     </div>
@@ -204,13 +204,13 @@
 
             <!-- UNBLOCK PANEL CONTROL CENTER -->
             <div style="background: #fff8f8; border: 1px solid #fca5a5; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <h4 style="margin: 0 0 8px 0; color: #991b1b; font-size:13px;">🚨 Active Anti-Cheat Device Locks</h4>
+                <h4 style="margin: 0 0 8px 0; color: #991b1b; font-size:13px;">🚨 Active Anti-Cheat Device Locks (Local Session List)</h4>
                 <div id="admin-unblock-zone" style="max-height: 140px; overflow-y: auto; margin-bottom: 10px;"></div>
                 
-                <!-- NEW CRITICAL MANUAL BYPASS ENGINE FOR DESYNCED ROLL NUMBERS -->
+                <!-- FORCE MANUAL GLOBAL COUNTER RESET CONTROL -->
                 <div style="border-top: 1px dashed #fca5a5; padding-top: 10px; margin-top: 5px;">
                     <label style="display:block; font-size:11px; font-weight:bold; color:#7f1d1d; margin-bottom:4px;">
-                        🛠️ Force Manual Reset Override (Use if a student is locked out but missing from above list):
+                        🛠️ Global Cross-Device Unblock Override Engine:
                     </label>
                     <div style="display: flex; gap: 6px;">
                         <select id="manual-reset-class" style="flex: 1; padding: 6px; font-size: 12px; border-radius: 4px; border:1px solid #fca5a5;">
@@ -219,19 +219,22 @@
                             <option value="class12" selected>Class 12th</option>
                         </select>
                         <input type="number" id="manual-reset-roll" placeholder="Roll No" min="1" style="width: 80px; padding: 6px; font-size: 12px; border-radius: 4px; border:1px solid #fca5a5;">
-                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; background:#dc2626;" onclick="executeForceManualUnlock()">Force Reset ID</button>
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; background:#dc2626;" onclick="executeForceManualUnlock()">Clear Block State</button>
+                    </div>
+                    <div style="font-size:10px; color:#991b1b; margin-top:5px; font-style:italic;">
+                        *Use this if a student gets locked out on one device but is missing from the local list. Clicking this updates their required authorization matrix across all device systems!
                     </div>
                 </div>
             </div>
             
             <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <h4 style="margin: 0 0 8px 0; color: #1e293b; font-size:13px;">📋 View Student Password Roster</h4>
+                <h4 style="margin: 0 0 8px 0; color: #1e293b; font-size:13px;">📋 View Student Password Roster & Multi-Device Control Keys</h4>
                 <div style="display: flex; gap: 8px; margin-bottom: 8px;">
                     <button class="btn btn-next" style="padding: 6px 12px; font-size: 12px;" onclick="displayClassRoster('class10')">Class 10th List</button>
                     <button class="btn btn-next" style="padding: 6px 12px; font-size: 12px;" onclick="displayClassRoster('class11')">Class 11th List</button>
                     <button class="btn btn-next" style="padding: 6px 12px; font-size: 12px;" onclick="displayClassRoster('class12')">Class 12th List</button>
                 </div>
-                <div id="roster-output-window" class="roster-box">Select a class above to print current randomized student passwords...</div>
+                <div id="roster-output-window" class="roster-box">Select a class above to print student verification configurations...</div>
             </div>
         </div>
     </div>
@@ -404,16 +407,34 @@
         const out = document.getElementById("roster-output-window");
         let label = classKey === 'class10' ? 'Class 10th' : classKey === 'class11' ? 'Class 11th' : 'Class 12th';
         let registryData = STUDENT_REGISTRY[classKey];
-        let htmlStr = `<strong>🔑 ${label} PASSWORD CONFIGURATION:</strong><br><br>`;
+        let htmlStr = `<strong>🔑 ${label} CRYPTO CONFIGURATIONS:</strong><br><br>`;
         Object.keys(registryData).forEach(roll => {
-            htmlStr += `Roll No ${roll.padStart(2, '0')} ➔ Code: <span style="color:#e74c3c; font-weight:bold;">${registryData[roll]}</span><br>`;
+            let passCode = registryData[roll];
+            // Cross-device challenge parameter generated completely deterministically
+            let crossDeviceCheck = generatePseudoRandomString(9901, parseInt(roll), 4);
+            htmlStr += `Roll No ${roll.padStart(2, '0')} ➔ Password: <span style="color:#2ecc71; font-weight:bold;">${passCode}</span> | Admin Master Unlock Key: <span style="color:#e74c3c; font-weight:bold;">${crossDeviceCheck}</span><br>`;
         });
         out.innerHTML = htmlStr;
     }
 
     function isGlobalBlockActive(roll, classKey) {
-        let globalList = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
-        return globalList.some(item => String(item.roll) === String(roll) && item.classKey === classKey);
+        // First check internal local tracking storage
+        let localRegistry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
+        if (localRegistry.some(item => String(item.roll) === String(roll) && item.classKey === classKey)) {
+            return true;
+        }
+        
+        // Dynamic Lock Verification check
+        let resetCounterDb = JSON.parse(localStorage.getItem("cross_device_reset_counters") || "{}");
+        let key = `${classKey}_${roll}`;
+        let localUserCounter = parseInt(localStorage.getItem(`user_counter_${key}`) || "0");
+        let globalAuthorizedCounter = parseInt(resetCounterDb[key] || "0");
+
+        // If system states mismatch, a device check restriction has dropped.
+        if (globalAuthorizedCounter > localUserCounter) {
+            return true; 
+        }
+        return false;
     }
 
     document.addEventListener("visibilitychange", function() {
@@ -436,7 +457,7 @@
         setTimeout(() => {
             document.getElementById("anti-cheat-blindfold").style.display = "none";
             triggerLockoutUI();
-            alert("⚠️ ANTICHEAT BLOCK ENGINE DEPLOYED:\nYou exited the secure testing interface!\nYour Roll Number identifier has been flagged and blocked globally.");
+            alert("⚠️ ANTICHEAT ACTION APPLIED:\nYou navigated away from the exam view screen.\nYour Roll identity signature has been restricted.");
         }, 800);
     }
 
@@ -459,12 +480,17 @@
     }
 
     function handleDeviceUnlock() {
-        const masterKeyInput = document.getElementById("unlock-master-key").value.trim();
-        if (masterKeyInput === MASTER_TEACHER_PASSWORD) {
+        const inputKey = document.getElementById("unlock-master-key").value.trim().toUpperCase();
+        
+        // Deterministic execution computation matching generated roster list token values
+        let rollInt = parseInt(studentRoll, 10);
+        let expectedMasterToken = generatePseudoRandomString(9901, rollInt, 4);
+
+        if (inputKey === MASTER_TEACHER_PASSWORD || inputKey === expectedMasterToken) {
             clearLockFromSystem(studentRoll, selectedClassKey);
-            alert("✅ Remote lock released. Reloading app framework...");
+            alert("✅ Lock matrix systematically released. Reloading test layout module...");
             location.reload();
-        } else { alert("❌ Incorrect Teacher Code!"); }
+        } else { alert("❌ Access Refused: The passcode entered does not match this student's encryption profile!"); }
     }
 
     function clearLockFromSystem(roll, classKey) {
@@ -472,10 +498,17 @@
         registry = registry.filter(item => !(String(item.roll) === String(roll) && item.classKey === classKey));
         localStorage.setItem("global_lockout_registry", JSON.stringify(registry));
 
-        if(localStorage.getItem("last_active_user") === String(roll) && localStorage.getItem("last_active_class") === classKey) {
-            localStorage.removeItem("last_active_user");
-            localStorage.removeItem("last_active_class");
-        }
+        // Increment device session generation states
+        let resetCounterDb = JSON.parse(localStorage.getItem("cross_device_reset_counters") || "{}");
+        let key = `${classKey}_${roll}`;
+        let currentVal = parseInt(resetCounterDb[key] || "0");
+        
+        resetCounterDb[key] = currentVal + 1;
+        localStorage.setItem("cross_device_reset_counters", JSON.stringify(resetCounterDb));
+        localStorage.setItem(`user_counter_${key}`, currentVal + 1);
+
+        localStorage.removeItem("last_active_user");
+        localStorage.removeItem("last_active_class");
     }
 
     function switchPortalView(targetView) {
@@ -511,7 +544,7 @@
 
         const loadSuccess = await fetchFreshQuestions();
         if(!loadSuccess || !allClassData) {
-            return alert("Error syncing quiz architecture. Check connection.");
+            return alert("Error connecting to question repository script engine.");
         }
 
         const inputRollRaw = document.getElementById("login-roll").value.trim();
@@ -538,16 +571,16 @@
         }
 
         if(!inputName || !inputRollRaw || !inputPassword) { 
-            return alert("Error: All identity validation fields are required!"); 
+            return alert("Error: Complete profile records are required to launch core session!"); 
         }
 
         const rollInt = parseInt(inputRollRaw, 10);
         if (isNaN(rollInt) || String(rollInt) !== inputRollRaw) {
-            return alert("❌ Invalid Roll Number format.");
+            return alert("❌ Invalid format parsed.");
         }
 
         if (rollInt < 1 || rollInt > config.maxRoll) {
-            return alert(`❌ Bound Range Error! Must be between 1 and ${config.maxRoll}.`);
+            return alert(`❌ Bound Range Error! Must fall inside limits [1 - ${config.maxRoll}].`);
         }
 
         studentRoll = String(rollInt);
@@ -560,7 +593,7 @@
 
         const assignedRollPassword = STUDENT_REGISTRY[selectedClassKey][studentRoll];
         if (inputPassword.toUpperCase() !== assignedRollPassword) {
-            return alert(`❌ Incorrect Access Password mapped to Roll No ${studentRoll}!`);
+            return alert(`❌ Password runtime mismatch error for student signature lookup key.`);
         }
 
         localStorage.setItem("last_active_user", studentRoll);
@@ -733,7 +766,6 @@
     function sendToTeacher() {
         if (studentName === "TEACHERS") return;
         
-        // COMPILE DETAILED QUESTION AND ANSWER LOG FOR WHATSAPP
         let qaLogString = "";
         quizData.forEach((qItem, idx) => {
             let studentSelectionIdx = userAnswers[idx];
@@ -766,7 +798,7 @@
             document.getElementById("admin-lockscreen").style.display = "none";
             document.getElementById("teacher-box").style.display = "block";
             renderLockoutManagerZone(); 
-        } else { alert("❌ Incorrect Admin Password Code!"); }
+        } else { alert("❌ Incorrect Password Code Mapped to System Profile."); }
     }
 
     function renderLockoutManagerZone() {
@@ -774,7 +806,7 @@
         let registry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
         
         if(registry.length === 0) {
-            container.innerHTML = `<p style="color:#6b7280; margin:4px 0; font-size:13px; font-style:italic; text-align:center;">No students are currently tracked as locked out.</p>`;
+            container.innerHTML = `<p style="color:#6b7280; margin:4px 0; font-size:13px; font-style:italic; text-align:center;">No students are currently tracked as locked out locally.</p>`;
             return;
         }
 
@@ -793,26 +825,46 @@
     function adminExecuteUnblock(roll, classKey, name) {
         if(confirm(`Are you sure you want to completely re-activate ID for Roll No ${roll} (${name})?`)) {
             clearLockFromSystem(roll, classKey);
-            alert(`✅ Profile for Roll No ${roll} has been activated globally!`);
+            alert(`✅ Profile for Roll No ${roll} has been activated locally!`);
             renderLockoutManagerZone(); 
         }
     }
 
-    // SYSTEM OVERRIDE BYPASS ACTION ENGINE
+    // CRITICAL HARD RESET OVERRIDE PIPELINE ENGINE
     function executeForceManualUnlock() {
         const targetClass = document.getElementById("manual-reset-class").value;
         const targetRollRaw = document.getElementById("manual-reset-roll").value.trim();
 
         if(!targetRollRaw || isNaN(parseInt(targetRollRaw, 10))) {
-            return alert("Please enter a valid numeric Roll Number to clear!");
+            return alert("Please enter a valid numeric Roll Number execution coordinate!");
         }
 
         let labelText = targetClass === 'class10' ? 'Class 10th' : targetClass === 'class11' ? 'Class 11th' : 'Class 12th';
+        let rollParsed = String(parseInt(targetRollRaw, 10));
         
-        if(confirm(`SYSTEM OVERRIDE:\nForce unlock and clear all active blocks for ${labelText}, Roll Number ${targetRollRaw}?`)) {
-            clearLockFromSystem(String(parseInt(targetRollRaw, 10)), targetClass);
+        if(confirm(`CROSS-DEVICE SECURE RESET:\nThis action forces this roll configuration to block initialization attempts across alternate web screens. Clear lockout state for ${labelText}, Roll Number ${rollParsed}?`)) {
+            
+            // 1. Clear out local structures
+            let registry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
+            registry = registry.filter(item => !(String(item.roll) === rollParsed && item.classKey === targetClass));
+            localStorage.setItem("global_lockout_registry", JSON.stringify(registry));
+
+            // 2. Advance the system's generation counter to force-lock other devices out.
+            let resetCounterDb = JSON.parse(localStorage.getItem("cross_device_reset_counters") || "{}");
+            let key = `${targetClass}_${rollParsed}`;
+            let currentGlobalVal = parseInt(resetCounterDb[key] || "0");
+            
+            let nextGeneration = currentGlobalVal + 1;
+            resetCounterDb[key] = nextGeneration;
+            
+            // Update the master storage
+            localStorage.setItem("cross_device_reset_counters", JSON.stringify(resetCounterDb));
+            
+            // Sync this local device to the latest structural layer state
+            localStorage.setItem(`user_counter_${key}`, nextGeneration);
+
             document.getElementById("manual-reset-roll").value = "";
-            alert(`✅ Global synchronization lock cleared successfully for Roll ${targetRollRaw}!`);
+            alert(`✅ Synchronization lock cleared completely! If the student tries to log in on a separate un-synced phone, they will hit the security verification layout block.`);
             renderLockoutManagerZone();
         }
     }

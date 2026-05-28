@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> City Public School - Brainiac Bowl </title>
     <link rel="manifest" href="manifest.json">
-    <!-- SUPABASE CLIENT LIBRARY -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* BASE ANTI-CHEAT SECURITY FOR STUDENTS */
@@ -144,7 +143,6 @@
     <h1>The Computer Brainiac Bowl</h1>
     <div class="teacher-brand">By KK</div>
     
-    <!-- FIX: FIXED ONCLICK FUNCTIONS TO MATCH THE SCRIPT EXPLICITLY -->
     <div id="navigation-tabs-hub" class="portal-tabs">
         <button id="tab-student" class="tab-btn active" onclick="switchPortalView('student')">👨‍🎓 Student Portal</button>
         <button id="tab-admin" class="tab-btn" onclick="switchPortalView('admin')">🔑 Admin Dashboard</button>
@@ -294,8 +292,17 @@
     const SUPABASE_URL = "https://pqkjdtajklalzjmqkgln.supabase.co";
     const SUPABASE_KEY = "sb_publishable_48O4iVJiEj0Pn0thejkbNA_r4F1pm4k";
 
-    // Initialize Supabase Client securely
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // FIX: Renamed global pointer to clientInstance to prevent namespace collisions inside browser compilation stages
+    let dbClientInstance = null;
+    try {
+        if (typeof supabase !== 'undefined' && supabase.createClient) {
+            dbClientInstance = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } else {
+            console.warn("Supabase library not yet loaded via CDN hook.");
+        }
+    } catch (e) {
+        console.error("Critical error building cloud client interface:", e);
+    }
 
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
@@ -371,14 +378,18 @@
         try {
             const cacheBusterUrl = `questions.json?v=${Date.now()}`;
             const response = await fetch(cacheBusterUrl);
+            if (!response.ok) throw new Error("File context missing");
             allClassData = await response.json();
             return true;
         } catch(e) {
-            console.error("Error updating structure:", e);
+            console.error("Warning reading questions.json package schema:", e);
+            // Fallback object layout to keep code execution alive even if JSON is currently missing
+            allClassData = { "class10": [], "class11": [], "class12": [] };
             return false;
         }
     }
 
+    // FIX: Wrapped onload logic cleanly with fallback protections to eliminate complete UI blocks
     window.onload = async function() {
         initializeSecureRegistry();
         updateRollLimits(); 
@@ -407,18 +418,21 @@
     }
 
     async function isGlobalBlockActive(roll, classKey) {
-        const rowId = `${classKey}_${roll}`;
-        const { data, error } = await supabase
-            .from('device_locks')
-            .select('is_locked')
-            .eq('id', rowId)
-            .maybeSingle();
+        if (!dbClientInstance) return false;
+        try {
+            const rowId = `${classKey}_${roll}`;
+            const { data, error } = await dbClientInstance
+                .from('device_locks')
+                .select('is_locked')
+                .eq('id', rowId)
+                .maybeSingle();
 
-        if (error) {
-            console.error("Database connection issue:", error);
+            if (error) throw error;
+            return data ? data.is_locked : false;
+        } catch (e) {
+            console.error("Database connection issue:", e);
             return false;
         }
-        return data ? data.is_locked : false;
     }
 
     document.addEventListener("visibilitychange", function() {
@@ -447,16 +461,19 @@
     }
 
     async function registerGlobalLocktrack(name, roll, classKey) {
-        const rowId = `${classKey}_${roll}`;
-        await supabase
-            .from('device_locks')
-            .upsert({ 
-                id: rowId, 
-                student_name: name, 
-                class_key: classKey, 
-                roll_number: roll, 
-                is_locked: true 
-            });
+        if (!dbClientInstance) return;
+        try {
+            const rowId = `${classKey}_${roll}`;
+            await dbClientInstance
+                .from('device_locks')
+                .upsert({ 
+                    id: rowId, 
+                    student_name: name, 
+                    class_key: classKey, 
+                    roll_number: roll, 
+                    is_locked: true 
+                });
+        } catch(e) { console.error(e); }
     }
 
     function triggerLockoutUI() {
@@ -478,31 +495,42 @@
     }
 
     async function clearLockFromSystem(roll, classKey) {
-        const rowId = `${classKey}_${roll}`;
-        await supabase
-            .from('device_locks')
-            .delete()
-            .eq('id', rowId);
+        if (!dbClientInstance) return;
+        try {
+            const rowId = `${classKey}_${roll}`;
+            await dbClientInstance
+                .from('device_locks')
+                .delete()
+                .eq('id', rowId);
+        } catch(e) { console.error(e); }
     }
 
-    // FIX: ENSURED VISIBILITY TOGGLING WORKS WITHOUT FAIL
+    // FIX: Optimized tab selector system. Functions perfectly even if asynchronous processes fail.
     function switchPortalView(targetView) {
-        document.getElementById("tab-student").classList.remove("active");
-        document.getElementById("tab-admin").classList.remove("active");
-        
+        const studentTab = document.getElementById("tab-student");
+        const adminTab = document.getElementById("tab-admin");
+        const studentSection = document.getElementById("student-portal-section");
+        const adminSection = document.getElementById("admin-portal-section");
         const bodyEl = document.getElementById("main-body-container");
 
-        if(targetView === 'student') {
+        if (!studentTab || !adminTab || !studentSection || !adminSection) {
+            return alert("DOM layout error. Please ensure elements have proper matching IDs.");
+        }
+
+        studentTab.classList.remove("active");
+        adminTab.classList.remove("active");
+        
+        if (targetView === 'student') {
             isAdminAuthenticatedState = false;
             bodyEl.className = "student-mode-active";
             
-            document.getElementById("tab-student").classList.add("active");
-            document.getElementById("student-portal-section").style.display = "block";
-            document.getElementById("admin-portal-section").style.display = "none";
+            studentTab.classList.add("active");
+            studentSection.style.display = "block";
+            adminSection.style.display = "none";
         } else {
-            document.getElementById("tab-admin").classList.add("active");
-            document.getElementById("student-portal-section").style.display = "none";
-            document.getElementById("admin-portal-section").style.display = "block";
+            adminTab.classList.add("active");
+            studentSection.style.display = "none";
+            adminSection.style.display = "block";
             document.getElementById("admin-lockscreen").style.display = "block";
             document.getElementById("teacher-box").style.display = "none";
             document.getElementById("admin-master-key").value = "";
@@ -519,9 +547,9 @@
         selectedClassLabel = document.getElementById("student-class").options[document.getElementById("student-class").selectedIndex].text;
         const config = CLASS_CONFIGS[selectedClassKey];
 
-        const loadSuccess = await fetchFreshQuestions();
-        if(!loadSuccess || !allClassData) {
-            return alert("Error syncing quiz architecture. Check connection.");
+        await fetchFreshQuestions();
+        if(!allClassData || !allClassData[selectedClassKey]) {
+            return alert("Error syncing quiz architecture. Please verify questions.json is setup inside directory root.");
         }
 
         const inputRollRaw = document.getElementById("login-roll").value.trim();
@@ -531,6 +559,7 @@
             studentName = "TEACHERS";
             studentRoll = "Teacher Mode";
             quizData = allClassData[selectedClassKey]; 
+            if (quizData.length === 0) { return alert("Error: Target class data array is empty!"); }
             userAnswers = new Array(quizData.length).fill(null);
             totalTimeInSeconds = quizData.length * 60;
             isProtectionLoopActive = false; 
@@ -575,6 +604,9 @@
         }
         
         let baseQuestions = allClassData[selectedClassKey];
+        if (!baseQuestions || baseQuestions.length === 0) {
+            return alert("Target layout contains no active question values inside JSON!");
+        }
         quizData = shuffleQuestionsByRoll(baseQuestions, config.seedValue, studentRoll);
         
         userAnswers = new Array(quizData.length).fill(null);
@@ -608,6 +640,7 @@
     }
 
     function encryptTextForHumanEyes(plainText) {
+        if (!plainText) return "";
         const words = plainText.split(" ");
         let compositeHtml = "";
         const poisonDict = ["@", "#", "$", "%", "&", "x", "z", "q"];
@@ -775,27 +808,35 @@
 
     async function renderLockoutManagerZone() {
         const container = document.getElementById("admin-unblock-zone");
-        
-        const { data: registry, error } = await supabase
-            .from('device_locks')
-            .select('*')
-            .eq('is_locked', true);
-
-        if (error || !registry || registry.length === 0) {
-            container.innerHTML = `<p style="color:#6b7280; margin:4px 0; font-size:13px; font-style:italic; text-align:center;">No students are locked out in the Cloud Database.</p>`;
+        if (!dbClientInstance) {
+            container.innerHTML = `<p style="color:#dc2626; margin:4px 0; font-size:13px; font-weight:bold; text-align:center;">Supabase engine offline. Double check API Credentials.</p>`;
             return;
         }
+        
+        try {
+            const { data: registry, error } = await dbClientInstance
+                .from('device_locks')
+                .select('*')
+                .eq('is_locked', true);
 
-        let html = "";
-        registry.forEach((item) => {
-            let classBadge = item.class_key === 'class10' ? '10th' : item.class_key === 'class11' ? '11th' : '12th';
-            html += `
-            <div class="unblock-list-item">
-                <span>🔴 Roll ${item.roll_number} (${classBadge}) - ${item.student_name}</span>
-                <span class="unblock-action-link" onclick="adminExecuteUnblock('${item.roll_number}', '${item.class_key}', '${item.student_name}')">Delete Lock ✔</span>
-            </div>`;
-        });
-        container.innerHTML = html;
+            if (error || !registry || registry.length === 0) {
+                container.innerHTML = `<p style="color:#6b7280; margin:4px 0; font-size:13px; font-style:italic; text-align:center;">No students are locked out in the Cloud Database.</p>`;
+                return;
+            }
+
+            let html = "";
+            registry.forEach((item) => {
+                let classBadge = item.class_key === 'class10' ? '10th' : item.class_key === 'class11' ? '11th' : '12th';
+                html += `
+                <div class="unblock-list-item">
+                    <span>🔴 Roll ${item.roll_number} (${classBadge}) - ${item.student_name}</span>
+                    <span class="unblock-action-link" onclick="adminExecuteUnblock('${item.roll_number}', '${item.class_key}', '${item.student_name}')">Delete Lock ✔</span>
+                </div>`;
+            });
+            container.innerHTML = html;
+        } catch(err) {
+            container.innerHTML = `<p style="color:#dc2626; font-size:12px;">Query Error: ${err.message}</p>`;
+        }
     }
 
     async function adminExecuteUnblock(roll, classKey, name) {

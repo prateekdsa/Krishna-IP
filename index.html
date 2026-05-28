@@ -6,8 +6,8 @@
     <title> City Public School - Brainiac Bowl </title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* CRITICAL ANTI-LENS & ANTI-SCREENSHOT SECURITY */
-        * {
+        /* BASE ANTI-CHEAT SECURITY FOR STUDENTS */
+        body.student-mode-active * {
             -webkit-user-select: none !important; 
             -moz-user-select: none !important;
             -ms-user-select: none !important; 
@@ -15,16 +15,22 @@
             -webkit-touch-callout: none !important;
         }
 
-        /* SCREENSHOT & PRINT OVERRIDE PROTECTION */
+        /* ALLOW UNRESTRICTED SELECTION IN ADMIN MODE */
+        body.admin-mode-active * {
+            -webkit-user-select: text !important; 
+            -moz-user-select: text !important;
+            -ms-user-select: text !important; 
+            user-select: text !important; 
+            -webkit-touch-callout: default !important;
+        }
+
         @media print {
             body { display: none !important; }
         }
 
-        /* NEW VERY LIGHT BLUE BACKGROUND */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef6fc; margin: 0; padding: 15px; color: #333; }
         .quiz-container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
         
-        /* NEW RE-ORDERED HEADER SYSTEM */
         .school-header { color: #1e3a8a; text-align: center; font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; line-height: 1.2; }
         h1 { color: #2c3e50; text-align: center; font-size: 19px; margin-top: 0; margin-bottom: 4px; line-height: 1.3; font-weight: 700; }
         .teacher-brand { text-align: center; margin-bottom: 20px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #7f8c8d; font-weight: bold; }
@@ -39,9 +45,8 @@
         
         .input-group { margin-bottom: 12px; }
         .input-group label { display: block; font-weight: bold; margin-bottom: 4px; color: #2c3e50; font-size: 13px; }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 15px; box-sizing: border-box; background: #fff; -webkit-user-select: text !important; user-select: text !important; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 15px; box-sizing: border-box; background: #fff; }
         
-        /* UPDATED SYNTAX CODE BOX: CREAM BACKGROUND AND LARGER FONTS */
         .code-box { 
             background: #fdfbf7; 
             color: #23241f; 
@@ -58,13 +63,11 @@
             letter-spacing: 0.4px;
         }
 
-        /* BALANCED QUESTION FONT SIZE */
         .secure-text-render {
             font-size: 17px;
             font-weight: 700;
             color: #2c3e50;
             line-height: 1.4;
-            text-shadow: 0px 0px 0px #2c3e50, 0.3px 0px 0px rgba(0,0,0,0.1);
             letter-spacing: -0.1px;
             margin-bottom: 12px;
         }
@@ -73,10 +76,7 @@
 
         .option-container { display: flex; align-items: center; padding: 12px 12px; margin: 8px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
         .option-container:hover { background: #e8f1f5; border-color: #3498db; }
-        
         .option-container input[type="radio"] { margin-right: 12px; width: 18px; height: 18px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
-        
-        /* BALANCED OPTIONS/ANSWERS FONT SIZE */
         .option-label { font-size: 15px; cursor: pointer; width: 100%; color: #222; font-weight: 500; line-height: 1.4; }
         
         .nav-actions { display: flex; justify-content: space-between; margin-top: 20px; gap: 10px; }
@@ -88,31 +88,28 @@
         .btn-next:hover { background: #2980b9; }
         .btn-submit { background: #2ecc71; color: white; }
         .btn-submit:hover { background: #27ae60; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { background: #c0392b; }
         
         .btn-whatsapp { background: #25D366; color: white; width: 100%; padding: 12px; font-size: 16px; margin-top: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; }
-        .btn-whatsapp:hover { background: #20ba5a; }
         .restart-btn { display: block; width: 100%; padding: 12px; background: #2c3e50; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; margin-top: 12px; font-weight: bold; }
         .restart-btn:disabled { background: #bdc3c7; cursor: not-allowed; opacity: 0.6; }
         
         .score-box { text-align: center; font-size: 20px; font-weight: bold; color: #2ecc71; margin-bottom: 5px; }
-        .student-log-card { background: #f1f2f6; padding: 10px; margin-bottom: 8px; border-radius: 6px; border-left: 5px solid #2c3e50; text-align: left; font-size: 14px; }
-        .btn-danger { background: #e74c3c; color: white; }
-        .btn-danger:hover { background: #c0392b; }
-
-        /* WRONG QUESTION FEEDBACK BOX */
         .wrong-review-panel { background: #fff5f5; border: 1px solid #fecaca; border-radius: 8px; padding: 15px; margin: 15px 0; text-align: left; max-height: 220px; overflow-y: auto; }
         .wrong-review-title { color: #dc2626; font-size: 15px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #fca5a5; padding-bottom: 4px; }
         .wrong-item { font-size: 14px; color: #4b5563; margin-bottom: 8px; padding-left: 10px; border-left: 3px solid #ef4444; font-weight: 500; }
 
-        .roster-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 12px; max-height: 180px; overflow-y: auto; text-align: left; -webkit-user-select: text !important; user-select: text !important; }
+        .roster-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 12px; max-height: 180px; overflow-y: auto; text-align: left; }
         .lockdown-container { text-align: center; padding: 15px; }
         .lockdown-title { color: #c0392b; font-size: 24px; font-weight: bold; margin-bottom: 12px; }
         .lockdown-desc { font-size: 15px; color: #555; line-height: 1.5; margin-bottom: 20px; }
 
-        /* NEW UNBLOCK MANAGER STYLES */
         .unblock-list-item { display: flex; justify-content: space-between; align-items: center; background: #fff1f2; padding: 8px 12px; margin-bottom: 6px; border-radius: 6px; border: 1px solid #fecaca; font-size: 13px; font-weight: 600; }
         .unblock-action-link { color: #ef4444; text-decoration: underline; cursor: pointer; font-weight: bold; font-size: 13px; }
         .unblock-action-link:hover { color: #b91c1c; }
+
+        .lookup-card { background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 8px; margin-top: 15px; text-align: left; font-size: 14px; display: none; }
 
         #anti-cheat-blindfold {
             display: none;
@@ -129,7 +126,7 @@
         }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body id="main-body-container" class="student-mode-active">
 
 <div id="anti-cheat-blindfold">⚠️ SECURITY SHIELD: PROCESSING AUTO-LOGOUT ACTION...</div>
 
@@ -173,9 +170,9 @@
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
         <div class="lockdown-title">⛔ LOGIN ATTEMPT DISABLED</div>
         <p class="lockdown-desc">
-            Your login identity has been frozen for safety reasons. You cannot rejoin immediately after starting, refreshing, or abandoning an ongoing session.
+            This Roll Number has been locked out globally due to an anti-cheat violation or unauthorized browser abandonment.
             <br><br>
-            <span id="lockout-time-left" style="font-size:18px; color:#e74c3c; font-weight:bold; display:block; margin: 12px 0;">Time Remaining: --:--:--</span>
+            <strong>Status:</strong> Locked across all devices. You cannot rejoin until KK Sir explicitly re-activates this ID from the Admin Dashboard panel.
         </p>
         <div class="input-group" style="max-width: 400px; margin: 0 auto 15px auto;">
             <label for="unlock-master-key">Enter Teacher Bypass Code:</label>
@@ -201,9 +198,29 @@
             </div>
 
             <div style="background: #fff8f8; border: 1px solid #fca5a5; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <h4 style="margin: 0 0 8px 0; color: #991b1b; font-size:13px;">🚨 Active Anti-Cheat Device Locks</h4>
-                <div id="admin-unblock-zone" style="max-height: 120px; overflow-y: auto;">
-                    </div>
+                <h4 style="margin: 0 0 8px 0; color: #991b1b; font-size:13px;">🚨 Active Anti-Cheat Device Locks (Cross-Device Block List)</h4>
+                <div id="admin-unblock-zone" style="max-height: 140px; overflow-y: auto;"></div>
+            </div>
+
+            <div style="background: #f0fdf4; border: 1px solid #86efac; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <h4 style="margin: 0 0 8px 0; color: #16a34a; font-size:13px;">🔍 Targeted Student Data Packet Lookup</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                    <select id="lookup-class">
+                        <option value="class10">Class 10th</option>
+                        <option value="class11">Class 11th</option>
+                        <option value="class12" selected>Class 12th</option>
+                    </select>
+                    <input type="number" id="lookup-roll" placeholder="Roll Number" min="1">
+                </div>
+                
+                <div class="input-group" style="margin-bottom: 8px;">
+                    <label style="font-size:11px; color:#15803d;">To map data to this search engine, paste their raw WhatsApp Packet once here:</label>
+                    <textarea id="hidden-packet-importer" rows="1" placeholder="Paste WhatsApp Text Packet and click Map..." style="padding:4px; font-size:12px; height:28px;"></textarea>
+                    <button class="btn btn-next" style="width:100%; padding:4px; font-size:11px; margin-top:3px; background:#16a34a;" onclick="executeHiddenMap()">Map Packet to Storage Engine</button>
+                </div>
+                <button class="btn btn-submit" style="width: 100%; font-size:13px; background:#16a34a;" onclick="searchStudentProfile()">Lookup Student Packet</button>
+                
+                <div id="lookup-result-display" class="lookup-card"></div>
             </div>
             
             <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
@@ -215,15 +232,6 @@
                 </div>
                 <div id="roster-output-window" class="roster-box">Select a class above to print current randomized student passwords...</div>
             </div>
-
-            <div class="input-group" style="background: #eef2f7; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
-                <label for="compressed-input" style="color: #2c3e50; font-weight: bold; font-size:13px;">📥 Paste Student's WhatsApp Report Code Here:</label>
-                <textarea id="compressed-input" rows="3" placeholder="Paste entire raw text packet message here..."></textarea>
-                <button class="btn btn-submit" style="width: 100%; margin-top: 8px; font-size:14px;" onclick="importStudentCode()">Decode & Add to Evaluation Log</button>
-            </div>
-            <h3 style="color: #2c3e50; margin-top: 15px; border-bottom: 2px solid #2c3e50; padding-bottom: 5px; font-size:15px;">Student Evaluation Logs</h3>
-            <div id="teacher-logs-container" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;"></div>
-            <button class="btn btn-danger" style="width: 100%; font-size:14px;" onclick="clearTeacherLogs()">Clear Dashboard Data Archive</button>
         </div>
     </div>
     
@@ -232,12 +240,9 @@
             <div id="progress-text">Question 1 of 3</div>
             <div id="timer-box">Time Left: --:--</div>
         </div>
-        
         <div id="secure-question-host" class="secure-text-render"></div>
-        
         <div id="code-container"></div>
         <div id="options-container"></div>
-        
         <div class="nav-actions">
             <button class="btn btn-prev" id="prev-btn" onclick="goPrevious()">Previous</button>
             <button class="btn btn-next" id="next-btn" onclick="goNext()">Next</button>
@@ -247,14 +252,11 @@
     <div id="result-box" style="display: none;">
         <p class="score-box">🎉 Quiz Completed! 🎉</p>
         <p id="score-text" style="text-align: center; font-size: 16px; color: #555; line-height: 1.5; font-weight: bold; margin-bottom: 10px;"></p>
-        
         <div id="wrong-questions-review-zone"></div>
-        
         <button class="btn-whatsapp" id="whatsapp-submit-btn" onclick="sendToTeacher()">Send Score to KK Sir via WhatsApp 💬</button>
-        
         <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()">Log Out & Return to Home Screen 🔒</button>
         <div id="lock-notice" style="text-align:center; font-size:11px; color:#e74c3c; margin-top:8px; font-weight:bold;">
-            CRITICAL WARNING: You must submit your score via WhatsApp above to unlock this app! Exiting, refreshing, or closing the app now will trigger a 12-hour session block penalty.
+            CRITICAL WARNING: You must submit your score via WhatsApp above to unlock this app! Exiting, refreshing, or closing the app now will trigger a persistent lock block penalty.
         </div>
     </div>
 </div>
@@ -262,7 +264,16 @@
 <script>
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
-    const LOCKOUT_DURATION_MS = 12 * 60 * 60 * 1000;
+
+    // GLOBAL CONTEXT MENU SWITCH FOR COPIES/PASTES
+    let isAdminAuthenticatedState = false;
+
+    document.addEventListener("contextmenu", function(e) {
+        if (!isAdminAuthenticatedState) {
+            e.preventDefault();
+            return false;
+        }
+    });
 
     const CLASS_CONFIGS = {
         "class10": { maxRoll: 100, seedValue: 1023, prefix: "C10" },
@@ -271,7 +282,6 @@
     };
 
     const STUDENT_REGISTRY = { "class10": {}, "class11": {}, "class12": {} };
-    let liveLockoutInterval = null;
 
     function generatePseudoRandomString(seed, rollNum, targetLength) {
         let combinedSeed = seed + (rollNum * 31);
@@ -288,7 +298,6 @@
     function shuffleQuestionsByRoll(array, classSeed, rollNum) {
         let shuffleSeed = classSeed + (parseInt(rollNum, 10) * 73); 
         let shuffled = [...array];
-        
         for (let i = shuffled.length - 1; i > 0; i--) {
             shuffleSeed = (shuffleSeed * 9301 + 49297) % 233280;
             let j = Math.floor((shuffleSeed / 233280) * (i + 1));
@@ -331,7 +340,7 @@
             allClassData = await response.json();
             return true;
         } catch(e) {
-            console.error("Error refreshing data structure:", e);
+            console.error("Error updating structure:", e);
             return false;
         }
     }
@@ -340,18 +349,14 @@
         initializeSecureRegistry();
         updateRollLimits(); 
         await fetchFreshQuestions(); 
-        renderTeacherLogs();
 
-        // Check if device was locked from a previous session check on startup
-        let lastUser = localStorage.getItem("last_active_user");
-        let lastClass = localStorage.getItem("last_active_class");
-        if(lastUser && lastClass) {
-            let trackingKey = `lockTime_${lastUser}_${lastClass}`;
-            let lockoutTime = localStorage.getItem(trackingKey);
-            if(lockoutTime && (Date.now() - parseInt(lockoutTime) < LOCKOUT_DURATION_MS)) {
-                studentRoll = lastUser;
-                selectedClassKey = lastClass;
-                triggerLockoutUI(lockoutTime);
+        let sessionRoll = localStorage.getItem("last_active_user");
+        let sessionClass = localStorage.getItem("last_active_class");
+        if(sessionRoll && sessionClass) {
+            if(isGlobalBlockActive(sessionRoll, sessionClass)) {
+                studentRoll = sessionRoll;
+                selectedClassKey = sessionClass;
+                triggerLockoutUI();
             }
         }
     }
@@ -361,7 +366,6 @@
         const rollInput = document.getElementById("login-roll");
         const rollLabel = document.getElementById("roll-label");
         const maxLimit = CLASS_CONFIGS[classSelect].maxRoll;
-
         rollInput.max = maxLimit;
         rollLabel.innerText = `Roll Number (1 to ${maxLimit}):`;
         if(parseInt(rollInput.value) > maxLimit) { rollInput.value = ""; }
@@ -371,15 +375,18 @@
         const out = document.getElementById("roster-output-window");
         let label = classKey === 'class10' ? 'Class 10th' : classKey === 'class11' ? 'Class 11th' : 'Class 12th';
         let registryData = STUDENT_REGISTRY[classKey];
-        let htmlStr = `<strong>🔑 ${label} UNIQUE PASSWORD REGISTRY:</strong><br><br>`;
-        
+        let htmlStr = `<strong>🔑 ${label} PASSWORD CONFIGURATION:</strong><br><br>`;
         Object.keys(registryData).forEach(roll => {
-            htmlStr += `Roll No ${roll.padStart(2, '0')} ➔ Password: <span style="color:#e74c3c; font-weight:bold;">${registryData[roll]}</span><br>`;
+            htmlStr += `Roll No ${roll.padStart(2, '0')} ➔ Code: <span style="color:#e74c3c; font-weight:bold;">${registryData[roll]}</span><br>`;
         });
         out.innerHTML = htmlStr;
     }
 
-    /* 12-HOUR PENALTY TRIGGER LOCKOUTS */
+    function isGlobalBlockActive(roll, classKey) {
+        let globalList = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
+        return globalList.some(item => String(item.roll) === String(roll) && item.classKey === classKey);
+    }
+
     document.addEventListener("visibilitychange", function() {
         if (isProtectionLoopActive && document.hidden) { executeAutoLogoutAction(); }
     });
@@ -393,93 +400,47 @@
 
         isProtectionLoopActive = false;
         clearInterval(timerInterval);
+        
+        registerGlobalLocktrack(studentName, studentRoll, selectedClassKey);
         document.getElementById("anti-cheat-blindfold").style.display = "block";
         
         setTimeout(() => {
             document.getElementById("anti-cheat-blindfold").style.display = "none";
-            let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
-            let registeredLockTime = localStorage.getItem(trackingKey);
-            if(!registeredLockTime) {
-                localStorage.setItem(trackingKey, Date.now());
-                registeredLockTime = Date.now();
-            }
-            
-            // Log block info into global index for teacher diagnostic display
-            registerGlobalLocktrack(studentName, studentRoll, selectedClassKey);
-
-            triggerLockoutUI(registeredLockTime);
-            alert("⚠️ ANTICHEAT ACTION DETECTED:\nYou exited or minimized the running interface!\nYour system profile is now blocked for 12 hours.");
-        }, 1000);
+            triggerLockoutUI();
+            alert("⚠️ ANTICHEAT BLOCK ENGINE DEPLOYED:\nYou exited the secure testing interface!\nYour Roll Number identifier has been flagged and blocked across all systems.");
+        }, 800);
     }
 
-    // Records dynamic target profiles to LocalStorage array index for global unblocks
     function registerGlobalLocktrack(name, roll, classKey) {
         let registry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
-        let exists = registry.some(item => item.roll === roll && item.classKey === classKey);
+        let exists = registry.some(item => String(item.roll) === String(roll) && item.classKey === classKey);
         if(!exists) {
-            registry.push({ name, roll, classKey, timestamp: Date.now() });
+            registry.push({ name: name || "Unknown Student", roll: String(roll), classKey: classKey, timestamp: Date.now() });
             localStorage.setItem("global_lockout_registry", JSON.stringify(registry));
         }
     }
 
-    function runLockoutCountdown(lockoutTime) {
-        clearInterval(liveLockoutInterval);
-        const display = document.getElementById("lockout-time-left");
-        
-        function updateClock() {
-            const now = Date.now();
-            const difference = (parseInt(lockoutTime) + LOCKOUT_DURATION_MS) - now;
-            
-            if (difference <= 0) {
-                clearInterval(liveLockoutInterval);
-                let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
-                localStorage.removeItem(trackingKey);
-                localStorage.removeItem("last_active_user");
-                localStorage.removeItem("last_active_class");
-                document.getElementById("permanent-lockdown-box").style.display = "none";
-                document.getElementById("navigation-tabs-hub").style.display = "flex";
-                document.getElementById("student-portal-section").style.display = "block";
-                return;
-            }
-            
-            const hours = Math.floor(difference / (1000 * 60 * 60));
-            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-            
-            display.innerText = `Time Remaining: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-        updateClock();
-        liveLockoutInterval = setInterval(updateClock, 1000);
-    }
-
-    function triggerLockoutUI(lockoutTime) {
+    function triggerLockoutUI() {
         document.getElementById("navigation-tabs-hub").style.display = "none";
         document.getElementById("student-portal-section").style.display = "none";
         document.getElementById("admin-portal-section").style.display = "none";
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "none";
         document.getElementById("permanent-lockdown-box").style.display = "block";
-        runLockoutCountdown(lockoutTime);
     }
 
     function handleDeviceUnlock() {
         const masterKeyInput = document.getElementById("unlock-master-key").value.trim();
         if (masterKeyInput === MASTER_TEACHER_PASSWORD) {
-            clearInterval(liveLockoutInterval);
-            let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
-            localStorage.removeItem(trackingKey);
-            localStorage.removeItem("last_active_user");
-            localStorage.removeItem("last_active_class");
             
-            // Clean global registry item if cleared manually via client input
             let registry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
-            registry = registry.filter(item => !(item.roll === studentRoll && item.classKey === selectedClassKey));
+            registry = registry.filter(item => !(String(item.roll) === String(studentRoll) && item.classKey === selectedClassKey));
             localStorage.setItem("global_lockout_registry", JSON.stringify(registry));
 
-            document.getElementById("permanent-lockdown-box").style.display = "none";
-            document.getElementById("navigation-tabs-hub").style.display = "flex";
-            document.getElementById("student-portal-section").style.display = "block";
-            alert("✅ Lockout bypass accepted.");
+            localStorage.removeItem("last_active_user");
+            localStorage.removeItem("last_active_class");
+
+            alert("✅ Remote lock released. Reloading app framework...");
             location.reload();
         } else { alert("❌ Incorrect Teacher Code!"); }
     }
@@ -487,7 +448,13 @@
     function switchPortalView(targetView) {
         document.getElementById("tab-student").classList.remove("active");
         document.getElementById("tab-admin").classList.remove("active");
+        
+        const bodyEl = document.getElementById("main-body-container");
+
         if(targetView === 'student') {
+            isAdminAuthenticatedState = false;
+            bodyEl.className = "student-mode-active";
+            
             document.getElementById("tab-student").classList.add("active");
             document.getElementById("student-portal-section").style.display = "block";
             document.getElementById("admin-portal-section").style.display = "none";
@@ -496,11 +463,12 @@
             document.getElementById("student-portal-section").style.display = "none";
             document.getElementById("admin-portal-section").style.display = "block";
             document.getElementById("admin-master-key").value = "";
-            renderLockoutManagerZone(); // Refresh block index lists immediately upon authentication click
         }
     }
 
-    function exitAdminDashboard() { switchPortalView('student'); }
+    function exitAdminDashboard() { 
+        switchPortalView('student'); 
+    }
 
     async function handleLogin() {
         const inputName = document.getElementById("login-name").value.trim();
@@ -510,13 +478,12 @@
 
         const loadSuccess = await fetchFreshQuestions();
         if(!loadSuccess || !allClassData) {
-            return alert("Error syncing question data. Please check your internet connection.");
+            return alert("Error syncing quiz architecture. Check connection.");
         }
 
         if (inputName.toUpperCase() === "TEACHERS") {
             studentName = "TEACHERS";
             studentRoll = "Teacher Mode";
-            
             quizData = allClassData[selectedClassKey]; 
             userAnswers = new Array(quizData.length).fill(null);
             totalTimeInSeconds = quizData.length * 60;
@@ -525,7 +492,6 @@
             document.getElementById("navigation-tabs-hub").style.display = "none";
             document.getElementById("student-portal-section").style.display = "none";
             document.getElementById("quiz-box").style.display = "block";
-            
             document.getElementById("whatsapp-submit-btn").style.display = "none";
             document.getElementById("reset-app-btn").disabled = false;
             document.getElementById("lock-notice").style.display = "none";
@@ -539,42 +505,31 @@
         const inputPassword = document.getElementById("class-password").value.trim();
 
         if(!inputName || !inputRollRaw || !inputPassword) { 
-            return alert("Error: All entry fields (Name, Roll No, and Password) are required!"); 
+            return alert("Error: All identity validation fields are required!"); 
         }
 
         const rollInt = parseInt(inputRollRaw, 10);
         if (isNaN(rollInt) || String(rollInt) !== inputRollRaw) {
-            return alert("❌ Invalid Roll Number!");
+            return alert("❌ Invalid Roll Number format.");
         }
 
         if (rollInt < 1 || rollInt > config.maxRoll) {
-            return alert(`❌ Roll Number Range Error! Must be between 1 and ${config.maxRoll}.`);
+            return alert(`❌ Bound Range Error! Must be between 1 and ${config.maxRoll}.`);
         }
 
-        studentName = inputName; 
         studentRoll = String(rollInt);
+        studentName = inputName;
+
+        if (isGlobalBlockActive(studentRoll, selectedClassKey)) {
+            triggerLockoutUI();
+            return;
+        }
 
         const assignedRollPassword = STUDENT_REGISTRY[selectedClassKey][studentRoll];
         if (inputPassword.toUpperCase() !== assignedRollPassword) {
-            return alert(`❌ Incorrect Password details matching Roll No ${studentRoll}!`);
+            return alert(`❌ Incorrect Access Password mapped to Roll No ${studentRoll}!`);
         }
 
-        let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
-        let lockoutTime = localStorage.getItem(trackingKey);
-        
-        if (lockoutTime) {
-            const timePassed = Date.now() - parseInt(lockoutTime);
-            if (timePassed < LOCKOUT_DURATION_MS) {
-                registerGlobalLocktrack(studentName, studentRoll, selectedClassKey);
-                triggerLockoutUI(lockoutTime);
-                return;
-            } else {
-                localStorage.removeItem(trackingKey);
-            }
-        }
-
-        // Write lockdown target parameters immediately
-        localStorage.setItem(trackingKey, Date.now());
         localStorage.setItem("last_active_user", studentRoll);
         localStorage.setItem("last_active_class", selectedClassKey);
         
@@ -615,7 +570,7 @@
     function encryptTextForHumanEyes(plainText) {
         const words = plainText.split(" ");
         let compositeHtml = "";
-        const poisonDict = ["@", "#", "$", "%", "&", "x", "z", "q", "9", "4"];
+        const poisonDict = ["@", "#", "$", "%", "&", "x", "z", "q"];
         words.forEach((word) => {
             let wordBlock = "<span style='display:inline-block; margin-right:5px;'>";
             for (let i = 0; i < word.length; i++) {
@@ -695,7 +650,7 @@
 
     function calculateAndShowResults(forced) {
         clearInterval(timerInterval);
-        isProtectionLoopActive = false; // Turn off early abandonment sensor safely now that they completed it
+        isProtectionLoopActive = false; 
         
         let score = 0;
         let wrongQuestionsHtml = "";
@@ -713,21 +668,19 @@
         finalScore = score;
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
-        document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nUser Group: ${studentName}\nRoll Identifier: ${studentRoll}\nFinal Score: ${score} / ${quizData.length}`;
+        document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nStudent Name: ${studentName}\nRoll ID: ${studentRoll}\nFinal Score: ${score} / ${quizData.length}`;
 
-        // Inject the Wrong Question Review Box above the submit action item
         const reviewZone = document.getElementById("wrong-questions-review-zone");
         if (wrongCount > 0) {
             reviewZone.innerHTML = `
                 <div class="wrong-review-panel">
-                    <div class="wrong-review-title">⚠️ Wrong Questions Review (${wrongCount} Missed)</div>
+                    <div class="wrong-review-title">⚠️ Missed Question Mapping (${wrongCount} Errors)</div>
                     ${wrongQuestionsHtml}
                 </div>`;
         } else {
             reviewZone.innerHTML = `
                 <div class="wrong-review-panel" style="background:#f0fdf4; border-color:#bbf7d0;">
-                    <div class="wrong-review-title" style="color:#16a34a; border-color:#86efac;">🎯 Excellent Job!</div>
-                    <div style="color:#16a34a; font-size:14px; font-weight:bold;">You answered all questions correctly!</div>
+                    <div class="wrong-review-title" style="color:#16a34a; border-color:#86efac;">🎯 Perfect Accuracy!</div>
                 </div>`;
         }
     }
@@ -737,9 +690,6 @@
         let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
         let reportText = `*QUIZ DATA PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nDataKey: [${answersString}]`;
         
-        // Safely destroy session tracking traces upon proper completion submission
-        let trackingKey = `lockTime_${studentRoll}_${selectedClassKey}`;
-        localStorage.removeItem(trackingKey);
         localStorage.removeItem("last_active_user");
         localStorage.removeItem("last_active_class");
         
@@ -748,34 +698,26 @@
         window.location.href = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodeURIComponent(reportText)}`; 
     }
 
-    function restartQuiz() {
-        location.reload();
-    }
+    function restartQuiz() { location.reload(); }
 
     function verifyAdminLogin() {
         if(document.getElementById("admin-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
+            // LIFT SECURITY RESTRICTIONS DYNAMICALLY
+            isAdminAuthenticatedState = true;
+            document.getElementById("main-body-container").className = "admin-mode-active";
+
             document.getElementById("admin-lockscreen").style.display = "none";
             document.getElementById("teacher-box").style.display = "block";
-            renderTeacherLogs();
-            renderLockoutManagerZone(); // Load active blocks instantly inside panel
+            renderLockoutManagerZone(); 
         } else { alert("❌ Incorrect Admin Password Code!"); }
     }
 
-    /* RENDERS THE ACTIVE BLOCK MANAGER INTERFACE WITHIN ADMIN PANELS */
     function renderLockoutManagerZone() {
         const container = document.getElementById("admin-unblock-zone");
         let registry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
         
-        // Double check against current active state timestamps to ensure listings remain strictly synced
-        registry = registry.filter(item => {
-            let key = `lockTime_${item.roll}_${item.classKey}`;
-            let activeLock = localStorage.getItem(key);
-            return activeLock && (Date.now() - parseInt(activeLock) < LOCKOUT_DURATION_MS);
-        });
-        localStorage.setItem("global_lockout_registry", JSON.stringify(registry));
-
         if(registry.length === 0) {
-            container.innerHTML = `<p style="color:#6b7280; margin:4px 0; font-size:13px; font-style:italic; text-align:center;">No students are currently locked out of systems.</p>`;
+            container.innerHTML = `<p style="color:#6b7280; margin:4px 0; font-size:13px; font-style:italic; text-align:center;">No students are locked out of the exam layout.</p>`;
             return;
         }
 
@@ -791,77 +733,82 @@
         container.innerHTML = html;
     }
 
-    /* DIRECT ONE-CLICK ADMIN REMOVAL LINK TO RE-ACTIVATE STUDENT PROFILES */
     function adminExecuteUnblock(roll, classKey, name) {
-        if(confirm(`Are you sure you want to re-activate ID for Roll No ${roll} (${name})?`)) {
-            let trackingKey = `lockTime_${roll}_${classKey}`;
-            
-            // Wipe out session flags completely
-            localStorage.removeItem(trackingKey);
-            
-            // Clean active profile arrays out from internal tracking indices 
+        if(confirm(`Are you sure you want to completely re-activate ID for Roll No ${roll} (${name})?`)) {
             let registry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
-            registry = registry.filter(item => !(item.roll === roll && item.classKey === classKey));
+            registry = registry.filter(item => !(String(item.roll) === String(roll) && item.classKey === classKey));
             localStorage.setItem("global_lockout_registry", JSON.stringify(registry));
 
-            // If the teacher happens to be running this on the specific student's actual physical machine, wipe core system tags too
-            if(localStorage.getItem("last_active_user") === roll && localStorage.getItem("last_active_class") === classKey) {
+            if(localStorage.getItem("last_active_user") === String(roll) && localStorage.getItem("last_active_class") === classKey) {
                 localStorage.removeItem("last_active_user");
                 localStorage.removeItem("last_active_class");
             }
 
-            alert(`✅ Profile for Roll No ${roll} has been successfully activated!`);
-            renderLockoutManagerZone(); // Instant live update refresh
+            alert(`✅ Profile for Roll No ${roll} has been activated globally!`);
+            renderLockoutManagerZone(); 
         }
     }
 
-    function renderTeacherLogs() {
-        const container = document.getElementById("teacher-logs-container");
-        let archive = JSON.parse(localStorage.getItem("quiz_teacher_archive") || "[]");
-        if(archive.length === 0) {
-            container.innerHTML = `<p style="color:#7f8c8d; text-align:center; font-style:italic; font-size:13px;">No decoded student packets found in storage hardware storage.</p>`;
-            return;
-        }
-        let html = "";
-        archive.forEach((item, index) => {
-            html += `
-            <div class="student-log-card">
-                <strong>👤 Student:</strong> ${item.name} | <strong>🔢 Roll No:</strong> ${item.roll}<br>
-                <strong>📚 Course Group:</strong> ${item.classKey.toUpperCase()}<br>
-                <strong>📊 Grade Score:</strong> ${item.score} <br>
-                <small style="color:#7f8c8d;">Packet Trace ID: ${item.dataKey}</small>
-            </div>`;
-        });
-        container.innerHTML = html;
-    }
-
-    function importStudentCode() {
-        const rawInput = document.getElementById("compressed-input").value.trim();
-        if(!rawInput) return;
+    function executeHiddenMap() {
+        const rawPacket = document.getElementById("hidden-packet-importer").value.trim();
+        if(!rawPacket) return alert("Paste a valid WhatsApp string packet first!");
         try {
-            const lines = rawInput.split('\n');
+            const lines = rawPacket.split('\n');
             let name = lines.find(l => l.startsWith("Name:")).replace("Name:", "").trim();
             let roll = lines.find(l => l.startsWith("Roll:")).replace("Roll:", "").trim();
             let classKey = lines.find(l => l.startsWith("ClassKey:")).replace("ClassKey:", "").trim();
             let score = lines.find(l => l.startsWith("Score:")).replace("Score:", "").trim();
             let dataKey = lines.find(l => l.startsWith("DataKey:")).replace("DataKey:", "").trim();
 
-            let archive = JSON.parse(localStorage.getItem("quiz_teacher_archive") || "[]");
-            archive.unshift({ name, roll, classKey, score, dataKey });
-            localStorage.setItem("quiz_teacher_archive", JSON.stringify(archive));
+            let targetDb = JSON.parse(localStorage.getItem("hidden_student_db") || "{}");
+            let lookupKey = `${classKey}_${roll}`;
             
-            document.getElementById("compressed-input").value = "";
-            renderTeacherLogs();
-            alert("✅ Student packet imported successfully!");
+            targetDb[lookupKey] = { name, roll, classKey, score, dataKey };
+            localStorage.setItem("hidden_student_db", JSON.stringify(targetDb));
+
+            document.getElementById("hidden-packet-importer").value = "";
+            alert(`🎉 Packet mapped successfully for Roll ${roll}! Ready for lookup.`);
         } catch(e) {
-            alert("❌ Invalid Packet Data String Configuration format structure!");
+            alert("❌ Parsing error. Verify packet structure formatting rules.");
         }
     }
 
-    function clearTeacherLogs() {
-        if(confirm("Are you certain you wish to completely drop local dashboard logs? This is irreversible.")) {
-            localStorage.removeItem("quiz_teacher_archive");
-            renderTeacherLogs();
+    function searchStudentProfile() {
+        const targetClass = document.getElementById("lookup-class").value;
+        const targetRoll = document.getElementById("lookup-roll").value.trim();
+        const display = document.getElementById("lookup-result-display");
+
+        if(!targetRoll) {
+            alert("Please provide a target Roll Number configuration.");
+            return;
+        }
+
+        let targetDb = JSON.parse(localStorage.getItem("hidden_student_db") || "{}");
+        let queryKey = `${targetClass}_${targetRoll}`;
+        let matchedRecord = targetDb[queryKey];
+
+        display.style.display = "block";
+
+        if(matchedRecord) {
+            display.innerHTML = `
+                <div style="border-bottom:1px solid #cbd5e1; padding-bottom:4px; margin-bottom:6px; font-weight:bold; color:#16a34a;">
+                    🎯 Record Found Successfully
+                </div>
+                <strong>👤 Name:</strong> ${matchedRecord.name}<br>
+                <strong>🔢 Roll ID:</strong> ${matchedRecord.roll}<br>
+                <strong>📚 Class Key:</strong> ${matchedRecord.classKey.toUpperCase()}<br>
+                <strong>📊 Grade Performance:</strong> <span style="color:#16a34a; font-weight:bold;">${matchedRecord.score}</span><br>
+                <code style="display:block; background:#fff; padding:4px; margin-top:5px; border:1px solid #e2e8f0; font-size:11px; word-break:break-all;">
+                    Data Trace Matrix: ${matchedRecord.dataKey}
+                </code>
+            `;
+        } else {
+            display.innerHTML = `
+                <div style="color:#ef4444; font-weight:bold;">❌ Code Packet Record Missing</div>
+                <p style="margin:4px 0 0 0; font-size:12px; color:#64748b;">
+                    No text packet data has been mapped for Roll Number ${targetRoll} under this class section folder yet.
+                </p>
+            `;
         }
     }
 </script>

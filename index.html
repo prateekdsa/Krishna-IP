@@ -100,7 +100,6 @@
         .wrong-review-title { color: #dc2626; font-size: 15px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #fca5a5; padding-bottom: 4px; }
         .wrong-item { font-size: 14px; color: #4b5563; margin-bottom: 8px; padding-left: 10px; border-left: 3px solid #ef4444; font-weight: 500; }
 
-        /* DETAILED REPORT METRICS STYLE */
         .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .metric-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
         .metric-card.correct-card { background: #f0fdf4; border-color: #bbf7d0; }
@@ -118,8 +117,6 @@
         .unblock-list-item { display: flex; justify-content: space-between; align-items: center; background: #fff1f2; padding: 8px 12px; margin-bottom: 6px; border-radius: 6px; border: 1px solid #fecaca; font-size: 13px; font-weight: 600; }
         .unblock-action-link { color: #ef4444; text-decoration: underline; cursor: pointer; font-weight: bold; font-size: 13px; }
         .unblock-action-link:hover { color: #b91c1c; }
-
-        .lookup-card { background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 8px; margin-top: 15px; text-align: left; font-size: 14px; display: none; }
 
         #anti-cheat-blindfold {
             display: none;
@@ -180,9 +177,7 @@
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
         <div class="lockdown-title">⛔ LOGIN ATTEMPT DISABLED</div>
         <p class="lockdown-desc">
-            This Roll Number has been locked out globally due to an anti-cheat violation or unauthorized browser abandonment.
-            <br><br>
-            <strong>Status:</strong> Locked across all devices. You cannot rejoin until KK Sir explicitly re-activates this ID from the Admin Dashboard panel.
+            This Roll Number has been flagged and locked out globally due to an anti-cheat violation or unauthorized browser abandonment.
         </p>
         <div class="input-group" style="max-width: 400px; margin: 0 auto 15px auto;">
             <label for="unlock-master-key">Enter Teacher Bypass Code:</label>
@@ -207,30 +202,26 @@
                 <button class="btn btn-prev" style="padding: 6px 14px; font-size:13px;" onclick="exitAdminDashboard()">← Exit Admin</button>
             </div>
 
+            <!-- UNBLOCK PANEL CONTROL CENTER -->
             <div style="background: #fff8f8; border: 1px solid #fca5a5; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <h4 style="margin: 0 0 8px 0; color: #991b1b; font-size:13px;">🚨 Active Anti-Cheat Device Locks (Cross-Device Block List)</h4>
-                <div id="admin-unblock-zone" style="max-height: 140px; overflow-y: auto;"></div>
-            </div>
-
-            <div style="background: #f0fdf4; border: 1px solid #86efac; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <h4 style="margin: 0 0 8px 0; color: #16a34a; font-size:13px;">🔍 Targeted Student Data Packet Lookup</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                    <select id="lookup-class">
-                        <option value="class10">Class 10th</option>
-                        <option value="class11">Class 11th</option>
-                        <option value="class12" selected>Class 12th</option>
-                    </select>
-                    <input type="number" id="lookup-roll" placeholder="Roll Number" min="1">
-                </div>
+                <h4 style="margin: 0 0 8px 0; color: #991b1b; font-size:13px;">🚨 Active Anti-Cheat Device Locks</h4>
+                <div id="admin-unblock-zone" style="max-height: 140px; overflow-y: auto; margin-bottom: 10px;"></div>
                 
-                <div class="input-group" style="margin-bottom: 8px;">
-                    <label style="font-size:11px; color:#15803d;">To map data to this search engine, paste their raw WhatsApp Packet once here:</label>
-                    <textarea id="hidden-packet-importer" rows="1" placeholder="Paste WhatsApp Text Packet and click Map..." style="padding:4px; font-size:12px; height:28px;"></textarea>
-                    <button class="btn btn-next" style="width:100%; padding:4px; font-size:11px; margin-top:3px; background:#16a34a;" onclick="executeHiddenMap()">Map Packet to Storage Engine</button>
+                <!-- NEW CRITICAL MANUAL BYPASS ENGINE FOR DESYNCED ROLL NUMBERS -->
+                <div style="border-top: 1px dashed #fca5a5; padding-top: 10px; margin-top: 5px;">
+                    <label style="display:block; font-size:11px; font-weight:bold; color:#7f1d1d; margin-bottom:4px;">
+                        🛠️ Force Manual Reset Override (Use if a student is locked out but missing from above list):
+                    </label>
+                    <div style="display: flex; gap: 6px;">
+                        <select id="manual-reset-class" style="flex: 1; padding: 6px; font-size: 12px; border-radius: 4px; border:1px solid #fca5a5;">
+                            <option value="class10">Class 10th</option>
+                            <option value="class11">Class 11th</option>
+                            <option value="class12" selected>Class 12th</option>
+                        </select>
+                        <input type="number" id="manual-reset-roll" placeholder="Roll No" min="1" style="width: 80px; padding: 6px; font-size: 12px; border-radius: 4px; border:1px solid #fca5a5;">
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; background:#dc2626;" onclick="executeForceManualUnlock()">Force Reset ID</button>
+                    </div>
                 </div>
-                <button class="btn btn-submit" style="width: 100%; font-size:13px; background:#16a34a;" onclick="searchStudentProfile()">Lookup Student Packet</button>
-                
-                <div id="lookup-result-display" class="lookup-card"></div>
             </div>
             
             <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
@@ -445,7 +436,7 @@
         setTimeout(() => {
             document.getElementById("anti-cheat-blindfold").style.display = "none";
             triggerLockoutUI();
-            alert("⚠️ ANTICHEAT BLOCK ENGINE DEPLOYED:\nYou exited the secure testing interface!\nYour Roll Number identifier has been flagged and blocked across all systems.");
+            alert("⚠️ ANTICHEAT BLOCK ENGINE DEPLOYED:\nYou exited the secure testing interface!\nYour Roll Number identifier has been flagged and blocked globally.");
         }, 800);
     }
 
@@ -470,16 +461,21 @@
     function handleDeviceUnlock() {
         const masterKeyInput = document.getElementById("unlock-master-key").value.trim();
         if (masterKeyInput === MASTER_TEACHER_PASSWORD) {
-            let registry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
-            registry = registry.filter(item => !(String(item.roll) === String(studentRoll) && item.classKey === selectedClassKey));
-            localStorage.setItem("global_lockout_registry", JSON.stringify(registry));
-
-            localStorage.removeItem("last_active_user");
-            localStorage.removeItem("last_active_class");
-
+            clearLockFromSystem(studentRoll, selectedClassKey);
             alert("✅ Remote lock released. Reloading app framework...");
             location.reload();
         } else { alert("❌ Incorrect Teacher Code!"); }
+    }
+
+    function clearLockFromSystem(roll, classKey) {
+        let registry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
+        registry = registry.filter(item => !(String(item.roll) === String(roll) && item.classKey === classKey));
+        localStorage.setItem("global_lockout_registry", JSON.stringify(registry));
+
+        if(localStorage.getItem("last_active_user") === String(roll) && localStorage.getItem("last_active_class") === classKey) {
+            localStorage.removeItem("last_active_user");
+            localStorage.removeItem("last_active_class");
+        }
     }
 
     function switchPortalView(targetView) {
@@ -518,6 +514,9 @@
             return alert("Error syncing quiz architecture. Check connection.");
         }
 
+        const inputRollRaw = document.getElementById("login-roll").value.trim();
+        const inputPassword = document.getElementById("class-password").value.trim();
+
         if (inputName.toUpperCase() === "TEACHERS") {
             studentName = "TEACHERS";
             studentRoll = "Teacher Mode";
@@ -530,7 +529,6 @@
             document.getElementById("student-portal-section").style.display = "none";
             document.getElementById("quiz-box").style.display = "block";
             
-            // Bypass sending to whatsapp for teacher test view
             document.getElementById("submission-pending-block").style.display = "none";
             document.getElementById("post-submission-report").style.display = "block";
 
@@ -538,9 +536,6 @@
             startTimer();
             return;
         }
-
-        const inputRollRaw = document.getElementById("login-roll").value.trim();
-        const inputPassword = document.getElementById("class-password").value.trim();
 
         if(!inputName || !inputRollRaw || !inputPassword) { 
             return alert("Error: All identity validation fields are required!"); 
@@ -578,7 +573,6 @@
         totalTimeInSeconds = quizData.length * 60;
         isProtectionLoopActive = true;
 
-        // Reset display wrappers
         document.getElementById("submission-pending-block").style.display = "block";
         document.getElementById("post-submission-report").style.display = "none";
 
@@ -705,12 +699,10 @@
 
         finalScore = score;
         
-        // Populate standard headers
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
         document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nStudent Name: ${studentName}\nRoll ID: ${studentRoll}`;
 
-        // Populate metrics calculations
         document.getElementById("metric-correct-count").innerText = score;
         document.getElementById("metric-wrong-count").innerText = wrongCount;
         document.getElementById("metric-total-marks").innerText = `${score} / ${quizData.length}`;
@@ -718,7 +710,6 @@
         let accuracyPct = Math.round((score / quizData.length) * 100);
         document.getElementById("metric-accuracy-rate").innerText = `${accuracyPct}%`;
 
-        // Render incorrect choices preview area
         const reviewZone = document.getElementById("wrong-questions-review-zone");
         if (wrongCount > 0) {
             reviewZone.innerHTML = `
@@ -733,7 +724,6 @@
                 </div>`;
         }
 
-        // If explicitly logged in as teacher, bypass blocking view completely
         if (studentName === "TEACHERS") {
             document.getElementById("submission-pending-block").style.display = "none";
             document.getElementById("post-submission-report").style.display = "block";
@@ -742,18 +732,27 @@
 
     function sendToTeacher() {
         if (studentName === "TEACHERS") return;
-        let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
-        let reportText = `*QUIZ DATA PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nDataKey: [${answersString}]`;
         
-        // Remove tracking references since they submitted natively
+        // COMPILE DETAILED QUESTION AND ANSWER LOG FOR WHATSAPP
+        let qaLogString = "";
+        quizData.forEach((qItem, idx) => {
+            let studentSelectionIdx = userAnswers[idx];
+            let studentAnsText = studentSelectionIdx !== null ? qItem.options[studentSelectionIdx] : "SKIPPED/UNANSWERED";
+            let correctAnsText = qItem.options[qItem.correct];
+            let statusSymbol = (studentSelectionIdx === qItem.correct) ? "✅ [CORRECT]" : "❌ [WRONG]";
+            
+            qaLogString += `\nQ${idx+1}: ${qItem.question}\n   Your Ans: ${studentAnsText}\n   Correct Ans: ${correctAnsText}\n   Result: ${statusSymbol}\n`;
+        });
+
+        let answersMatrix = userAnswers.map(x => x === null ? 'X' : x).join(',');
+        let reportText = `*QUIZ PERFORMANCE PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nMatrix Trace: [${answersMatrix}]\n\n*--- DETAILED QUESTION ANSWER LOG ---*${qaLogString}`;
+        
         localStorage.removeItem("last_active_user");
         localStorage.removeItem("last_active_class");
         
-        // SWAP ACTIONS: Open metrics details to the student inside the layout context
         document.getElementById("submission-pending-block").style.display = "none";
         document.getElementById("post-submission-report").style.display = "block";
         
-        // Dispatch window process out to handle system deep-linking
         window.open(`whatsapp://send?phone=${TEACHER_PHONE}&text=${encodeURIComponent(reportText)}`, '_blank');
     }
 
@@ -775,7 +774,7 @@
         let registry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
         
         if(registry.length === 0) {
-            container.innerHTML = `<p style="color:#6b7280; margin:4px 0; font-size:13px; font-style:italic; text-align:center;">No students are locked out of the exam layout.</p>`;
+            container.innerHTML = `<p style="color:#6b7280; margin:4px 0; font-size:13px; font-style:italic; text-align:center;">No students are currently tracked as locked out.</p>`;
             return;
         }
 
@@ -793,80 +792,28 @@
 
     function adminExecuteUnblock(roll, classKey, name) {
         if(confirm(`Are you sure you want to completely re-activate ID for Roll No ${roll} (${name})?`)) {
-            let registry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
-            registry = registry.filter(item => !(String(item.roll) === String(roll) && item.classKey === classKey));
-            localStorage.setItem("global_lockout_registry", JSON.stringify(registry));
-
-            if(localStorage.getItem("last_active_user") === String(roll) && localStorage.getItem("last_active_class") === classKey) {
-                localStorage.removeItem("last_active_user");
-                localStorage.removeItem("last_active_class");
-            }
-
+            clearLockFromSystem(roll, classKey);
             alert(`✅ Profile for Roll No ${roll} has been activated globally!`);
             renderLockoutManagerZone(); 
         }
     }
 
-    function executeHiddenMap() {
-        const rawPacket = document.getElementById("hidden-packet-importer").value.trim();
-        if(!rawPacket) return alert("Paste a valid WhatsApp string packet first!");
-        try {
-            const lines = rawPacket.split('\n');
-            let name = lines.find(l => l.startsWith("Name:")).replace("Name:", "").trim();
-            let roll = lines.find(l => l.startsWith("Roll:")).replace("Roll:", "").trim();
-            let classKey = lines.find(l => l.startsWith("ClassKey:")).replace("ClassKey:", "").trim();
-            let score = lines.find(l => l.startsWith("Score:")).replace("Score:", "").trim();
-            let dataKey = lines.find(l => l.startsWith("DataKey:")).replace("DataKey:", "").trim();
+    // SYSTEM OVERRIDE BYPASS ACTION ENGINE
+    function executeForceManualUnlock() {
+        const targetClass = document.getElementById("manual-reset-class").value;
+        const targetRollRaw = document.getElementById("manual-reset-roll").value.trim();
 
-            let targetDb = JSON.parse(localStorage.getItem("hidden_student_db") || "{}");
-            let lookupKey = `${classKey}_${roll}`;
-            
-            targetDb[lookupKey] = { name, roll, classKey, score, dataKey };
-            localStorage.setItem("hidden_student_db", JSON.stringify(targetDb));
-
-            document.getElementById("hidden-packet-importer").value = "";
-            alert(`🎉 Packet mapped successfully for Roll ${roll}! Ready for lookup.`);
-        } catch(e) {
-            alert("❌ Parsing error. Verify packet structure formatting rules.");
-        }
-    }
-
-    function searchStudentProfile() {
-        const targetClass = document.getElementById("lookup-class").value;
-        const targetRoll = document.getElementById("lookup-roll").value.trim();
-        const display = document.getElementById("lookup-result-display");
-
-        if(!targetRoll) {
-            alert("Please provide a target Roll Number configuration.");
-            return;
+        if(!targetRollRaw || isNaN(parseInt(targetRollRaw, 10))) {
+            return alert("Please enter a valid numeric Roll Number to clear!");
         }
 
-        let targetDb = JSON.parse(localStorage.getItem("hidden_student_db") || "{}");
-        let queryKey = `${targetClass}_${targetRoll}`;
-        let matchedRecord = targetDb[queryKey];
-
-        display.style.display = "block";
-
-        if(matchedRecord) {
-            display.innerHTML = `
-                <div style="border-bottom:1px solid #cbd5e1; padding-bottom:4px; margin-bottom:6px; font-weight:bold; color:#16a34a;">
-                    🎯 Record Found Successfully
-                </div>
-                <strong>👤 Name:</strong> ${matchedRecord.name}<br>
-                <strong>🔢 Roll ID:</strong> ${matchedRecord.roll}<br>
-                <strong>📚 Class Key:</strong> ${matchedRecord.classKey.toUpperCase()}<br>
-                <strong>📊 Grade Performance:</strong> <span style="color:#16a34a; font-weight:bold;">${matchedRecord.score}</span><br>
-                <code style="display:block; background:#fff; padding:4px; margin-top:5px; border:1px solid #e2e8f0; font-size:11px; word-break:break-all;">
-                    Data Trace Matrix: ${matchedRecord.dataKey}
-                </code>
-            `;
-        } else {
-            display.innerHTML = `
-                <div style="color:#ef4444; font-weight:bold;">❌ Code Packet Record Missing</div>
-                <p style="margin:4px 0 0 0; font-size:12px; color:#64748b;">
-                    No text packet data has been mapped for Roll Number ${targetRoll} under this class section folder yet.
-                </p>
-            `;
+        let labelText = targetClass === 'class10' ? 'Class 10th' : targetClass === 'class11' ? 'Class 11th' : 'Class 12th';
+        
+        if(confirm(`SYSTEM OVERRIDE:\nForce unlock and clear all active blocks for ${labelText}, Roll Number ${targetRollRaw}?`)) {
+            clearLockFromSystem(String(parseInt(targetRollRaw, 10)), targetClass);
+            document.getElementById("manual-reset-roll").value = "";
+            alert(`✅ Global synchronization lock cleared successfully for Roll ${targetRollRaw}!`);
+            renderLockoutManagerZone();
         }
     }
 </script>

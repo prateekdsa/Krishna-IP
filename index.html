@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Public School - Brainiac Bowl</title>
-    <!-- Load the official Supabase bundle explicitly -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* BASE ANTI-CHEAT SECURITY FOR STUDENTS */
@@ -30,7 +29,7 @@
         }
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef6fc; margin: 0; padding: 15px; color: #333; }
-        .quiz-container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
+        .quiz-container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; transition: opacity 0.1s ease; }
         
         .school-header { color: #1e3a8a; text-align: center; font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; line-height: 1.2; }
         h1 { color: #2c3e50; text-align: center; font-size: 19px; margin-top: 0; margin-bottom: 4px; line-height: 1.3; font-weight: 700; }
@@ -129,10 +128,26 @@
             font-size: 20px;
             font-weight: bold;
         }
+
+        /* 🔒 ANTI-LENS FADE SHIELD STYLE */
+        #lens-freeze-blackout {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000000;
+            color: #ffffff;
+            z-index: 99999999;
+            text-align: center;
+            padding-top: 45vh;
+            font-family: sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body id="main-body-container" class="student-mode-active">
 
+<div id="lens-freeze-blackout">🔒 SECURITY BLOCK: SCREEN PROTOCOL ACTIVE</div>
 <div id="anti-cheat-blindfold">⚠️ SECURITY SHIELD ACTIVE...</div>
 
 <div class="quiz-container" id="app-visibility-wrapper">
@@ -140,7 +155,6 @@
     <h1>The Computer Brainiac Bowl</h1>
     <div class="teacher-brand">By KK</div>
 
-    <!-- STUDENT VERIFICATION COMPONENT -->
     <div id="student-portal-section">
         <h3 style="color:#2c3e50; margin-top:0; font-size:15px;">Student Verification Access</h3>
         <div class="input-group">
@@ -166,7 +180,6 @@
         <button class="btn btn-next" style="width:100%; margin-top:10px;" onclick="handleLogin()">Verify Identity & Begin Test</button>
     </div>
 
-    <!-- CROSS DEVICE LOCKOUT LAYER -->
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
         <div class="lockdown-title">⛔ CROSS-DEVICE ID LOCKOUT</div>
         <p class="lockdown-desc">
@@ -179,7 +192,6 @@
         <button class="btn btn-submit" style="width: 100%; max-width:400px;" onclick="handleDeviceUnlock()">Authorize Live Cloud Reset</button>
     </div>
 
-    <!-- SECRET HIDDEN ADMIN PORTAL SECTION (NO TABS VISIBLE) -->
     <div id="admin-portal-section" style="display: none;">
         <div id="teacher-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
@@ -219,7 +231,6 @@
         </div>
     </div>
     
-    <!-- SYSTEM QUIZ MONITOR RUNNER -->
     <div id="quiz-box" style="display: none;">
         <div class="status-bar">
             <div id="progress-text">Question 1 of 3</div>
@@ -234,7 +245,6 @@
         </div>
     </div>
     
-    <!-- SYSTEM SCORE ANALYTICS VIEW -->
     <div id="result-box" style="display: none;">
         <p class="score-box">🎉 Quiz Completed! 🎉</p>
         <p id="score-text" style="text-align: center; font-size: 16px; color: #555; line-height: 1.5; font-weight: bold; margin-bottom: 10px;"></p>
@@ -307,7 +317,6 @@
 
     const STUDENT_REGISTRY = { "class10": {}, "class11": {}, "class12": {} };
 
-    // Built-in hardcoded questions array for backup fallback protection
     let fallbackDatabase = {
         "class12": [
             {
@@ -613,7 +622,6 @@
         }, 1000);
     }
 
-    // 🛡️ ADVANCED LENS SHIELD: POISONS TEXT CHARACTERS DYNAMICALLY FOR THE AI SCANNER
     function encryptTextForHumanEyes(plainText) {
         if (!plainText) return "";
         const words = plainText.split(" ");
@@ -831,23 +839,33 @@
     }
 </script>
 
-<!-- 🛡️ INTERACTIVE GEOMETRIC RE-RENDER LAYOUT ENGINE SHIELD FOR GOOGLE LENS -->
 <script>
-setInterval(() => {
-    let glitchBox = document.getElementById('lens-shield');
-    if (!glitchBox) {
-        glitchBox = document.createElement('div');
-        glitchBox.id = 'lens-shield';
-        glitchBox.style.position = 'fixed';
-        glitchBox.style.width = '1px';
-        glitchBox.style.height = '1px';
-        glitchBox.style.opacity = '0.01'; 
-        glitchBox.style.zIndex = '99999';
-        document.body.appendChild(glitchBox);
-    }
-    glitchBox.style.top = Math.random() + 'px';
-    glitchBox.style.left = Math.random() + 'px';
-}, 50);
+(function() {
+    const blackoutShield = document.getElementById('lens-freeze-blackout');
+    const mainContentWrapper = document.getElementById('app-visibility-wrapper');
+
+    // Triggered the exact millisecond Google Lens pushes the app into background cache state
+    window.addEventListener('blur', () => {
+        if (typeof studentName !== 'undefined' && studentName === "TEACHERS") return;
+
+        if (blackoutShield) {
+            blackoutShield.style.display = 'block'; 
+        }
+        if (mainContentWrapper) {
+            mainContentWrapper.style.opacity = '0'; 
+        }
+    });
+
+    // Restores display elements gracefully if they return to the app window
+    window.addEventListener('focus', () => {
+        if (blackoutShield) {
+            blackoutShield.style.display = 'none';
+        }
+        if (mainContentWrapper) {
+            mainContentWrapper.style.opacity = '1';
+        }
+    });
+})();
 </script>
 
 </body>

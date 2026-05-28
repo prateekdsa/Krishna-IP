@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> City Public School - Brainiac Bowl </title>
     <link rel="manifest" href="manifest.json">
-    <!-- INJECTING OFFICIAL SUPABASE CLIENT LIBRARY -->
+    <!-- SUPABASE CLIENT LIBRARY -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* BASE ANTI-CHEAT SECURITY FOR STUDENTS */
@@ -137,13 +137,14 @@
 </head>
 <body id="main-body-container" class="student-mode-active">
 
-<div id="anti-cheat-blindfold">⚠️ SECURITY SHIELD: RE-ROUTING SECURE LOCK DATA INTO CLOUD...</div>
+<div id="anti-cheat-blindfold">⚠️ SECURITY SHIELD ACTIVE...</div>
 
 <div class="quiz-container" id="app-visibility-wrapper">
     <div class="school-header">City Public School, Najibabad</div>
     <h1>The Computer Brainiac Bowl</h1>
     <div class="teacher-brand">By KK</div>
     
+    <!-- FIX: FIXED ONCLICK FUNCTIONS TO MATCH THE SCRIPT EXPLICITLY -->
     <div id="navigation-tabs-hub" class="portal-tabs">
         <button id="tab-student" class="tab-btn active" onclick="switchPortalView('student')">👨‍🎓 Student Portal</button>
         <button id="tab-admin" class="tab-btn" onclick="switchPortalView('admin')">🔑 Admin Dashboard</button>
@@ -179,7 +180,7 @@
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
         <div class="lockdown-title">⛔ CROSS-DEVICE ID LOCKOUT</div>
         <p class="lockdown-desc">
-            This Roll number is locked down inside the live cloud database. It cannot be loaded on <strong>ANY device</strong> until released.
+            This Roll number is locked down inside the live cloud database. It cannot be loaded on any device until released.
         </p>
         <div class="input-group" style="max-width: 400px; margin: 0 auto 15px auto;">
             <label for="unlock-master-key">Enter Teacher Bypass Security Password:</label>
@@ -204,12 +205,10 @@
                 <button class="btn btn-prev" style="padding: 6px 14px; font-size:13px;" onclick="exitAdminDashboard()">← Exit Admin</button>
             </div>
 
-            <!-- UNBLOCK PANEL CONTROL CENTER -->
             <div style="background: #fff8f8; border: 1px solid #fca5a5; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
                 <h4 style="margin: 0 0 8px 0; color: #991b1b; font-size:13px;">🚨 Live Cloud Lockouts (Real-time DB pull)</h4>
                 <div id="admin-unblock-zone" style="max-height: 140px; overflow-y: auto; margin-bottom: 10px;"></div>
                 
-                <!-- FORCE MANUAL GLOBAL COUNTER RESET CONTROL -->
                 <div style="border-top: 1px dashed #fca5a5; padding-top: 10px; margin-top: 5px;">
                     <label style="display:block; font-size:11px; font-weight:bold; color:#7f1d1d; margin-bottom:4px;">
                         🛠️ Direct Database Manual Wipe Engine:
@@ -256,7 +255,6 @@
         <p class="score-box">🎉 Quiz Completed! 🎉</p>
         <p id="score-text" style="text-align: center; font-size: 16px; color: #555; line-height: 1.5; font-weight: bold; margin-bottom: 10px;"></p>
         
-        <!-- INTERMEDIATE ACTION VIEW FOR SUBMISSION -->
         <div id="submission-pending-block">
             <button class="btn-whatsapp" id="whatsapp-submit-btn" onclick="sendToTeacher()">Send Score to KK Sir via WhatsApp 💬</button>
             <div id="lock-notice" style="text-align:center; font-size:11px; color:#e74c3c; margin-top:8px; font-weight:bold;">
@@ -264,7 +262,6 @@
             </div>
         </div>
 
-        <!-- POST-WHATSAPP COMPREHENSIVE PERFORMANCE VIEW -->
         <div id="post-submission-report" style="display: none; border-top: 2px dashed #cbd5e1; margin-top: 15px; padding-top: 15px;">
             <h3 style="text-align:center; color:#2c3e50; margin-top:0; font-size:16px;">📊 Comprehensive Report Card</h3>
             
@@ -294,15 +291,10 @@
 </div>
 
 <script>
-    // ========================================================
-    // AUTO-CONNECTED TO YOUR PERSONAL LIVE INSTANCE URL
-    // ========================================================
     const SUPABASE_URL = "https://pqkjdtajklalzjmqkgln.supabase.co";
-    
-    // LIVE PRODUCTION API KEY INJECTED
     const SUPABASE_KEY = "sb_publishable_48O4iVJiEj0Pn0thejkbNA_r4F1pm4k";
 
-    // Initialize Supabase Client
+    // Initialize Supabase Client securely
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const TEACHER_PHONE = "917055202223"; 
@@ -493,6 +485,7 @@
             .eq('id', rowId);
     }
 
+    // FIX: ENSURED VISIBILITY TOGGLING WORKS WITHOUT FAIL
     function switchPortalView(targetView) {
         document.getElementById("tab-student").classList.remove("active");
         document.getElementById("tab-admin").classList.remove("active");

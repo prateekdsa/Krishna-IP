@@ -44,16 +44,30 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 4px; color: #2c3e50; font-size: 13px; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 15px; box-sizing: border-box; background: #fff; }
         
-        /* OCR MASK PATTERN FOR QUESTIONS & OPTIONS */
+        /* 🛡️ OCR MASK PATTERN & BLOCK HOOSTERS */
+        .secure-wrapper-panel {
+            position: relative;
+            margin: 14px 0;
+            padding: 2px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Hardware Accelerated Interference Canvas Layer */
+        .lens-disruptor-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.12; /* Subtle profile for human eyes, high-frequency distortion for OCR filters */
+        }
+
         .secure-text-render, .option-container, .code-box {
             position: relative;
-            background-image: repeating-linear-gradient(
-                45deg,
-                rgba(52, 152, 219, 0.05) 0px,
-                rgba(52, 152, 219, 0.05) 1px,
-                transparent 1px,
-                transparent 6px
-            ) !important;
+            z-index: 2;
         }
 
         .code-box { 
@@ -62,7 +76,7 @@
             border-radius: 6px; 
             font-family: 'Consolas', 'Courier New', Courier, monospace; 
             white-space: pre-wrap; 
-            margin: 14px 0; 
+            margin: 10px 0; 
             overflow-x: auto; 
             font-size: 17px; 
             font-weight: bold;
@@ -75,13 +89,13 @@
             font-size: 17px;
             font-weight: 700;
             color: #2c3e50;
-            line-height: 1.4;
-            letter-spacing: -0.1px;
+            line-height: 1.5;
             margin-bottom: 12px;
-            padding: 6px;
+            padding: 8px;
             border-radius: 4px;
         }
 
+        /* 🛡️ UNICODE REVERSAL MASK CLASS */
         .bidi-mask {
             display: inline-block !important; 
             direction: rtl !important; 
@@ -237,9 +251,19 @@
             <div id="progress-text">Question 1 of 3</div>
             <div id="timer-box">Time Left: --:--</div>
         </div>
-        <div id="secure-question-host" class="secure-text-render"></div>
+        
+        <div class="secure-wrapper-panel" id="question-wrapper-frame">
+            <canvas class="lens-disruptor-canvas" id="canvas-shield-q"></canvas>
+            <div id="secure-question-host" class="secure-text-render"></div>
+        </div>
+        
         <div id="code-container"></div>
-        <div id="options-container"></div>
+        
+        <div class="secure-wrapper-panel" id="options-wrapper-frame">
+            <canvas class="lens-disruptor-canvas" id="canvas-shield-o"></canvas>
+            <div id="options-container"></div>
+        </div>
+
         <div class="nav-actions">
             <button class="btn btn-prev" id="prev-btn" onclick="goPrevious()">Previous</button>
             <button class="btn btn-next" id="next-btn" onclick="goNext()">Next</button>
@@ -573,7 +597,7 @@
 
         studentRoll = String(rollInt);
 
-        // 🔒 DUAL DEVICE PRE-CHECK: Query if this roll number has an open active session elsewhere
+        // DUAL DEVICE PRE-CHECK
         const liveLockActive = await isGlobalBlockActive(studentRoll, selectedClassKey);
         if (liveLockActive) {
             triggerLockoutUI("⛔ SIMULTANEOUS LOG IN DETECTED:\nThis Roll number configuration is currently active on another device inside the cloud network.");
@@ -585,7 +609,7 @@
             return alert(`❌ Incorrect Access Password mapped to Roll No ${studentRoll}!`);
         }
         
-        // 🔒 ENGAGE LIVE CLOUD LOCK: Lock the identity immediately to avoid double entry
+        // ENGAGE LIVE CLOUD LOCK
         await registerGlobalLocktrack(studentName, studentRoll, selectedClassKey);
 
         let baseQuestions = allClassData[selectedClassKey];
@@ -630,6 +654,7 @@
         }, 1000);
     }
 
+    // 🛡️ GOOGLE LENS TEXT SHUFFLER & ANTI-OCR OBFUSCATOR
     function encryptTextForHumanEyes(plainText) {
         if (!plainText) return "";
         const words = plainText.split(" ");
@@ -643,11 +668,13 @@
                 let part1 = word.substring(0, half);
                 let part2 = word.substring(half);
                 
-                wordBlock += `<span class="bidi-mask">${part1.split('').reverse().join('')}</span>`;
+                // Physical text structure written backward in DOM layout, flipped normal visually by CSS bidi properties.
+                // Injects an invisible soft hyphen break entity (&#8204;) to break character mapping filters.
+                wordBlock += `<span class="bidi-mask">${part1.split('').reverse().join('')}</span>&#8204;`;
                 wordBlock += `<span class="bidi-mask">${part2.split('').reverse().join('')}</span>`;
             } else {
                 for (let i = 0; i < word.length; i++) {
-                    wordBlock += `<span>${word[i]}</span>`;
+                    wordBlock += `<span>${word[i]}</span>&#8203;`; // Zero-width spaces break word aggregation bounds
                 }
             }
             
@@ -656,6 +683,37 @@
         });
         
         return compositeHtml;
+    }
+
+    // 🛡️ DYNAMIC HARDWARE NOISE ENGINE
+    // Creates ultra-fine micro lines that block OCR segmentation frames while remaining invisible to humans.
+    function deployInterferenceMatrix(canvasId, parentWrapperId) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const wrapper = document.getElementById(parentWrapperId);
+        
+        // Reset sizes dynamically to text box profile boundaries
+        canvas.width = wrapper.offsetWidth;
+        canvas.height = wrapper.offsetHeight;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 0.6;
+        
+        // Render high-frequency micro lines
+        for (let i = 0; i < canvas.width; i += 4) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i + (Math.random() * 4 - 2), canvas.height);
+            ctx.stroke();
+        }
+        for (let j = 0; j < canvas.height; j += 4) {
+            ctx.beginPath();
+            ctx.moveTo(0, j);
+            ctx.lineTo(canvas.width, j + (Math.random() * 4 - 2));
+            ctx.stroke();
+        }
     }
 
     function loadQuestion() {
@@ -668,7 +726,12 @@
         
         const codeContainer = document.getElementById("code-container");
         if (currentQuiz.code) {
-            codeContainer.innerHTML = `<div class="code-box">${currentQuiz.code}</div>`;
+            // Embed separate block wrappers around raw source strings if required
+            codeContainer.innerHTML = `
+                <div class="secure-wrapper-panel" id="code-wrapper-frame">
+                    <canvas class="lens-disruptor-canvas" id="canvas-shield-c"></canvas>
+                    <div class="code-box">${currentQuiz.code}</div>
+                </div>`;
         } else { codeContainer.innerHTML = ""; }
 
         const optionsContainer = document.getElementById("options-container");
@@ -703,6 +766,15 @@
             nextBtn.innerText = "Next";
             nextBtn.className = "btn btn-next";
         }
+
+        // Fire interference array renders after the DOM updates layouts
+        setTimeout(() => {
+            deployInterferenceMatrix('canvas-shield-q', 'question-wrapper-frame');
+            deployInterferenceMatrix('canvas-shield-o', 'options-wrapper-frame');
+            if (currentQuiz.code) {
+                deployInterferenceMatrix('canvas-shield-c', 'code-wrapper-frame');
+            }
+        }, 60);
     }
 
     function selectOption(index) {
@@ -739,7 +811,7 @@
 
         finalScore = score;
         
-        // 🔒 RELEASE SESSION LOCK OUT ON RETRIEVAL COMPILATION
+        // RELEASE SESSION LOCK OUT ON RETRIEVAL COMPILATION
         if(studentName !== "TEACHERS") {
             await clearLockFromSystem(studentRoll, selectedClassKey);
         }

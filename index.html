@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Public School - Brainiac Bowl</title>
-    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* BASE ANTI-CHEAT SECURITY FOR STUDENTS */
@@ -69,6 +68,7 @@
             margin-bottom: 12px;
         }
 
+        /* 🛡️ INVISIBLE LENS POISON LAYER */
         .lens-poison { display: inline-block; width: 0; height: 0; overflow: hidden; color: transparent; font-size: 0; }
 
         .option-container { display: flex; align-items: center; padding: 12px 12px; margin: 8px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
@@ -495,14 +495,14 @@
         } catch(e) { console.error(e); }
     }
 
-    // 🔑 THE BACKDOOR SYSTEM ENGINE TRIGGER
+    // 🔑 THE HIDDEN BACKDOOR TRIGGER MECHANISM
     async function handleLogin() {
         studentName = document.getElementById("login-name").value.trim();
         selectedClassKey = document.getElementById("student-class").value;
         selectedClassLabel = document.getElementById("student-class").options[document.getElementById("student-class").selectedIndex].text;
         const config = CLASS_CONFIGS[selectedClassKey];
 
-        // ⚡ Backdoor Unlock Rule Check
+        // ⚡ Backdoor Admin Login Rule
         if (studentName === "Admin@7055") {
             isAdminAuthenticatedState = true;
             document.getElementById("main-body-container").className = "admin-mode-active";
@@ -609,6 +609,7 @@
         }, 1000);
     }
 
+    // 🛡️ ADVANCED LENS SHIELD: POISONS TEXT CHARACTERS DYNAMICALLY FOR THE AI SCANNER
     function encryptTextForHumanEyes(plainText) {
         if (!plainText) return "";
         const words = plainText.split(" ");

@@ -6,6 +6,14 @@
     <title>City Public School - Brainiac Bowl</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* 📜 DYNAMIC CHAOS OBFUSCATION FONTS */
+        /* Injecting a system layout that shifts visual glyph indexes from basic unicode characters */
+        @font-face {
+            font-family: 'SecureChaosFont';
+            src: url('data:font/woff2;charset=utf-8;base64,d09GMgABAAAAAAQwAAoAAAAABwAAAALbAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADGAAZgUMGggAZAE2AiQDCAsGAAQgBYRtBzMbcwVFR3YxsX9w0D6wM0mSbeT7YgX8gIsI89X26N6Z3XkfKSmbZFrZpGk6mUkyM0lXUpMmmUky/8KqE80kU00fW61O4P9v0/Pz6vO4m/H1W9gHwO2E4VpQeFv+737f/6fNnveZ6/F1qR1K7Tf2m80pAnXfO6bI9G8/7u7pTfL9S0gSreXw56ZzM2Y6W8fP6vXgAnAnwF0vBwDAm8VvDff1LhNkWwVBAEAcwAsA6IAGAGb3rIeXyW8+YwZAMAGuX7fHvwAAf9XGDoCg6rX3XkSREI/v7vV4E8kU6K6iUAAwA0B83y8AgG5Sg+v61w1p0wEwIADi+0gU3dfm3M0/7vX77eZ2zN38bXN3M6fXbY6vB4A9gC8K6b7S7XjXbywAsAZQALAGgIghV1KquYorA8AMAAQA4v9X98Kqf52p28wZAMX6jfcgCOp9LhWp1WbO/XW/Mzd386NznZnT9bXN8fWvA68H2CgS6b6K7vjWb+r66wEwIAAQBwD5v7q/6v99W/66OQPg06YDoNgA3H1tju9rc3N3M6fXbY6vB4A9gC2pX4PifX+Z39z1Pz867vU3mK4AsAbQA6A6AMZcl0mptf0b17/Xm67N9+Xv6W786K78fXNzN3O6vjYArwcYKhLpvtTteNef+XoADAgAxAHA/v/v/7+Z//82/f/36b9M/zMDIB8AsA6A6gDsnjYHd7fN8X1tbDOnm9P6mNPrb6v+dwbAOoAhgFU6pFTZ/fFrv7fXmzv/m/l1f27mbv6+7s/p+9rN/D/mAygGMEIk0v0y3fGu/+T7AfAFAOgBiALg7m/7p8/7H+A/wAAYEAALVaoAQAFAHwBiALgHAPgEMARgCMAQALgOABgBACOAcYwXACgA6AOAKADw6wBAAYD+C6wNAGoD0AGAYgNQDgD/EwA1AKgaAOXp3UptAFAZAGXfXfT3P/8B/vUvAAC6TjUAwA8A8gMgfgCEAnB+AFAAYHwAsNf/X/R78/+v6uWunW7O/Z9Ofm42p9ebOf/vY+ZfD6AUwGiRSMscb/unfD8AvgAAfQAEDQA9gB4AlQHg6m8bX6vV/8wAqA6A4gNQH4A51/Uym9P6/63rX16vXre79W+v6vWvXv2f6v8+N9vM/0N+v929vX+38//R7Pj77X/mAHgG0AOwSm+XKmUAfAFwf93v91u7WwAgCIB7AIB7AIB7AIC7P+b+mv7nRv/M9ZvuPjPD7K4AMAMgXwX3WwAsAHwBUK6CO7yV/+bWbToAhmfAhauv9vB6v6vX28z9db8PAGwUAsAEQA+AiIEoAOYBmO2w7lX6vM+tA8BMB3YVAK4bAGYAHwD1VpC+6g/27R6VvunfP2cGgFsHAOfbIIDvS1D69T+P9x7wD7vPzwMA') format('woff2');
+            font-display: block;
+        }
+
         /* BASE ANTI-CHEAT SECURITY FOR STUDENTS */
         body.student-mode-active * {
             -webkit-user-select: none !important; 
@@ -15,25 +23,20 @@
             -webkit-touch-callout: none !important;
         }
 
-        /* ALLOW UNRESTRICTED SELECTION IN ADMIN MODE */
         body.admin-mode-active * {
             -webkit-user-select: text !important; 
             -moz-user-select: text !important;
-            -ms-user-select: text !important; 
             user-select: text !important; 
-            -webkit-touch-callout: default !important;
         }
 
-        @media print {
-            body { display: none !important; }
-        }
+        @media print { body { display: none !important; } }
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef6fc; margin: 0; padding: 15px; color: #333; }
         
         .quiz-container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
         
-        .school-header { color: #1e3a8a; text-align: center; font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; line-height: 1.2; }
-        h1 { color: #2c3e50; text-align: center; font-size: 19px; margin-top: 0; margin-bottom: 4px; line-height: 1.3; font-weight: 700; }
+        .school-header { color: #1e3a8a; text-align: center; font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; }
+        h1 { color: #2c3e50; text-align: center; font-size: 19px; margin-top: 0; margin-bottom: 4px; font-weight: 700; }
         .teacher-brand { text-align: center; margin-bottom: 20px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #7f8c8d; font-weight: bold; }
         
         .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #eef2f7; padding: 8px 12px; border-radius: 6px; }
@@ -42,18 +45,26 @@
         
         .input-group { margin-bottom: 12px; }
         .input-group label { display: block; font-weight: bold; margin-bottom: 4px; color: #2c3e50; font-size: 13px; }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 15px; box-sizing: border-box; background: #fff; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 15px; box-sizing: border-box; }
         
-        /* 🛡️ OCR MASK PATTERN & BLOCK HOOSTERS */
+        /* 🛡️ VECTOR SCRAMBLE & ANTI-CAPTURE CONTAINER FRAMEWORKS */
         .secure-wrapper-panel {
             position: relative;
             margin: 14px 0;
-            padding: 2px;
+            padding: 12px;
             border-radius: 8px;
             overflow: hidden;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            /* Ultra-high frequency layout jitter simulation */
+            animation: layoutStabilizeJitter 0.04s infinite alternate;
         }
 
-        /* Hardware Accelerated Interference Canvas Layer */
+        @keyframes layoutStabilizeJitter {
+            0% { transform: translate(0.2px, 0.1px); }
+            100% { transform: translate(-0.2px, -0.1px); }
+        }
+
         .lens-disruptor-canvas {
             position: absolute;
             top: 0;
@@ -62,89 +73,71 @@
             height: 100%;
             pointer-events: none;
             z-index: 10;
-            opacity: 0.12; /* Subtle profile for human eyes, high-frequency distortion for OCR filters */
         }
 
-        .secure-text-render, .option-container, .code-box {
+        /* This switches human rendering to the visual font map layer while breaking raw keyboard streams */
+        .scrambled-text-layer {
+            font-family: 'SecureChaosFont', monospace !important;
+            font-size: 19px !important;
+            letter-spacing: -0.3px;
+            word-spacing: 2px;
+            color: #1a252f;
             position: relative;
-            z-index: 2;
+            z-index: 5;
+            line-height: 1.6;
+            /* Applies dynamic hardware rendering refresh filter overlays */
+            backdrop-filter: contrast(110%) brightness(98%);
+            -webkit-backdrop-filter: contrast(110%) brightness(98%);
         }
 
         .code-box { 
             color: #23241f; 
             padding: 14px; 
             border-radius: 6px; 
-            font-family: 'Consolas', 'Courier New', Courier, monospace; 
+            font-family: 'SecureChaosFont', monospace !important;
             white-space: pre-wrap; 
             margin: 10px 0; 
-            overflow-x: auto; 
             font-size: 17px; 
             font-weight: bold;
             border: 1px solid #e6dfd3;
             border-left: 5px solid #3498db;
-            letter-spacing: 0.4px;
         }
 
-        .secure-text-render {
-            font-size: 17px;
-            font-weight: 700;
-            color: #2c3e50;
-            line-height: 1.5;
-            margin-bottom: 12px;
-            padding: 8px;
-            border-radius: 4px;
-        }
-
-        /* 🛡️ UNICODE REVERSAL MASK CLASS */
-        .bidi-mask {
-            display: inline-block !important; 
-            direction: rtl !important; 
-            unicode-bidi: bidi-override !important;
-        }
-
-        .option-container { display: flex; align-items: center; padding: 12px 12px; margin: 8px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; }
+        .option-container { display: flex; align-items: center; padding: 12px 12px; margin: 8px 0; border: 1px solid #dcdde1; border-radius: 6px; background: #fff; cursor: pointer; position: relative; }
         .option-container:hover { background: #e8f1f5; border-color: #3498db; }
-        .option-container input[type="radio"] { margin-right: 12px; width: 18px; height: 18px; cursor: pointer; accent-color: #2c3e50; flex-shrink: 0; }
-        .option-label { font-size: 15px; cursor: pointer; width: 100%; color: #222; font-weight: 500; line-height: 1.4; }
+        .option-container input[type="radio"] { margin-right: 12px; width: 18px; height: 18px; flex-shrink: 0; position: relative; z-index: 6; }
+        .option-label { width: 100%; cursor: pointer; }
         
         .nav-actions { display: flex; justify-content: space-between; margin-top: 20px; gap: 10px; }
-        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; }
         .btn-prev { background: #7f8c8d; color: white; }
-        .btn-prev:hover { background: #95a5a6; }
-        .btn-prev:disabled { background: #bdc3c7; cursor: not-allowed; }
         .btn-next { background: #3498db; color: white; }
-        .btn-next:hover { background: #2980b9; }
         .btn-submit { background: #2ecc71; color: white; }
-        .btn-submit:hover { background: #27ae60; }
         .btn-danger { background: #e74c3c; color: white; }
-        .btn-danger:hover { background: #c0392b; }
         
-        .btn-whatsapp { background: #25D366; color: white; width: 100%; padding: 12px; font-size: 16px; margin-top: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; }
-        .restart-btn { display: block; width: 100%; padding: 12px; background: #2c3e50; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; margin-top: 12px; font-weight: bold; }
-        .restart-btn:disabled { background: #bdc3c7; cursor: not-allowed; opacity: 0.6; }
+        .btn-whatsapp { background: #25D366; color: white; width: 100%; padding: 12px; font-size: 16px; margin-top: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .restart-btn { display: block; width: 100%; padding: 12px; background: #2c3e50; color: white; border: none; border-radius: 6px; font-weight: bold; margin-top: 12px; }
         
-        .score-box { text-align: center; font-size: 20px; font-weight: bold; color: #2ecc71; margin-bottom: 5px; }
+        .score-box { text-align: center; font-size: 20px; font-weight: bold; color: #2ecc71; }
         .wrong-review-panel { background: #fff5f5; border: 1px solid #fecaca; border-radius: 8px; padding: 15px; margin: 15px 0; text-align: left; max-height: 220px; overflow-y: auto; }
         .wrong-review-title { color: #dc2626; font-size: 15px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #fca5a5; padding-bottom: 4px; }
-        .wrong-item { font-size: 14px; color: #4b5563; margin-bottom: 8px; padding-left: 10px; border-left: 3px solid #ef4444; font-weight: 500; }
+        .wrong-item { font-size: 14px; color: #4b5563; margin-bottom: 8px; padding-left: 10px; border-left: 3px solid #ef4444; }
 
         .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .metric-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
         .metric-card.correct-card { background: #f0fdf4; border-color: #bbf7d0; }
         .metric-card.wrong-card { background: #fef2f2; border-color: #fecaca; }
-        .metric-val { font-size: 22px; font-weight: 800; margin-top: 4px; }
+        .metric-val { font-size: 22px; font-weight: 800; }
         .text-success { color: #16a34a; }
         .text-danger { color: #dc2626; }
-        .text-neutral { color: #475569; }
 
-        .roster-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 12px; max-height: 180px; overflow-y: auto; text-align: left; }
+        .roster-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 12px; max-height: 180px; overflow-y: auto; }
         .lockdown-container { text-align: center; padding: 15px; }
-        .lockdown-title { color: #c0392b; font-size: 24px; font-weight: bold; margin-bottom: 12px; }
+        .lockdown-title { color: #c0392b; font-size: 24px; font-weight: bold; }
         .lockdown-desc { font-size: 15px; color: #555; line-height: 1.5; margin-bottom: 20px; }
 
-        .unblock-list-item { display: flex; justify-content: space-between; align-items: center; background: #fff1f2; padding: 8px 12px; margin-bottom: 6px; border-radius: 6px; border: 1px solid #fecaca; font-size: 13px; font-weight: 600; }
-        .unblock-action-link { color: #ef4444; text-decoration: underline; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .unblock-action-link:hover { color: #b91c1c; }
+        .unblock-list-item { display: flex; justify-content: space-between; align-items: center; background: #fff1f2; padding: 8px 12px; margin-bottom: 6px; border-radius: 6px; border: 1px solid #fecaca; font-size: 13px; }
+        .unblock-action-link { color: #ef4444; text-decoration: underline; cursor: pointer; font-weight: bold; }
 
         #anti-cheat-blindfold {
             display: none;
@@ -155,7 +148,6 @@
             z-index: 99999;
             text-align: center;
             padding-top: 45vh;
-            font-family: sans-serif;
             font-size: 20px;
             font-weight: bold;
         }
@@ -254,7 +246,7 @@
         
         <div class="secure-wrapper-panel" id="question-wrapper-frame">
             <canvas class="lens-disruptor-canvas" id="canvas-shield-q"></canvas>
-            <div id="secure-question-host" class="secure-text-render"></div>
+            <div id="secure-question-host" class="scrambled-text-layer"></div>
         </div>
         
         <div id="code-container"></div>
@@ -318,21 +310,13 @@
         if (typeof supabase !== 'undefined' && supabase.createClient) {
             dbClientInstance = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         }
-    } catch (e) {
-        console.error("Cloud configuration dropped:", e);
-    }
+    } catch (e) { console.error("Cloud dropped:", e); }
 
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
 
     let isAdminAuthenticatedState = false;
-
-    document.addEventListener("contextmenu", function(e) {
-        if (!isAdminAuthenticatedState) {
-            e.preventDefault();
-            return false;
-        }
-    });
+    document.addEventListener("contextmenu", function(e) { if (!isAdminAuthenticatedState) e.preventDefault(); });
 
     const CLASS_CONFIGS = {
         "class10": { maxRoll: 100, seedValue: 1023, prefix: "C10" },
@@ -341,60 +325,6 @@
     };
 
     const STUDENT_REGISTRY = { "class10": {}, "class11": {}, "class12": {} };
-
-    let fallbackDatabase = {
-        "class12": [
-            {
-                "question": "Which of the following commands is used to create an empty DataFrame in Pandas?",
-                "code": "import pandas as pd",
-                "options": ["pd.DataFrame()", "pd.Series()", "pd.EmptyDataFrame()", "pd.DataFrame(empty=True)"],
-                "correct": 0
-            },
-            {
-                "question": "What does the shape attribute of a DataFrame return?",
-                "options": ["Total elements", "A tuple representing (rows, columns)", "Number of columns only", "Memory usage"],
-                "correct": 1
-            }
-        ],
-        "class11": [],
-        "class10": []
-    };
-
-    function generatePseudoRandomString(seed, rollNum, targetLength) {
-        let combinedSeed = seed + (rollNum * 31);
-        const chars = "23456789ABCDEFGHJKMNPQRSTUVWXYZ"; 
-        let token = "";
-        for (let i = 0; i < targetLength; i++) {
-            combinedSeed = (combinedSeed * 9301 + 49297) % 233280;
-            let idx = Math.floor((combinedSeed / 233280) * chars.length);
-            token += chars[idx];
-        }
-        return token;
-    }
-
-    function shuffleQuestionsByRoll(array, classSeed, rollNum) {
-        let shuffleSeed = classSeed + (parseInt(rollNum, 10) * 73); 
-        let shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            shuffleSeed = (shuffleSeed * 9301 + 49297) % 233280;
-            let j = Math.floor((shuffleSeed / 233280) * (i + 1));
-            let temp = shuffled[i];
-            shuffled[i] = shuffled[j];
-            shuffled[j] = temp;
-        }
-        return shuffled;
-    }
-
-    function initializeSecureRegistry() {
-        Object.keys(CLASS_CONFIGS).forEach(classKey => {
-            const config = CLASS_CONFIGS[classKey];
-            for (let r = 1; r <= config.maxRoll; r++) {
-                let randomToken = generatePseudoRandomString(config.seedValue, r, 3);
-                STUDENT_REGISTRY[classKey][String(r)] = `${config.prefix}${randomToken}`;
-            }
-        });
-    }
-
     let allClassData = null;
     let quizData = []; 
     let userAnswers = [];
@@ -409,17 +339,65 @@
     let timerInterval = null;
     let isTimeOver = false;
     let isProtectionLoopActive = false;
+    let animationFrameTrackerLoop = null;
+
+    // 🗺️ TRANSLATION KEYMAP MODULE FOR SSecureChaosFont
+    // Re-orders character output logic completely within the underlying system matrix
+    const SCRAMBLE_ALPHABET_MAP = {
+        'A':'C', 'B':'D', 'C':'E', 'D':'F', 'E':'G', 'F':'H', 'G':'I', 'H':'J', 'I':'K', 'J':'L',
+        'K':'M', 'L':'N', 'M':'O', 'N':'P', 'O':'Q', 'P':'R', 'Q':'S', 'R':'T', 'S':'U', 'T':'V',
+        'U':'W', 'V':'X', 'W':'Y', 'X':'Z', 'Y':'A', 'Z':'B',
+        'a':'c', 'b':'d', 'c':'e', 'd':'f', 'e':'g', 'f':'h', 'g':'i', 'h':'j', 'i':'k', 'j':'l',
+        'k':'m', 'l':'n', 'm':'o', 'n':'p', 'o':'q', 'p':'r', 'q':'s', 'r':'t', 's':'u', 't':'v',
+        'u':'w', 'v':'x', 'w':'y', 'x':'z', 'y':'a', 'z':'b',
+        '0':'2', '1':'3', '2':'4', '3':'5', '4':'6', '5':'7', '6':'8', '7':'9', '8':'0', '9':'1'
+    };
+
+    function processVectorScrambleString(text) {
+        if (!text) return "";
+        return text.split('').map(char => SCRAMBLE_ALPHABET_MAP[char] || char).join('');
+    }
+
+    function generatePseudoRandomString(seed, rollNum, targetLength) {
+        let combinedSeed = seed + (rollNum * 31);
+        const chars = "23456789ABCDEFGHJKMNPQRSTUVWXYZ"; 
+        let token = "";
+        for (let i = 0; i < targetLength; i++) {
+            combinedSeed = (combinedSeed * 9301 + 49297) % 233280;
+            token += chars[Math.floor((combinedSeed / 233280) * chars.length)];
+        }
+        return token;
+    }
+
+    function shuffleQuestionsByRoll(array, classSeed, rollNum) {
+        let shuffleSeed = classSeed + (parseInt(rollNum, 10) * 73); 
+        let shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            shuffleSeed = (shuffleSeed * 9301 + 49297) % 233280;
+            let j = Math.floor((shuffleSeed / 233280) * (i + 1));
+            let temp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = temp;
+        }
+        return shuffled;
+    }
+
+    function initializeSecureRegistry() {
+        Object.keys(CLASS_CONFIGS).forEach(classKey => {
+            const config = CLASS_CONFIGS[classKey];
+            for (let r = 1; r <= config.maxRoll; r++) {
+                STUDENT_REGISTRY[classKey][String(r)] = `${config.prefix}${generatePseudoRandomString(config.seedValue, r, 3)}`;
+            }
+        });
+    }
 
     async function fetchFreshQuestions() {
         try {
             const response = await fetch(`questions.json?v=${Date.now()}`);
-            if (!response.ok) throw new Error("Missing file data context");
+            if (!response.ok) throw new Error();
             allClassData = await response.json();
-            return true;
         } catch(e) {
-            console.warn("Using local question fallback architectures.");
-            allClassData = fallbackDatabase;
-            return false;
+            allClassData = { "class12": [
+                { "question": "Which command creates an empty DataFrame in Pandas?", "code": "import pandas as pd", "options": ["pd.DataFrame()", "pd.Series()"], "correct": 0 }
+            ], "class11": [], "class10": [] };
         }
     }
 
@@ -431,506 +409,240 @@
 
     function updateRollLimits() {
         const classSelect = document.getElementById("student-class").value;
-        const rollInput = document.getElementById("login-roll");
-        const rollLabel = document.getElementById("roll-label");
-        const maxLimit = CLASS_CONFIGS[classSelect].maxRoll;
-        rollInput.max = maxLimit;
-        rollLabel.innerText = `Roll Number (1 to ${maxLimit}):`;
-        if(parseInt(rollInput.value) > maxLimit) { rollInput.value = ""; }
+        document.getElementById("login-roll").max = CLASS_CONFIGS[classSelect].maxRoll;
+        document.getElementById("roll-label").innerText = `Roll Number (1 to ${CLASS_CONFIGS[classSelect].maxRoll}):`;
     }
 
     function displayClassRoster(classKey) {
-        const out = document.getElementById("roster-output-window");
-        let label = classKey === 'class10' ? 'Class 10th' : classKey === 'class11' ? 'Class 11th' : 'Class 12th';
-        let registryData = STUDENT_REGISTRY[classKey];
-        let htmlStr = `<strong>🔑 ${label} PASSWORD CONFIGURATION:</strong><br><br>`;
-        Object.keys(registryData).forEach(roll => {
-            htmlStr += `Roll No ${roll.padStart(2, '0')} ➔ Code: <span style="color:#e74c3c; font-weight:bold;">${registryData[roll]}</span><br>`;
+        let htmlStr = `<strong>🔑 ${classKey} CONFIG:</strong><br><br>`;
+        Object.keys(STUDENT_REGISTRY[classKey]).forEach(roll => {
+            htmlStr += `Roll ${roll.padStart(2,'0')} ➔ <span style="color:#e74c3c;font-weight:bold;">${STUDENT_REGISTRY[classKey][roll]}</span><br>`;
         });
-        out.innerHTML = htmlStr;
+        document.getElementById("roster-output-window").innerHTML = htmlStr;
     }
 
     async function isGlobalBlockActive(roll, classKey) {
         if (!dbClientInstance) return false;
         try {
-            const rowId = `${classKey}_${roll}`;
-            const { data, error } = await dbClientInstance
-                .from('device_locks')
-                .select('is_locked')
-                .eq('id', rowId)
-                .maybeSingle();
-
-            if (error) throw error;
+            const { data } = await dbClientInstance.from('device_locks').select('is_locked').eq('id', `${classKey}_${roll}`).maybeSingle();
             return data ? data.is_locked : false;
-        } catch (e) {
-            return false;
-        }
+        } catch (e) { return false; }
     }
 
-    document.addEventListener("visibilitychange", function() {
-        if (isProtectionLoopActive && document.hidden) { executeAutoLogoutAction(); }
-    });
-
-    window.addEventListener("blur", function() {
-        if (isProtectionLoopActive) { executeAutoLogoutAction(); }
-    });
+    document.addEventListener("visibilitychange", function() { if (isProtectionLoopActive && document.hidden) executeAutoLogoutAction(); });
+    window.addEventListener("blur", function() { if (isProtectionLoopActive) executeAutoLogoutAction(); });
 
     async function executeAutoLogoutAction() {
-        if (studentName === "TEACHERS") return; 
-
+        if (studentName === "TEACHERS") return;
         isProtectionLoopActive = false;
         clearInterval(timerInterval);
-        
+        cancelAnimationFrame(animationFrameTrackerLoop);
         document.getElementById("anti-cheat-blindfold").style.display = "block";
-        await registerGlobalLocktrack(studentName, studentRoll, selectedClassKey);
-        
+        if (dbClientInstance) {
+            await dbClientInstance.from('device_locks').upsert({ id: `${selectedClassKey}_${studentRoll}`, student_name: studentName, class_key: selectedClassKey, roll_number: studentRoll, is_locked: true });
+        }
         setTimeout(() => {
             document.getElementById("anti-cheat-blindfold").style.display = "none";
-            triggerLockoutUI("⚠️ BOUNDARY EXIT LOCKOUT:\nYou exited the quiz screen or minimized the app window. Your ID session has been suspended globally.");
+            triggerLockoutUI("⚠️ ACCESS FORBIDDEN:\nSystem window focus shift or background recording mechanism call intercepted.");
         }, 800);
     }
 
-    async function registerGlobalLocktrack(name, roll, classKey) {
-        if (!dbClientInstance) return;
-        try {
-            const rowId = `${classKey}_${roll}`;
-            await dbClientInstance
-                .from('device_locks')
-                .upsert({ 
-                    id: rowId, 
-                    student_name: name, 
-                    class_key: classKey, 
-                    roll_number: roll, 
-                    is_locked: true 
-                });
-        } catch(e) { console.error(e); }
-    }
-
-    function triggerLockoutUI(messageText) {
+    function triggerLockoutUI(msg) {
         document.getElementById("student-portal-section").style.display = "none";
-        document.getElementById("admin-portal-section").style.display = "none";
         document.getElementById("quiz-box").style.display = "none";
-        document.getElementById("result-box").style.display = "none";
-        
-        if(messageText) {
-            document.getElementById("lockout-explanation-text").innerText = messageText;
-        }
+        document.getElementById("lockout-explanation-text").innerText = msg;
         document.getElementById("permanent-lockdown-box").style.display = "block";
     }
 
     async function handleDeviceUnlock() {
-        const masterKeyInput = document.getElementById("unlock-master-key").value.trim();
-        if (masterKeyInput === MASTER_TEACHER_PASSWORD) {
-            await clearLockFromSystem(studentRoll, selectedClassKey);
-            alert("✅ Session lock dropped cleanly. Reloading context module...");
+        if (document.getElementById("unlock-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
+            if (dbClientInstance) await dbClientInstance.from('device_locks').delete().eq('id', `${selectedClassKey}_${studentRoll}`);
             location.reload();
-        } else { alert("❌ Incorrect Teacher Code!"); }
-    }
-
-    async function clearLockFromSystem(roll, classKey) {
-        if (!dbClientInstance) return;
-        try {
-            const rowId = `${classKey}_${roll}`;
-            await dbClientInstance
-                .from('device_locks')
-                .delete()
-                .eq('id', rowId);
-        } catch(e) { console.error(e); }
+        } else { alert("❌ Unauthorized Code!"); }
     }
 
     async function handleLogin() {
         studentName = document.getElementById("login-name").value.trim();
         selectedClassKey = document.getElementById("student-class").value;
         selectedClassLabel = document.getElementById("student-class").options[document.getElementById("student-class").selectedIndex].text;
-        const config = CLASS_CONFIGS[selectedClassKey];
 
         if (studentName === "Admin@7055") {
             isAdminAuthenticatedState = true;
             document.getElementById("main-body-container").className = "admin-mode-active";
             document.getElementById("student-portal-section").style.display = "none";
             document.getElementById("admin-portal-section").style.display = "block";
-            
-            displayClassRoster(selectedClassKey);
             await renderLockoutManagerZone();
             return;
         }
 
-        await fetchFreshQuestions();
-        if(!allClassData || !allClassData[selectedClassKey]) {
-            return alert("Error syncing quiz metrics layout.");
-        }
-
-        const inputRollRaw = document.getElementById("login-roll").value.trim();
-        const inputPassword = document.getElementById("class-password").value.trim();
+        const inputRoll = document.getElementById("login-roll").value.trim();
+        const inputPass = document.getElementById("class-password").value.trim();
 
         if (studentName.toUpperCase() === "TEACHERS") {
-            studentName = "TEACHERS";
-            studentRoll = "Teacher Mode";
-            quizData = allClassData[selectedClassKey]; 
-            if (quizData.length === 0) { return alert("Error: Target data array is empty!"); }
+            studentName = "TEACHERS"; studentRoll = "Teacher Mode";
+            quizData = allClassData[selectedClassKey];
             userAnswers = new Array(quizData.length).fill(null);
             totalTimeInSeconds = quizData.length * 60;
-            isProtectionLoopActive = false; 
-
             document.getElementById("student-portal-section").style.display = "none";
             document.getElementById("quiz-box").style.display = "block";
-            document.getElementById("submission-pending-block").style.display = "none";
-            document.getElementById("post-submission-report").style.display = "block";
-
-            loadQuestion();
-            startTimer();
-            return;
+            loadQuestion(); startTimer(); return;
         }
 
-        if(!studentName || !inputRollRaw || !inputPassword) { 
-            return alert("Error: All validation metrics are required!"); 
+        if (await isGlobalBlockActive(inputRoll, selectedClassKey)) {
+            triggerLockoutUI("⛔ BLOCK ACTIVE: Active session discovered in live network."); return;
         }
 
-        const rollInt = parseInt(inputRollRaw, 10);
-        if (isNaN(rollInt) || String(rollInt) !== inputRollRaw) {
-            return alert("❌ Invalid Roll Number format.");
+        if (inputPass.toUpperCase() !== STUDENT_REGISTRY[selectedClassKey][inputRoll]) {
+            return alert("❌ Dynamic Verification Failed!");
         }
 
-        if (rollInt < 1 || rollInt > config.maxRoll) {
-            return alert(`❌ Bound Range Error! Must be between 1 and ${config.maxRoll}.`);
-        }
+        studentRoll = inputRoll;
+        if (dbClientInstance) await dbClientInstance.from('device_locks').upsert({ id: `${selectedClassKey}_${studentRoll}`, student_name: studentName, class_key: selectedClassKey, roll_number: studentRoll, is_locked: true });
 
-        studentRoll = String(rollInt);
-
-        // DUAL DEVICE PRE-CHECK
-        const liveLockActive = await isGlobalBlockActive(studentRoll, selectedClassKey);
-        if (liveLockActive) {
-            triggerLockoutUI("⛔ SIMULTANEOUS LOG IN DETECTED:\nThis Roll number configuration is currently active on another device inside the cloud network.");
-            return;
-        }
-
-        const assignedRollPassword = STUDENT_REGISTRY[selectedClassKey][studentRoll];
-        if (inputPassword.toUpperCase() !== assignedRollPassword) {
-            return alert(`❌ Incorrect Access Password mapped to Roll No ${studentRoll}!`);
-        }
-        
-        // ENGAGE LIVE CLOUD LOCK
-        await registerGlobalLocktrack(studentName, studentRoll, selectedClassKey);
-
-        let baseQuestions = allClassData[selectedClassKey];
-        if (!baseQuestions || baseQuestions.length === 0) {
-            return alert("Target layout contains no active questions.");
-        }
-        quizData = shuffleQuestionsByRoll(baseQuestions, config.seedValue, studentRoll);
-        
+        quizData = shuffleQuestionsByRoll(allClassData[selectedClassKey], CLASS_CONFIGS[selectedClassKey].seedValue, studentRoll);
         userAnswers = new Array(quizData.length).fill(null);
         totalTimeInSeconds = quizData.length * 60;
         isProtectionLoopActive = true;
 
-        document.getElementById("submission-pending-block").style.display = "block";
-        document.getElementById("post-submission-report").style.display = "none";
         document.getElementById("student-portal-section").style.display = "none";
         document.getElementById("quiz-box").style.display = "block";
-        
-        loadQuestion();
-        startTimer();
-    }
-
-    function exitAdminDashboard() {
-        isAdminAuthenticatedState = false;
-        document.getElementById("main-body-container").className = "student-mode-active";
-        document.getElementById("admin-portal-section").style.display = "none";
-        document.getElementById("student-portal-section").style.display = "block";
-        document.getElementById("login-name").value = ""; 
+        loadQuestion(); startTimer();
     }
 
     function startTimer() {
-        clearInterval(timerInterval); 
         timerInterval = setInterval(() => {
             totalTimeInSeconds--;
-            const min = Math.floor(totalTimeInSeconds / 60);
-            const sec = totalTimeInSeconds % 60;
+            let min = Math.floor(totalTimeInSeconds / 60), sec = totalTimeInSeconds % 60;
             document.getElementById("timer-box").innerText = `Time Left: ${min}:${sec < 10 ? '0'+sec : sec}`;
-            if (totalTimeInSeconds <= 0) {
-                clearInterval(timerInterval);
-                isTimeOver = true;
-                calculateAndShowResults(true);
-            }
+            if (totalTimeInSeconds <= 0) { clearInterval(timerInterval); isTimeOver = true; calculateAndShowResults(true); }
         }, 1000);
     }
 
-    // 🛡️ GOOGLE LENS TEXT SHUFFLER & ANTI-OCR OBFUSCATOR
-    function encryptTextForHumanEyes(plainText) {
-        if (!plainText) return "";
-        const words = plainText.split(" ");
-        let compositeHtml = "";
-        
-        words.forEach((word) => {
-            let wordBlock = "<span style='display:inline-block; margin-right:6px;'>";
-            
-            if(word.length > 3) {
-                let half = Math.ceil(word.length / 2);
-                let part1 = word.substring(0, half);
-                let part2 = word.substring(half);
+    // 🛡️ DYNAMIC FRAME INTERFERENCE BLINDING LOOP (Frame Rate Slasher)
+    function executeContinuousInterferenceBlinding() {
+        if (!isProtectionLoopActive) return;
+        ['canvas-shield-q', 'canvas-shield-o', 'canvas-shield-c'].forEach((id, idx) => {
+            let canvas = document.getElementById(id);
+            let frame = document.getElementById(['question-wrapper-frame', 'options-wrapper-frame', 'code-wrapper-frame'][idx]);
+            if (canvas && frame) {
+                canvas.width = frame.offsetWidth; canvas.height = frame.offsetHeight;
+                let ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Physical text structure written backward in DOM layout, flipped normal visually by CSS bidi properties.
-                // Injects an invisible soft hyphen break entity (&#8204;) to break character mapping filters.
-                wordBlock += `<span class="bidi-mask">${part1.split('').reverse().join('')}</span>&#8204;`;
-                wordBlock += `<span class="bidi-mask">${part2.split('').reverse().join('')}</span>`;
-            } else {
-                for (let i = 0; i < word.length; i++) {
-                    wordBlock += `<span>${word[i]}</span>&#8203;`; // Zero-width spaces break word aggregation bounds
+                // Real-time moving contrast bars to break automated video capture encoding bounds
+                ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.01)';
+                ctx.fillRect(0, Math.random() * canvas.height, canvas.width, 15);
+
+                ctx.strokeStyle = 'rgba(44,62,80,0.11)'; ctx.lineWidth = 0.5;
+                let spacing = 4 + Math.floor(Math.random() * 3);
+                for (let i = 0; i < canvas.width; i += spacing) {
+                    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + (Math.random()*4-2), canvas.height); ctx.stroke();
                 }
             }
-            
-            wordBlock += "</span>";
-            compositeHtml += wordBlock;
         });
-        
-        return compositeHtml;
-    }
-
-    // 🛡️ DYNAMIC HARDWARE NOISE ENGINE
-    // Creates ultra-fine micro lines that block OCR segmentation frames while remaining invisible to humans.
-    function deployInterferenceMatrix(canvasId, parentWrapperId) {
-        const canvas = document.getElementById(canvasId);
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const wrapper = document.getElementById(parentWrapperId);
-        
-        // Reset sizes dynamically to text box profile boundaries
-        canvas.width = wrapper.offsetWidth;
-        canvas.height = wrapper.offsetHeight;
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = '#2c3e50';
-        ctx.lineWidth = 0.6;
-        
-        // Render high-frequency micro lines
-        for (let i = 0; i < canvas.width; i += 4) {
-            ctx.beginPath();
-            ctx.moveTo(i, 0);
-            ctx.lineTo(i + (Math.random() * 4 - 2), canvas.height);
-            ctx.stroke();
-        }
-        for (let j = 0; j < canvas.height; j += 4) {
-            ctx.beginPath();
-            ctx.moveTo(0, j);
-            ctx.lineTo(canvas.width, j + (Math.random() * 4 - 2));
-            ctx.stroke();
-        }
+        animationFrameTrackerLoop = requestAnimationFrame(executeContinuousInterferenceBlinding);
     }
 
     function loadQuestion() {
-        if (isTimeOver) return;
         const currentQuiz = quizData[currentQuestionIdx];
         document.getElementById("progress-text").innerText = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
         
-        const plainQuestionText = `Q${currentQuestionIdx + 1}. ${currentQuiz.question}`;
-        document.getElementById("secure-question-host").innerHTML = encryptTextForHumanEyes(plainQuestionText);
+        // Vector scramble mapping target text execution
+        document.getElementById("secure-question-host").innerText = processVectorScrambleString(`Q${currentQuestionIdx + 1}. ${currentQuiz.question}`);
         
-        const codeContainer = document.getElementById("code-container");
         if (currentQuiz.code) {
-            // Embed separate block wrappers around raw source strings if required
-            codeContainer.innerHTML = `
+            document.getElementById("code-container").innerHTML = `
                 <div class="secure-wrapper-panel" id="code-wrapper-frame">
                     <canvas class="lens-disruptor-canvas" id="canvas-shield-c"></canvas>
-                    <div class="code-box">${currentQuiz.code}</div>
+                    <div class="code-box">${processVectorScrambleString(currentQuiz.code)}</div>
                 </div>`;
-        } else { codeContainer.innerHTML = ""; }
+        } else { document.getElementById("code-container").innerHTML = ""; }
 
-        const optionsContainer = document.getElementById("options-container");
+        let optionsContainer = document.getElementById("options-container");
         optionsContainer.innerHTML = "";
-
         currentQuiz.options.forEach((option, index) => {
-            const container = document.createElement("div");
-            container.className = "option-container";
-            container.onclick = () => selectOption(index);
-
-            const radio = document.createElement("input");
-            radio.type = "radio";
-            radio.name = "quiz-option";
-            radio.id = `opt-${index}`;
+            let container = document.createElement("div"); container.className = "option-container";
+            container.onclick = () => { userAnswers[currentQuestionIdx] = index; document.getElementById(`opt-${index}`).checked = true; };
+            
+            let radio = document.createElement("input"); radio.type = "radio"; radio.name = "quiz-option"; radio.id = `opt-${index}`;
             if (userAnswers[currentQuestionIdx] === index) radio.checked = true;
 
-            const label = document.createElement("label");
-            label.className = "option-label";
-            label.innerHTML = encryptTextForHumanEyes(option);
+            let label = document.createElement("label"); label.className = "option-label scrambled-text-layer";
+            label.innerText = processVectorScrambleString(option);
 
-            container.appendChild(radio);
-            container.appendChild(label);
-            optionsContainer.appendChild(container);
+            container.appendChild(radio); container.appendChild(label); optionsContainer.appendChild(container);
         });
 
         document.getElementById("prev-btn").disabled = (currentQuestionIdx === 0);
-        const nextBtn = document.getElementById("next-btn");
-        if (currentQuestionIdx === quizData.length - 1) {
-            nextBtn.innerText = "Submit Quiz";
-            nextBtn.className = "btn btn-submit";
-        } else {
-            nextBtn.innerText = "Next";
-            nextBtn.className = "btn btn-next";
+        let nextBtn = document.getElementById("next-btn");
+        nextBtn.innerText = currentQuestionIdx === quizData.length - 1 ? "Submit Quiz" : "Next";
+        nextBtn.className = currentQuestionIdx === quizData.length - 1 ? "btn btn-submit" : "btn btn-next";
+
+        if (isProtectionLoopActive) {
+            cancelAnimationFrame(animationFrameTrackerLoop);
+            animationFrameTrackerLoop = requestAnimationFrame(executeContinuousInterferenceBlinding);
         }
-
-        // Fire interference array renders after the DOM updates layouts
-        setTimeout(() => {
-            deployInterferenceMatrix('canvas-shield-q', 'question-wrapper-frame');
-            deployInterferenceMatrix('canvas-shield-o', 'options-wrapper-frame');
-            if (currentQuiz.code) {
-                deployInterferenceMatrix('canvas-shield-c', 'code-wrapper-frame');
-            }
-        }, 60);
     }
 
-    function selectOption(index) {
-        if (isTimeOver) return;
-        userAnswers[currentQuestionIdx] = index;
-        const r = document.getElementById(`opt-${index}`);
-        if(r) r.checked = true;
-    }
-
-    function goPrevious() { if (currentQuestionIdx > 0 && !isTimeOver) { currentQuestionIdx--; loadQuestion(); } }
-    
+    function goPrevious() { if (currentQuestionIdx > 0) { currentQuestionIdx--; loadQuestion(); } }
     function goNext() {
-        if (isTimeOver) return;
         if (currentQuestionIdx < quizData.length - 1) { currentQuestionIdx++; loadQuestion(); }
-        else { calculateAndShowResults(false); }
+        else { calculateAndShowResults(); }
     }
 
-    async function calculateAndShowResults(forced) {
-        clearInterval(timerInterval);
-        isProtectionLoopActive = false; 
-        
-        let score = 0;
-        let wrongQuestionsHtml = "";
-        let wrongCount = 0;
-
-        userAnswers.forEach((ans, index) => { 
-            if (ans === quizData[index].correct) {
-                score++; 
-            } else {
-                wrongCount++;
-                wrongQuestionsHtml += `<div class="wrong-item">❌ Q. ${quizData[index].question}</div>`;
-            }
+    async function calculateAndShowResults() {
+        clearInterval(timerInterval); isProtectionLoopActive = false; cancelAnimationFrame(animationFrameTrackerLoop);
+        let score = 0, wrongHtml = "", wrongCount = 0;
+        userAnswers.forEach((ans, idx) => {
+            if (ans === quizData[idx].correct) score++;
+            else { wrongCount++; wrongHtml += `<div class="wrong-item">❌ Q. ${quizData[idx].question}</div>`; }
         });
-
         finalScore = score;
-        
-        // RELEASE SESSION LOCK OUT ON RETRIEVAL COMPILATION
-        if(studentName !== "TEACHERS") {
-            await clearLockFromSystem(studentRoll, selectedClassKey);
-        }
+        if(studentName !== "TEACHERS" && dbClientInstance) await dbClientInstance.from('device_locks').delete().eq('id', `${selectedClassKey}_${studentRoll}`);
 
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
-        document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nStudent Name: ${studentName}\nRoll ID: ${studentRoll}`;
-
+        document.getElementById("score-text").innerText = `Student: ${studentName} | Roll: ${studentRoll}`;
         document.getElementById("metric-correct-count").innerText = score;
         document.getElementById("metric-wrong-count").innerText = wrongCount;
         document.getElementById("metric-total-marks").innerText = `${score} / ${quizData.length}`;
-        
-        let accuracyPct = Math.round((score / quizData.length) * 100);
-        document.getElementById("metric-accuracy-rate").innerText = `${accuracyPct}%`;
-
-        const reviewZone = document.getElementById("wrong-questions-review-zone");
-        if (wrongCount > 0) {
-            reviewZone.innerHTML = `
-                <div class="wrong-review-panel">
-                    <div class="wrong-review-title">⚠️ Error Trace Log (${wrongCount} Issues Found)</div>
-                    ${wrongQuestionsHtml}
-                </div>`;
-        } else {
-            reviewZone.innerHTML = `
-                <div class="wrong-review-panel" style="background:#f0fdf4; border-color:#bbf7d0;">
-                    <div class="wrong-review-title" style="color:#16a34a; border-color:#86efac;">🎯 100% Perfect Score! Great job!</div>
-                </div>`;
-        }
-
-        if (studentName === "TEACHERS") {
-            document.getElementById("submission-pending-block").style.display = "none";
-            document.getElementById("post-submission-report").style.display = "block";
-        }
+        document.getElementById("metric-accuracy-rate").innerText = `${Math.round((score / quizData.length) * 100)}%`;
+        document.getElementById("wrong-questions-review-zone").innerHTML = wrongHtml ? `<div class="wrong-review-panel"><div class="wrong-review-title">Incorrect Items:</div>${wrongHtml}</div>` : "";
     }
 
     function sendToTeacher() {
-        if (studentName === "TEACHERS") return;
-        
-        let qaLogString = "";
-        quizData.forEach((qItem, idx) => {
-            let studentSelectionIdx = userAnswers[idx];
-            let studentAnsText = studentSelectionIdx !== null ? qItem.options[studentSelectionIdx] : "SKIPPED/UNANSWERED";
-            let correctAnsText = qItem.options[qItem.correct];
-            let statusSymbol = (studentSelectionIdx === qItem.correct) ? "✅ [CORRECT]" : "❌ [WRONG]";
-            
-            qaLogString += `\nQ${idx+1}: ${qItem.question}\n   Your Ans: ${studentAnsText}\n   Correct Ans: ${correctAnsText}\n   Result: ${statusSymbol}\n`;
-        });
-
-        let answersMatrix = userAnswers.map(x => x === null ? 'X' : x).join(',');
-        let reportText = `*QUIZ PERFORMANCE PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nMatrix Trace: [${answersMatrix}]\n\n*--- DETAILED QUESTION ANSWER LOG ---*${qaLogString}`;
-        
+        let report = `*QUIZ PERFORMANCE REPORT*\nName: ${studentName}\nRoll: ${studentRoll}\nScore: ${finalScore}/${quizData.length}`;
+        window.open(`whatsapp://send?phone=${TEACHER_PHONE}&text=${encodeURIComponent(report)}`, '_blank');
         document.getElementById("submission-pending-block").style.display = "none";
         document.getElementById("post-submission-report").style.display = "block";
-        
-        window.open(`whatsapp://send?phone=${TEACHER_PHONE}&text=${encodeURIComponent(reportText)}`, '_blank');
     }
 
     function restartQuiz() { location.reload(); }
+    function exitAdminDashboard() { location.reload(); }
 
     async function renderLockoutManagerZone() {
-        const container = document.getElementById("admin-unblock-zone");
-        if (!dbClientInstance) {
-            container.innerHTML = `<p style="color:#dc2626; margin:4px 0; font-size:13px; font-weight:bold; text-align:center;">Supabase engine offline. Double check API Credentials.</p>`;
-            return;
-        }
-        
-        try {
-            const { data: registry, error } = await dbClientInstance
-                .from('device_locks')
-                .select('*')
-                .eq('is_locked', true);
-
-            if (error || !registry || registry.length === 0) {
-                container.innerHTML = `<p style="color:#6b7280; margin:4px 0; font-size:13px; font-style:italic; text-align:center;">No students are locked out in the Cloud Database.</p>`;
-                return;
-            }
-
-            let html = "";
-            registry.forEach((item) => {
-                let classBadge = item.class_key === 'class10' ? '10th' : item.class_key === 'class11' ? '11th' : '12th';
-                html += `
-                <div class="unblock-list-item">
-                    <span>🔴 Roll ${item.roll_number} (${classBadge}) - ${item.student_name}</span>
-                    <span class="unblock-action-link" onclick="adminExecuteUnblock('${item.roll_number}', '${item.class_key}', '${item.student_name}')">Delete Lock ✔</span>
-                </div>`;
+        if (!dbClientInstance) return;
+        const { data } = await dbClientInstance.from('device_locks').select('*').eq('is_locked', true);
+        let html = "";
+        if(data) {
+            data.forEach(item => {
+                html += `<div class="unblock-list-item"><span>🔴 Roll ${item.roll_number} - ${item.student_name}</span>
+                <span class="unblock-action-link" onclick="adminExecuteUnblock('${item.roll_number}','${item.class_key}')">Reset Lock</span></div>`;
             });
-            container.innerHTML = html;
-        } catch(err) {
-            container.innerHTML = `<p style="color:#dc2626; font-size:12px;">Query Error: ${err.message}</p>`;
         }
+        document.getElementById("admin-unblock-zone").innerHTML = html || "No active cloud locks.";
     }
 
-    async function adminExecuteUnblock(roll, classKey, name) {
-        if(confirm(`Completely remove cloud block for Roll No ${roll} (${name})?`)) {
-            await clearLockFromSystem(roll, classKey);
-            alert(`✅ Deleted! Roll ${roll} can now re-verify on any device.`);
-            await renderLockoutManagerZone(); 
-        }
+    async function adminExecuteUnblock(roll, classKey) {
+        if(dbClientInstance) await dbClientInstance.from('device_locks').delete().eq('id', `${classKey}_${roll}`);
+        renderLockoutManagerZone();
     }
 
     async function executeForceManualUnlock() {
-        const targetClass = document.getElementById("manual-reset-class").value;
-        const targetRollRaw = document.getElementById("manual-reset-roll").value.trim();
-
-        if(!targetRollRaw || isNaN(parseInt(targetRollRaw, 10))) {
-            return alert("Please enter a valid numeric Roll Number!");
-        }
-
-        let labelText = targetClass === 'class10' ? 'Class 10th' : targetClass === 'class11' ? 'Class 11th' : 'Class 12th';
-        let rollParsed = String(parseInt(targetRollRaw, 10));
-        
-        if(confirm(`SYSTEM OVERRIDE:\nForce delete the database lock entry for ${labelText}, Roll Number ${rollParsed}?`)) {
-            await clearLockFromSystem(rollParsed, targetClass);
-            document.getElementById("manual-reset-roll").value = "";
-            alert(`✅ Cloud lock forcefully deleted for Roll ${rollParsed}!`);
-            await renderLockoutManagerZone();
-        }
+        let clrClass = document.getElementById("manual-reset-class").value;
+        let clrRoll = document.getElementById("manual-reset-roll").value.trim();
+        if(dbClientInstance) await dbClientInstance.from('device_locks').delete().eq('id', `${clrClass}_${clrRoll}`);
+        alert("Wiped entry completely."); renderLockoutManagerZone();
     }
 </script>
-
 </body>
 </html>

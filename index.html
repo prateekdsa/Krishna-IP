@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Public School - Brainiac Bowl</title>
+    <!-- Load the official Supabase bundle explicitly -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* BASE ANTI-CHEAT SECURITY FOR STUDENTS */
@@ -139,6 +140,7 @@
     <h1>The Computer Brainiac Bowl</h1>
     <div class="teacher-brand">By KK</div>
 
+    <!-- STUDENT VERIFICATION COMPONENT -->
     <div id="student-portal-section">
         <h3 style="color:#2c3e50; margin-top:0; font-size:15px;">Student Verification Access</h3>
         <div class="input-group">
@@ -164,6 +166,7 @@
         <button class="btn btn-next" style="width:100%; margin-top:10px;" onclick="handleLogin()">Verify Identity & Begin Test</button>
     </div>
 
+    <!-- CROSS DEVICE LOCKOUT LAYER -->
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
         <div class="lockdown-title">⛔ CROSS-DEVICE ID LOCKOUT</div>
         <p class="lockdown-desc">
@@ -176,6 +179,7 @@
         <button class="btn btn-submit" style="width: 100%; max-width:400px;" onclick="handleDeviceUnlock()">Authorize Live Cloud Reset</button>
     </div>
 
+    <!-- SECRET HIDDEN ADMIN PORTAL SECTION (NO TABS VISIBLE) -->
     <div id="admin-portal-section" style="display: none;">
         <div id="teacher-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
@@ -215,6 +219,7 @@
         </div>
     </div>
     
+    <!-- SYSTEM QUIZ MONITOR RUNNER -->
     <div id="quiz-box" style="display: none;">
         <div class="status-bar">
             <div id="progress-text">Question 1 of 3</div>
@@ -229,6 +234,7 @@
         </div>
     </div>
     
+    <!-- SYSTEM SCORE ANALYTICS VIEW -->
     <div id="result-box" style="display: none;">
         <p class="score-box">🎉 Quiz Completed! 🎉</p>
         <p id="score-text" style="text-align: center; font-size: 16px; color: #555; line-height: 1.5; font-weight: bold; margin-bottom: 10px;"></p>
@@ -495,14 +501,12 @@
         } catch(e) { console.error(e); }
     }
 
-    // 🔑 THE HIDDEN BACKDOOR TRIGGER MECHANISM
     async function handleLogin() {
         studentName = document.getElementById("login-name").value.trim();
         selectedClassKey = document.getElementById("student-class").value;
         selectedClassLabel = document.getElementById("student-class").options[document.getElementById("student-class").selectedIndex].text;
         const config = CLASS_CONFIGS[selectedClassKey];
 
-        // ⚡ Backdoor Admin Login Rule
         if (studentName === "Admin@7055") {
             isAdminAuthenticatedState = true;
             document.getElementById("main-body-container").className = "admin-mode-active";
@@ -826,5 +830,25 @@
         }
     }
 </script>
+
+<!-- 🛡️ INTERACTIVE GEOMETRIC RE-RENDER LAYOUT ENGINE SHIELD FOR GOOGLE LENS -->
+<script>
+setInterval(() => {
+    let glitchBox = document.getElementById('lens-shield');
+    if (!glitchBox) {
+        glitchBox = document.createElement('div');
+        glitchBox.id = 'lens-shield';
+        glitchBox.style.position = 'fixed';
+        glitchBox.style.width = '1px';
+        glitchBox.style.height = '1px';
+        glitchBox.style.opacity = '0.01'; 
+        glitchBox.style.zIndex = '99999';
+        document.body.appendChild(glitchBox);
+    }
+    glitchBox.style.top = Math.random() + 'px';
+    glitchBox.style.left = Math.random() + 'px';
+}, 50);
+</script>
+
 </body>
 </html>

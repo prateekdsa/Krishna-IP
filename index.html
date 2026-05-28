@@ -100,6 +100,16 @@
         .wrong-review-title { color: #dc2626; font-size: 15px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #fca5a5; padding-bottom: 4px; }
         .wrong-item { font-size: 14px; color: #4b5563; margin-bottom: 8px; padding-left: 10px; border-left: 3px solid #ef4444; font-weight: 500; }
 
+        /* DETAILED REPORT METRICS STYLE */
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .metric-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
+        .metric-card.correct-card { background: #f0fdf4; border-color: #bbf7d0; }
+        .metric-card.wrong-card { background: #fef2f2; border-color: #fecaca; }
+        .metric-val { font-size: 22px; font-weight: 800; margin-top: 4px; }
+        .text-success { color: #16a34a; }
+        .text-danger { color: #dc2626; }
+        .text-neutral { color: #475569; }
+
         .roster-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 12px; max-height: 180px; overflow-y: auto; text-align: left; }
         .lockdown-container { text-align: center; padding: 15px; }
         .lockdown-title { color: #c0392b; font-size: 24px; font-weight: bold; margin-bottom: 12px; }
@@ -252,11 +262,40 @@
     <div id="result-box" style="display: none;">
         <p class="score-box">🎉 Quiz Completed! 🎉</p>
         <p id="score-text" style="text-align: center; font-size: 16px; color: #555; line-height: 1.5; font-weight: bold; margin-bottom: 10px;"></p>
-        <div id="wrong-questions-review-zone"></div>
-        <button class="btn-whatsapp" id="whatsapp-submit-btn" onclick="sendToTeacher()">Send Score to KK Sir via WhatsApp 💬</button>
-        <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()">Log Out & Return to Home Screen 🔒</button>
-        <div id="lock-notice" style="text-align:center; font-size:11px; color:#e74c3c; margin-top:8px; font-weight:bold;">
-            CRITICAL WARNING: You must submit your score via WhatsApp above to unlock this app! Exiting, refreshing, or closing the app now will trigger a persistent lock block penalty.
+        
+        <!-- INTERMEDIATE ACTION VIEW FOR SUBMISSION -->
+        <div id="submission-pending-block">
+            <button class="btn-whatsapp" id="whatsapp-submit-btn" onclick="sendToTeacher()">Send Score to KK Sir via WhatsApp 💬</button>
+            <div id="lock-notice" style="text-align:center; font-size:11px; color:#e74c3c; margin-top:8px; font-weight:bold;">
+                CRITICAL WARNING: You must submit your score via WhatsApp above to unlock your summary metrics dashboard view!
+            </div>
+        </div>
+
+        <!-- POST-WHATSAPP COMPREHENSIVE PERFORMANCE VIEW -->
+        <div id="post-submission-report" style="display: none; border-top: 2px dashed #cbd5e1; margin-top: 15px; padding-top: 15px;">
+            <h3 style="text-align:center; color:#2c3e50; margin-top:0; font-size:16px;">📊 Comprehensive Report Card</h3>
+            
+            <div class="metrics-grid">
+                <div class="metric-card correct-card">
+                    <span style="font-size:12px; font-weight:bold; color:#15803d;">CORRECT ANSWERS</span>
+                    <div id="metric-correct-count" class="metric-val text-success">0</div>
+                </div>
+                <div class="metric-card wrong-card">
+                    <span style="font-size:12px; font-weight:bold; color:#b91c1c;">WRONG / SKIPPED</span>
+                    <div id="metric-wrong-count" class="metric-val text-danger">0</div>
+                </div>
+                <div class="metric-card">
+                    <span style="font-size:12px; font-weight:bold; color:#475569;">TOTAL MARKS</span>
+                    <div id="metric-total-marks" class="metric-val text-neutral">0 / 0</div>
+                </div>
+                <div class="metric-card">
+                    <span style="font-size:12px; font-weight:bold; color:#475569;">ACCURACY RATIO</span>
+                    <div id="metric-accuracy-rate" class="metric-val text-neutral">0%</div>
+                </div>
+            </div>
+
+            <div id="wrong-questions-review-zone"></div>
+            <button class="restart-btn" id="reset-app-btn" onclick="restartQuiz()">Log Out & Return to Home Screen 🔒</button>
         </div>
     </div>
 </div>
@@ -265,7 +304,6 @@
     const TEACHER_PHONE = "917055202223"; 
     const MASTER_TEACHER_PASSWORD = "Admin@7055"; 
 
-    // GLOBAL CONTEXT MENU SWITCH FOR COPIES/PASTES
     let isAdminAuthenticatedState = false;
 
     document.addEventListener("contextmenu", function(e) {
@@ -432,7 +470,6 @@
     function handleDeviceUnlock() {
         const masterKeyInput = document.getElementById("unlock-master-key").value.trim();
         if (masterKeyInput === MASTER_TEACHER_PASSWORD) {
-            
             let registry = JSON.parse(localStorage.getItem("global_lockout_registry") || "[]");
             registry = registry.filter(item => !(String(item.roll) === String(studentRoll) && item.classKey === selectedClassKey));
             localStorage.setItem("global_lockout_registry", JSON.stringify(registry));
@@ -492,9 +529,10 @@
             document.getElementById("navigation-tabs-hub").style.display = "none";
             document.getElementById("student-portal-section").style.display = "none";
             document.getElementById("quiz-box").style.display = "block";
-            document.getElementById("whatsapp-submit-btn").style.display = "none";
-            document.getElementById("reset-app-btn").disabled = false;
-            document.getElementById("lock-notice").style.display = "none";
+            
+            // Bypass sending to whatsapp for teacher test view
+            document.getElementById("submission-pending-block").style.display = "none";
+            document.getElementById("post-submission-report").style.display = "block";
 
             loadQuestion();
             startTimer();
@@ -540,9 +578,9 @@
         totalTimeInSeconds = quizData.length * 60;
         isProtectionLoopActive = true;
 
-        document.getElementById("whatsapp-submit-btn").style.display = "block";
-        document.getElementById("reset-app-btn").disabled = true;
-        document.getElementById("lock-notice").style.display = "block";
+        // Reset display wrappers
+        document.getElementById("submission-pending-block").style.display = "block";
+        document.getElementById("post-submission-report").style.display = "none";
 
         document.getElementById("navigation-tabs-hub").style.display = "none";
         document.getElementById("student-portal-section").style.display = "none";
@@ -666,22 +704,39 @@
         });
 
         finalScore = score;
+        
+        // Populate standard headers
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
-        document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nStudent Name: ${studentName}\nRoll ID: ${studentRoll}\nFinal Score: ${score} / ${quizData.length}`;
+        document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nStudent Name: ${studentName}\nRoll ID: ${studentRoll}`;
 
+        // Populate metrics calculations
+        document.getElementById("metric-correct-count").innerText = score;
+        document.getElementById("metric-wrong-count").innerText = wrongCount;
+        document.getElementById("metric-total-marks").innerText = `${score} / ${quizData.length}`;
+        
+        let accuracyPct = Math.round((score / quizData.length) * 100);
+        document.getElementById("metric-accuracy-rate").innerText = `${accuracyPct}%`;
+
+        // Render incorrect choices preview area
         const reviewZone = document.getElementById("wrong-questions-review-zone");
         if (wrongCount > 0) {
             reviewZone.innerHTML = `
                 <div class="wrong-review-panel">
-                    <div class="wrong-review-title">⚠️ Missed Question Mapping (${wrongCount} Errors)</div>
+                    <div class="wrong-review-title">⚠️ Error Trace Log (${wrongCount} Issues Found)</div>
                     ${wrongQuestionsHtml}
                 </div>`;
         } else {
             reviewZone.innerHTML = `
                 <div class="wrong-review-panel" style="background:#f0fdf4; border-color:#bbf7d0;">
-                    <div class="wrong-review-title" style="color:#16a34a; border-color:#86efac;">🎯 Perfect Accuracy!</div>
+                    <div class="wrong-review-title" style="color:#16a34a; border-color:#86efac;">🎯 100% Perfect Score! Great job!</div>
                 </div>`;
+        }
+
+        // If explicitly logged in as teacher, bypass blocking view completely
+        if (studentName === "TEACHERS") {
+            document.getElementById("submission-pending-block").style.display = "none";
+            document.getElementById("post-submission-report").style.display = "block";
         }
     }
 
@@ -690,19 +745,22 @@
         let answersString = userAnswers.map(x => x === null ? 'X' : x).join(',');
         let reportText = `*QUIZ DATA PACKET*\nName: ${studentName}\nRoll: ${studentRoll}\nClassKey: ${selectedClassKey}\nScore: ${finalScore}/${quizData.length}\nDataKey: [${answersString}]`;
         
+        // Remove tracking references since they submitted natively
         localStorage.removeItem("last_active_user");
         localStorage.removeItem("last_active_class");
         
-        document.getElementById("reset-app-btn").disabled = false;
-        document.getElementById("lock-notice").style.display = "none";
-        window.location.href = `whatsapp://send?phone=${TEACHER_PHONE}&text=${encodeURIComponent(reportText)}`; 
+        // SWAP ACTIONS: Open metrics details to the student inside the layout context
+        document.getElementById("submission-pending-block").style.display = "none";
+        document.getElementById("post-submission-report").style.display = "block";
+        
+        // Dispatch window process out to handle system deep-linking
+        window.open(`whatsapp://send?phone=${TEACHER_PHONE}&text=${encodeURIComponent(reportText)}`, '_blank');
     }
 
     function restartQuiz() { location.reload(); }
 
     function verifyAdminLogin() {
         if(document.getElementById("admin-master-key").value.trim() === MASTER_TEACHER_PASSWORD) {
-            // LIFT SECURITY RESTRICTIONS DYNAMICALLY
             isAdminAuthenticatedState = true;
             document.getElementById("main-body-container").className = "admin-mode-active";
 

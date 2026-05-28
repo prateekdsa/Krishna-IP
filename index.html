@@ -139,11 +139,74 @@
             font-size: 20px;
             font-weight: bold;
         }
+
+        /* CUSTOM MODAL SYSTEM (REPLACES BROWSER ALERTS) */
+        .custom-alert-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 100000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .custom-alert-card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 380px;
+            width: 100%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            text-align: left;
+            animation: popIn 0.2s ease-out;
+        }
+        .custom-alert-message {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+        .custom-alert-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .custom-alert-btn {
+            background: transparent;
+            color: #d11a2a;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 8px 16px;
+            text-transform: uppercase;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .custom-alert-btn:hover {
+            background: #fff0f1;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body class="student-mode" oncontextmenu="return handleContextMenu(event);">
 
 <div id="anti-cheat-blindfold">⚠️ SECURITY SHIELD: PROCESSING AUTO-LOGOUT ACTION...</div>
+
+<!-- CUSTOM DIALOG DISPLAY ELEMENT -->
+<div id="app-alert-modal" class="custom-alert-overlay">
+    <div class="custom-alert-card">
+        <div id="app-alert-text" class="custom-alert-message">Error message context placeholder.</div>
+        <div class="custom-alert-footer">
+            <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
+</div>
 
 <div class="quiz-container" id="app-visibility-wrapper">
     <div class="school-header">City Public School, Najibabad</div>
@@ -278,10 +341,26 @@
 
     const STUDENT_REGISTRY = { "class10": {}, "class11": {}, "class12": {} };
     let liveLockoutInterval = null;
-    let currentActiveMode = "student"; // tracks active user mode context
+    let currentActiveMode = "student"; 
+    let onAlertCallback = null;
+
+    /* REPLACES THE NATIVE WINDOW.ALERT FUNCTION SYSTEM TO REMOVE THE URL HEADER */
+    function alert(message, callback = null) {
+        document.getElementById("app-alert-text").innerText = message;
+        document.getElementById("app-alert-modal").style.display = "flex";
+        onAlertCallback = callback;
+    }
+
+    function closeCustomAlert() {
+        document.getElementById("app-alert-modal").style.display = "none";
+        if (typeof onAlertCallback === "function") {
+            const tempCallback = onAlertCallback;
+            onAlertCallback = null;
+            tempCallback();
+        }
+    }
 
     function handleContextMenu(event) {
-        // If teacher is looking at the dashboard, completely allow context menus
         if (currentActiveMode === "admin") {
             return true;
         }
@@ -355,10 +434,13 @@
     window.onload = async function() {
         initializeSecureRegistry();
         updateRollLimits(); 
-        await fetchFreshQuestions(); 
+        const loadSuccess = await fetchFreshQuestions(); 
         renderTeacherLogs();
 
-        // Check if device was locked from a previous session check on startup
+        if(!loadSuccess) {
+            alert("Error syncing question data. Please check your internet connection.");
+        }
+
         let lastUser = localStorage.getItem("last_active_user");
         let lastClass = localStorage.getItem("last_active_class");
         if(lastUser && lastClass) {
@@ -419,8 +501,9 @@
                 localStorage.setItem(trackingKey, Date.now());
                 registeredLockTime = Date.now();
             }
-            triggerLockoutUI(registeredLockTime);
-            alert("⚠️ ANTICHEAT ACTION DETECTED:\nYou exited or minimized the running interface!\nYour system profile is now blocked for 12 hours.");
+            alert("⚠️ ANTICHEAT ACTION DETECTED:\nYou exited or minimized the running interface!\nYour system profile is now blocked for 12 hours.", () => {
+                triggerLockoutUI(registeredLockTime);
+            });
         }, 1000);
     }
 
@@ -472,11 +555,9 @@
             localStorage.removeItem(trackingKey);
             localStorage.removeItem("last_active_user");
             localStorage.removeItem("last_active_class");
-            document.getElementById("permanent-lockdown-box").style.display = "none";
-            document.getElementById("navigation-tabs-hub").style.display = "flex";
-            document.getElementById("student-portal-section").style.display = "block";
-            alert("✅ Lockout bypass accepted.");
-            location.reload();
+            alert("✅ Lockout bypass accepted.", () => {
+                location.reload();
+            });
         } else { alert("❌ Incorrect Teacher Code!"); }
     }
 
@@ -572,7 +653,6 @@
             }
         }
 
-        // Write lockdown target parameters immediately
         localStorage.setItem(trackingKey, Date.now());
         localStorage.setItem("last_active_user", studentRoll);
         localStorage.setItem("last_active_class", selectedClassKey);

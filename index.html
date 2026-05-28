@@ -30,7 +30,6 @@
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef6fc; margin: 0; padding: 15px; color: #333; }
         
-        /* 🛡️ AI DISRUPTOR VECTOR SHIELD - Places a geometric watermark to blind OCR engines */
         .quiz-container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 6px solid #2c3e50; position: relative; }
         
         .school-header { color: #1e3a8a; text-align: center; font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; line-height: 1.2; }
@@ -45,7 +44,7 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 4px; color: #2c3e50; font-size: 13px; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 15px; box-sizing: border-box; background: #fff; }
         
-        /* 🛡️ OCR MASK PATTERN FOR QUESTIONS & OPTIONS */
+        /* OCR MASK PATTERN FOR QUESTIONS & OPTIONS */
         .secure-text-render, .option-container, .code-box {
             position: relative;
             background-image: repeating-linear-gradient(
@@ -83,7 +82,6 @@
             border-radius: 4px;
         }
 
-        /* 🛡️ UNICODE REVERSAL MASK CLASS */
         .bidi-mask {
             display: inline-block !important; 
             direction: rtl !important; 
@@ -184,9 +182,9 @@
     </div>
 
     <div id="permanent-lockdown-box" style="display: none;" class="lockdown-container">
-        <div class="lockdown-title">⛔ CROSS-DEVICE ID LOCKOUT</div>
-        <p class="lockdown-desc">
-            This Roll number is locked down inside the live cloud database. It cannot be loaded on any device until released.
+        <div class="lockdown-title">⛔ SESSION ACCESS RESTRICTED</div>
+        <p class="lockdown-desc" id="lockout-explanation-text">
+            This Roll number is already logged in on another device or locked in the live database.
         </p>
         <div class="input-group" style="max-width: 400px; margin: 0 auto 15px auto;">
             <label for="unlock-master-key">Enter Teacher Bypass Security Password:</label>
@@ -464,8 +462,7 @@
         
         setTimeout(() => {
             document.getElementById("anti-cheat-blindfold").style.display = "none";
-            triggerLockoutUI();
-            alert("⚠️ CLOUD LOCK ACTIVATED:\nYou exited the test boundary window.\nYour ID has been locked out globally across ALL devices.");
+            triggerLockoutUI("⚠️ BOUNDARY EXIT LOCKOUT:\nYou exited the quiz screen or minimized the app window. Your ID session has been suspended globally.");
         }, 800);
     }
 
@@ -485,11 +482,15 @@
         } catch(e) { console.error(e); }
     }
 
-    function triggerLockoutUI() {
+    function triggerLockoutUI(messageText) {
         document.getElementById("student-portal-section").style.display = "none";
         document.getElementById("admin-portal-section").style.display = "none";
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "none";
+        
+        if(messageText) {
+            document.getElementById("lockout-explanation-text").innerText = messageText;
+        }
         document.getElementById("permanent-lockdown-box").style.display = "block";
     }
 
@@ -497,7 +498,7 @@
         const masterKeyInput = document.getElementById("unlock-master-key").value.trim();
         if (masterKeyInput === MASTER_TEACHER_PASSWORD) {
             await clearLockFromSystem(studentRoll, selectedClassKey);
-            alert("✅ Cloud verification released. Reloading app context...");
+            alert("✅ Session lock dropped cleanly. Reloading context module...");
             location.reload();
         } else { alert("❌ Incorrect Teacher Code!"); }
     }
@@ -572,9 +573,10 @@
 
         studentRoll = String(rollInt);
 
+        // 🔒 DUAL DEVICE PRE-CHECK: Query if this roll number has an open active session elsewhere
         const liveLockActive = await isGlobalBlockActive(studentRoll, selectedClassKey);
         if (liveLockActive) {
-            triggerLockoutUI();
+            triggerLockoutUI("⛔ SIMULTANEOUS LOG IN DETECTED:\nThis Roll number configuration is currently active on another device inside the cloud network.");
             return;
         }
 
@@ -583,6 +585,9 @@
             return alert(`❌ Incorrect Access Password mapped to Roll No ${studentRoll}!`);
         }
         
+        // 🔒 ENGAGE LIVE CLOUD LOCK: Lock the identity immediately to avoid double entry
+        await registerGlobalLocktrack(studentName, studentRoll, selectedClassKey);
+
         let baseQuestions = allClassData[selectedClassKey];
         if (!baseQuestions || baseQuestions.length === 0) {
             return alert("Target layout contains no active questions.");
@@ -625,7 +630,6 @@
         }, 1000);
     }
 
-    // 🛡️ UNICODE REVERSAL ENVELOPE: Permanently scrambles strings within the DOM snapshot layout
     function encryptTextForHumanEyes(plainText) {
         if (!plainText) return "";
         const words = plainText.split(" ");
@@ -639,7 +643,6 @@
                 let part1 = word.substring(0, half);
                 let part2 = word.substring(half);
                 
-                // Physical text structure is written backward in DOM, but rendered normal by CSS bidi rule
                 wordBlock += `<span class="bidi-mask">${part1.split('').reverse().join('')}</span>`;
                 wordBlock += `<span class="bidi-mask">${part2.split('').reverse().join('')}</span>`;
             } else {
@@ -717,7 +720,7 @@
         else { calculateAndShowResults(false); }
     }
 
-    function calculateAndShowResults(forced) {
+    async function calculateAndShowResults(forced) {
         clearInterval(timerInterval);
         isProtectionLoopActive = false; 
         
@@ -736,6 +739,11 @@
 
         finalScore = score;
         
+        // 🔒 RELEASE SESSION LOCK OUT ON RETRIEVAL COMPILATION
+        if(studentName !== "TEACHERS") {
+            await clearLockFromSystem(studentRoll, selectedClassKey);
+        }
+
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
         document.getElementById("score-text").innerText = `Course: ${selectedClassLabel}\nStudent Name: ${studentName}\nRoll ID: ${studentRoll}`;

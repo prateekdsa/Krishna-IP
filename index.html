@@ -6,7 +6,7 @@
     <title>City Public School - Brainiac Bowl</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* BASE ANTI-CHEAT SECURITY FOR STUDENTS */
+        
         body.student-mode-active * {
             -webkit-user-select: none !important; 
             -moz-user-select: none !important;
@@ -15,7 +15,7 @@
             -webkit-touch-callout: none !important;
         }
 
-        /* ALLOW UNRESTRICTED SELECTION IN ADMIN MODE */
+        
         body.admin-mode-active * {
             -webkit-user-select: text !important; 
             -moz-user-select: text !important;
@@ -44,7 +44,7 @@
         .input-group label { display: block; font-weight: bold; margin-bottom: 4px; color: #2c3e50; font-size: 13px; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 15px; box-sizing: border-box; background: #fff; }
         
-        /* OCR MASK PATTERN FOR QUESTIONS & OPTIONS */
+        
         .secure-text-render, .option-container, .code-box {
             position: relative;
             background-image: repeating-linear-gradient(
@@ -573,7 +573,7 @@
 
         studentRoll = String(rollInt);
 
-        // 🔒 DUAL DEVICE PRE-CHECK: Query if this roll number has an open active session elsewhere
+        
         const liveLockActive = await isGlobalBlockActive(studentRoll, selectedClassKey);
         if (liveLockActive) {
             triggerLockoutUI("⛔ SIMULTANEOUS LOG IN DETECTED:\nThis Roll number configuration is currently active on another device inside the cloud network.");
@@ -585,7 +585,7 @@
             return alert(`❌ Incorrect Access Password mapped to Roll No ${studentRoll}!`);
         }
         
-        // 🔒 ENGAGE LIVE CLOUD LOCK: Lock the identity immediately to avoid double entry
+        
         await registerGlobalLocktrack(studentName, studentRoll, selectedClassKey);
 
         let baseQuestions = allClassData[selectedClassKey];
@@ -739,7 +739,7 @@
 
         finalScore = score;
         
-        // 🔒 RELEASE SESSION LOCK OUT ON RETRIEVAL COMPILATION
+        
         if(studentName !== "TEACHERS") {
             await clearLockFromSystem(studentRoll, selectedClassKey);
         }

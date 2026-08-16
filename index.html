@@ -36,20 +36,14 @@
         .header-title {
             color: #ffffff;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-shadow: 0 2px 6px rgba(0,0,0,0.7);
         }
 
         .header-title h1 {
             margin: 0;
-            font-size: 26px;
+            font-size: 28px;
             letter-spacing: 1px;
-        }
-
-        .header-title p {
-            margin: 4px 0 0 0;
-            font-size: 14px;
-            color: #f1f5f9;
         }
 
         .container {
@@ -109,29 +103,6 @@
             font-size: 14px;
         }
 
-        .case-study-card {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-left: 5px solid var(--primary-color);
-            padding: 14px;
-            border-radius: 6px;
-            margin-bottom: 16px;
-            font-size: 14px;
-            color: #0c4a6e;
-            max-height: 220px;
-            overflow-y: auto;
-            line-height: 1.5;
-        }
-
-        .question-image {
-            max-width: 100%;
-            max-height: 260px;
-            border-radius: 6px;
-            margin: 10px 0 16px 0;
-            border: 1px solid var(--border-color);
-            display: block;
-        }
-
         .option-container {
             border: 1px solid var(--border-color);
             border-radius: 6px;
@@ -154,33 +125,26 @@
             padding: 10px 0;
             text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
-
-        @media print {
-            body { background: white; padding: 0; color: black; }
-            .container { box-shadow: none; max-width: 100%; }
-            .btn, .restart-btn, #student-completion-view, #admin-zone, .header-title { display: none !important; }
-        }
     </style>
 </head>
 <body>
 
 <div class="header-title">
     <h1>CITY PUBLIC SCHOOL, NAJIBABAD</h1>
-    <p>Department of Computer Science</p>
 </div>
 
 <div class="container">
-    <!-- SETUP / LOGIN PANEL -->
+    <!-- LOGIN PANEL -->
     <div id="setup-box">
-        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Student Login Portal</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Select Class, Roll Number, and enter assigned unique password</p>
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Portal Login</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Enter Name, select Class, Roll & Password.</p>
         
         <div class="input-group">
             <label for="student-name">Full Name</label>
-            <input type="text" id="student-name" placeholder="Enter full name">
+            <input type="text" id="student-name" placeholder="Enter full name (or 'teachers' to bypass password)">
         </div>
 
-        <div class="input-group">
+        <div class="input-group" id="class-group">
             <label for="class-select">Select Class</label>
             <select id="class-select">
                 <option value="class9">Class 9th (Information Technology - 402)</option>
@@ -190,35 +154,32 @@
             </select>
         </div>
 
-        <div class="input-group">
+        <div class="input-group" id="roll-group">
             <label for="student-roll">Select Roll Number (1 to 100)</label>
             <select id="student-roll"></select>
         </div>
 
-        <div class="input-group">
+        <div class="input-group" id="pass-group">
             <label for="student-pass">Unique Roll Password</label>
             <input type="password" id="student-pass" placeholder="Enter secret password">
         </div>
 
-        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="authenticateStudentAndStart()">Login & Start Examination</button>
+        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login</button>
+    </div>
 
-        <!-- TEACHER ADMIN PANEL & DOWNLOAD PASSWORDS -->
-        <div id="admin-zone" style="margin-top: 25px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                <button class="btn" style="font-size: 12px; background: #059669; width: 100%;" onclick="downloadAllPasswordsCSV()">📥 Download All Student Passwords (.CSV)</button>
-            </div>
+    <!-- ADMIN CONTROL PANEL VIEW -->
+    <div id="admin-box" style="display: none;">
+        <h2 style="text-align: center; color: #059669; margin-bottom: 10px;">🔒 Teacher Admin Panel</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Manage student passwords and active locks</p>
 
-            <details style="font-size: 13px; color: var(--text-muted); margin-top: 12px;">
-                <summary style="cursor: pointer; font-weight: bold;">🔒 Teacher Lockout Manager Access</summary>
-                <div style="margin-top: 10px; background: #f8fafc; padding: 12px; border-radius: 6px;">
-                    <div class="input-group" style="margin-bottom: 8px;">
-                        <input type="password" id="admin-pass-input" placeholder="Admin Password">
-                    </div>
-                    <button class="btn" style="width: 100%; font-size: 12px;" onclick="accessAdminPanel()">Unlock Device Lock Manager</button>
-                    <div id="admin-unblock-zone" style="margin-top: 12px;"></div>
-                </div>
-            </details>
+        <button class="btn" style="font-size: 14px; background: #059669; width: 100%; margin-bottom: 15px;" onclick="downloadAllPasswordsCSV()">📥 Download All Student Passwords (.CSV)</button>
+
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+            <h4 style="margin: 0 0 10px 0; color: var(--text-main);">Active Device Locks</h4>
+            <div id="admin-unblock-zone">Loading locks...</div>
         </div>
+
+        <button class="restart-btn" onclick="location.reload()">Back to Login</button>
     </div>
 
     <!-- QUIZ INTERFACE -->
@@ -228,9 +189,7 @@
             <span id="timer-display" style="font-weight: bold; font-size: 14px; color: var(--danger-color);">⏱️ 15:00</span>
         </div>
 
-        <div id="case-study-container" style="display: none;"></div>
         <h3 id="secure-question-host" style="font-size: 16px; margin-bottom: 12px;"></h3>
-        <div id="figure-container" style="display: none;"></div>
         <div id="response-container"></div>
 
         <div style="display: flex; justify-content: space-between; margin-top: 20px;">
@@ -239,17 +198,15 @@
         </div>
     </div>
 
-    <!-- RESULT & LOGOUT ONLY PANEL -->
+    <!-- RESULT & LOGOUT PANEL -->
     <div id="result-box" style="display: none;">
         <div id="student-completion-view" style="text-align: center; padding: 25px 10px;">
             <div style="font-size: 54px; margin-bottom: 10px;">🎉</div>
             <h2 style="color: #1e293b; margin-bottom: 8px;">Examination Submitted Successfully!</h2>
             <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">
                 Thank you, <strong id="submitted-student-name"></strong>.<br>
-                Your response has been saved. Please click below to log out.
+                Your response has been saved.
             </p>
-
-            <!-- ONLY LOGOUT OPTION - NO PASSWORD PROMPTS -->
             <button class="restart-btn" onclick="restartQuiz()">🔒 Log Out & Finish Session</button>
         </div>
     </div>
@@ -269,32 +226,43 @@
         dbClientInstance = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
 
-    // --- PSEUDO-RANDOM UNIQUE PASSWORD GENERATOR ---
-    // Generates complex, unpredictable passwords that remain identical for each roll number
-    function generateUniquePassword(classKey, rollNum) {
-        const seedStr = `${classKey}-SECRET-SALT-${rollNum}`;
+    function getSeedFromString(str) {
         let hash = 0;
-        for (let i = 0; i < seedStr.length; i++) {
-            hash = (hash << 5) - hash + seedStr.charCodeAt(i);
+        for (let i = 0; i < str.length; i++) {
+            hash = (hash << 5) - hash + str.charCodeAt(i);
             hash |= 0;
         }
+        return Math.abs(hash);
+    }
 
-        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789#@!$%";
+    function seededRandom(seed) {
+        let x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+    }
+
+    function generateUniquePassword(classKey, rollNum) {
+        let seed = getSeedFromString(`${classKey}-SECRET-SALT-${rollNum}`);
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789#@!";
         let pass = "";
-        let currentHash = Math.abs(hash);
-
         for (let i = 0; i < 8; i++) {
-            const charIdx = (currentHash + i * 37) % chars.length;
+            const charIdx = Math.floor(seededRandom(seed + i * 37) * chars.length);
             pass += chars[charIdx];
-            currentHash = (currentHash * 1664525 + 1013904223) % 4294967296;
         }
-
         const classPrefixMap = { class9: "9IT", class10: "10KZP", class11: "11EXHT", class12: "12IP" };
         const prefix = classPrefixMap[classKey] || "CPS";
         return `${prefix}-${pass}`;
     }
 
-    // Populate Roll Numbers 1 to 100
+    function shuffleArrayForRoll(array, rollNum, seedOffset = 0) {
+        let shuffled = JSON.parse(JSON.stringify(array));
+        let seed = rollNum * 997 + seedOffset;
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(seededRandom(seed++) * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
         const rollSelect = document.getElementById("student-roll");
         for (let i = 1; i <= 100; i++) {
@@ -305,7 +273,6 @@
         }
     });
 
-    // --- DOWNLOAD ALL 400 PASSWORDS CSV ---
     function downloadAllPasswordsCSV() {
         let csvContent = "Class,Roll Number,Unique Password\n";
         const classes = [
@@ -322,18 +289,15 @@
             }
         });
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
+        const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
         const link = document.createElement("a");
-        link.href = url;
+        link.setAttribute("href", encodedUri);
         link.setAttribute("download", "CPS_Student_Passwords_Master_List.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(url);
     }
 
-    // --- SAMPLE QUESTION BANK ---
     const quizDataset = {
         class9: [
             { type: "mcq", question: "Which component is responsible for performing calculations in a computer?", options: ["ALU", "Control Unit", "RAM", "Hard Disk"], correct: 0 },
@@ -341,10 +305,12 @@
         ],
         class10: [
             { type: "mcq", question: "Which web service should the school use to post daily notices and journals?", options: ["Blog", "Web Browser", "FTP", "Email Client"], correct: 0 },
-            { type: "descriptive", question: "Describe how Styles and Formatting enhance document structure in 50 words.", keywords: ["style", "formatting"], maxMarks: 2 }
+            { type: "descriptive", question: "Describe how Styles and Formatting enhance document structure in 50 words.", keywords: ["style", "formatting"], maxMarks: 2 },
+            { type: "mcq", question: "What type of network covers a single building or school campus?", options: ["LAN", "WAN", "MAN", "PAN"], correct: 0 }
         ],
         class11: [
-            { type: "mcq", question: "Identify the flowchart shape used for decision conditions:", options: ["Rectangle", "Diamond", "Parallelogram", "Oval"], correct: 1 }
+            { type: "mcq", question: "Identify the flowchart shape used for decision conditions:", options: ["Rectangle", "Diamond", "Parallelogram", "Oval"], correct: 1 },
+            { type: "mcq", question: "Which keyword is used to declare a function in Python?", options: ["def", "function", "define", "func"], correct: 0 }
         ],
         class12: [
             { type: "mcq", question: "Which Pandas function creates a DataFrame from a CSV file?", options: ["pd.read_csv()", "pd.import_csv()", "pd.open_csv()"], correct: 0 },
@@ -353,7 +319,7 @@
     };
 
     let studentName = "";
-    let studentRoll = "";
+    let studentRoll = 1;
     let selectedClassKey = "class10";
     let selectedClassLabel = "";
     let quizData = [];
@@ -361,6 +327,22 @@
     let userAnswers = [];
     let timerInterval = null;
     let timeRemainingSeconds = 900;
+
+    function handleLoginSubmit() {
+        const inputVal = document.getElementById("student-name").value.trim();
+        
+        // ADMIN MODE CHECK
+        if (inputVal === MASTER_TEACHER_PASSWORD) {
+            document.getElementById("setup-box").style.display = "none";
+            document.getElementById("admin-box").style.display = "block";
+            renderLockoutManagerZone();
+            return;
+        }
+
+        // TEACHER BYPASS OR REGULAR STUDENT
+        const isTeacherMode = (inputVal.toLowerCase() === "teachers");
+        authenticateStudentAndStart(inputVal, isTeacherMode);
+    }
 
     async function checkOrSetDeviceLock(roll, classKey, name) {
         if (!dbClientInstance) return true;
@@ -379,9 +361,7 @@
                 .upsert({ roll_number: roll, class_key: classKey, student_name: name, is_locked: true });
 
             return true;
-        } catch (e) {
-            return true;
-        }
+        } catch (e) { return true; }
     }
 
     async function clearLockFromSystem(roll, classKey) {
@@ -395,9 +375,9 @@
         } catch (e) {}
     }
 
-    async function authenticateStudentAndStart() {
-        studentName = document.getElementById("student-name").value.trim();
-        studentRoll = document.getElementById("student-roll").value;
+    async function authenticateStudentAndStart(nameVal, bypassPassword = false) {
+        studentName = nameVal;
+        studentRoll = parseInt(document.getElementById("student-roll").value, 10);
         selectedClassKey = document.getElementById("class-select").value;
         const enteredPass = document.getElementById("student-pass").value.trim();
 
@@ -405,24 +385,34 @@
         selectedClassLabel = classSelectElem.options[classSelectElem.selectedIndex].text;
 
         if (!studentName) {
-            alert("Please enter Student Full Name.");
+            alert("Please enter Full Name.");
             return;
         }
 
-        // Verify Unique Complex Password
-        const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
-        if (enteredPass !== expectedPass) {
-            alert("❌ Invalid Password! Please check the password list provided by your teacher.");
-            return;
+        // PASSWORD VALIDATION (Skipped if Name is 'teachers')
+        if (!bypassPassword) {
+            const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
+            if (enteredPass !== expectedPass) {
+                alert("❌ Invalid Password! Please check the password list provided by your teacher.");
+                return;
+            }
         }
 
         const lockGranted = await checkOrSetDeviceLock(studentRoll, selectedClassKey, studentName);
-        if (!lockGranted) {
+        if (!lockGranted && !bypassPassword) {
             alert("🔒 Roll Number " + studentRoll + " is already active on another browser!");
             return;
         }
 
-        quizData = quizDataset[selectedClassKey] || [];
+        const rawQuestions = quizDataset[selectedClassKey] || [];
+        quizData = shuffleArrayForRoll(rawQuestions, studentRoll);
+        
+        quizData.forEach((q, idx) => {
+            if (q.type === "mcq" && q.options) {
+                q.options = shuffleArrayForRoll(q.options, studentRoll, idx + 10);
+            }
+        });
+
         userAnswers = new Array(quizData.length).fill(null);
 
         document.getElementById("setup-box").style.display = "none";
@@ -514,12 +504,6 @@
         await clearLockFromSystem(studentRoll, selectedClassKey);
     }
 
-    async function accessAdminPanel() {
-        const pass = document.getElementById("admin-pass-input").value.trim();
-        if (pass === MASTER_TEACHER_PASSWORD) await renderLockoutManagerZone();
-        else alert("❌ Incorrect Admin Password.");
-    }
-
     async function renderLockoutManagerZone() {
         const zone = document.getElementById("admin-unblock-zone");
         if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>Database Instance Not Ready</span>";
@@ -530,9 +514,9 @@
 
             let html = "";
             data.forEach(item => {
-                html += `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0;">
-                    <span>🔒 ${item.student_name} (Roll ${item.roll_number})</span>
-                    <button class="btn" style="padding:2px 8px; font-size:11px; background:#dc2626;" onclick="executeAdminUnlock('${item.roll_number}', '${item.class_key}')">Unlock</button>
+                html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #e2e8f0;">
+                    <span style="font-size:13px;">🔒 ${item.student_name} (Roll ${item.roll_number})</span>
+                    <button class="btn" style="padding:4px 10px; font-size:12px; background:#dc2626;" onclick="executeAdminUnlock('${item.roll_number}', '${item.class_key}')">Unlock</button>
                 </div>`;
             });
             zone.innerHTML = html;

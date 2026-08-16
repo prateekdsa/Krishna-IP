@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brainiac Bowl - Quiz Application</title>
+    <title>Brainiac Bowl - City Public School, Najibabad</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary-color: #2563eb;
             --primary-hover: #1d4ed8;
-            --bg-color: #f1f5f9;
+            --bg-overlay: rgba(15, 23, 42, 0.75);
             --card-bg: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
@@ -20,29 +20,47 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
+                        url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
             color: var(--text-main);
             margin: 0;
             padding: 20px 10px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
         }
 
-        .container {
-            width: 100%;
-            max-width: 650px;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-            padding: 24px;
-            box-sizing: border-box;
+        .header-title {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        h1, h2, h3 {
-            margin-top: 0;
+        .header-title h1 {
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: 1px;
+        }
+
+        .header-title p {
+            margin: 4px 0 0 0;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+            padding: 24px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
         }
 
         .btn {
@@ -57,17 +75,9 @@
             transition: background 0.2s;
         }
 
-        .btn:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-submit {
-            background-color: var(--success-color);
-        }
-
-        .btn-submit:hover {
-            background-color: #15803d;
-        }
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn-submit { background-color: var(--success-color); }
+        .btn-submit:hover { background-color: #15803d; }
 
         .restart-btn {
             width: 100%;
@@ -81,14 +91,7 @@
             cursor: pointer;
         }
 
-        .restart-btn:hover {
-            background-color: #334155;
-        }
-
-        .input-group {
-            margin-bottom: 16px;
-        }
-
+        .input-group { margin-bottom: 16px; }
         .input-group label {
             display: block;
             font-size: 13px;
@@ -97,13 +100,32 @@
             color: var(--text-main);
         }
 
-        .input-group input, .input-group select {
+        .input-group input, .input-group select, .input-group textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 14px;
+        }
+
+        .case-study-card {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 14px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #1e3a8a;
+        }
+
+        .question-image {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 6px;
+            margin: 10px 0 16px 0;
+            border: 1px solid var(--border-color);
+            display: block;
         }
 
         .option-container {
@@ -114,19 +136,9 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            transition: background 0.15s;
         }
-
-        .option-container:hover {
-            background-color: #f8fafc;
-        }
-
-        .option-label {
-            margin-left: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            width: 100%;
-        }
+        .option-container:hover { background-color: #f8fafc; }
+        .option-label { margin-left: 10px; cursor: pointer; font-size: 14px; width: 100%; }
 
         .code-box {
             background: #1e293b;
@@ -137,7 +149,6 @@
             font-size: 13px;
             margin-bottom: 16px;
             white-space: pre-wrap;
-            word-break: break-all;
         }
 
         .metrics-grid {
@@ -154,87 +165,62 @@
             padding: 12px;
             text-align: center;
         }
-
-        .metric-val {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-
+        .metric-val { font-size: 20px; font-weight: bold; margin-top: 4px; }
         .text-success { color: var(--success-color); }
         .text-danger { color: var(--danger-color); }
         .text-neutral { color: #475569; }
 
-        .wrong-review-panel {
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
-            overflow-y: auto;
-        }
-
-        .wrong-review-title {
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 6px;
-        }
-
-        .unblock-list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px;
-            background: #fff;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            margin-bottom: 6px;
+        .app-footer {
+            color: #cbd5e1;
             font-size: 13px;
-        }
-
-        .unblock-action-link {
-            color: var(--danger-color);
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: underline;
+            font-weight: 500;
+            text-align: center;
+            margin-top: auto;
+            padding: 10px 0;
         }
 
         @media print {
-            body { background: white; padding: 0; }
+            body { background: white; padding: 0; color: black; }
             .container { box-shadow: none; max-width: 100%; }
-            .btn, .restart-btn, #student-completion-view, #admin-zone { display: none !important; }
+            .btn, .restart-btn, #student-completion-view, #admin-zone, .header-title { display: none !important; }
             #teacher-report-view { display: block !important; border: none !important; }
         }
     </style>
 </head>
 <body>
 
+<div class="header-title">
+    <h1>CITY PUBLIC SCHOOL, NAJIBABAD</h1>
+    <p>Department of Information Technology & Informatics Practices</p>
+</div>
+
 <div class="container">
-    <!-- ENTRY PANEL -->
+    <!-- SETUP / LOGIN PANEL -->
     <div id="setup-box">
-        <h2 style="text-align: center; color: var(--primary-color);">Brainiac Bowl Quiz</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Enter your details to start the assessment</p>
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Select your class and details to proceed</p>
         
         <div class="input-group">
             <label for="student-name">Full Name</label>
-            <input type="text" id="student-name" placeholder="Enter full name">
-        </div>
-
-        <div class="input-group">
-            <label for="student-roll">Roll Number</label>
-            <input type="text" id="student-roll" placeholder="Enter roll number">
+            <input type="text" id="student-name" placeholder="Enter student full name">
         </div>
 
         <div class="input-group">
             <label for="class-select">Select Class</label>
             <select id="class-select">
-                <option value="class12">Class 12th (Informatics Practices)</option>
-                <option value="class11">Class 11th (Computer Science)</option>
+                <option value="class9">Class 9th (Information Technology - 402)</option>
+                <option value="class10">Class 10th (Information Technology - 402)</option>
+                <option value="class11">Class 11th (Computer Science - 083)</option>
+                <option value="class12">Class 12th (Informatics Practices - 065)</option>
             </select>
         </div>
 
-        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="startQuiz()">Start Assessment</button>
+        <div class="input-group">
+            <label for="student-roll">Select Roll Number (1 to 100)</label>
+            <select id="student-roll"></select>
+        </div>
+
+        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="startQuiz()">Start Examination</button>
 
         <!-- ADMIN PANEL TRIGGER ZONE -->
         <div id="admin-zone" style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
@@ -245,20 +231,7 @@
                         <input type="password" id="admin-pass-input" placeholder="Admin Password">
                     </div>
                     <button class="btn" style="width: 100%; font-size: 12px;" onclick="accessAdminPanel()">Unlock Lockout Manager</button>
-                    
                     <div id="admin-unblock-zone" style="margin-top: 12px;"></div>
-
-                    <div style="margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 8px;">
-                        <span style="font-size: 11px; font-weight: bold;">Manual Roll Clear:</span>
-                        <div style="display: flex; gap: 4px; margin-top: 4px;">
-                            <select id="manual-reset-class" style="font-size: 11px; padding: 4px;">
-                                <option value="class12">Class 12</option>
-                                <option value="class11">Class 11</option>
-                            </select>
-                            <input type="text" id="manual-reset-roll" placeholder="Roll No" style="font-size: 11px; padding: 4px; width: 60px;">
-                            <button class="btn" style="font-size: 11px; padding: 4px 8px;" onclick="executeForceManualUnlock()">Clear</button>
-                        </div>
-                    </div>
                 </div>
             </details>
         </div>
@@ -271,9 +244,19 @@
             <span id="timer-display" style="font-weight: bold; font-size: 14px; color: var(--danger-color);">⏱️ 15:00</span>
         </div>
 
+        <!-- Case Study Block (remains fixed if defined) -->
+        <div id="case-study-container" style="display: none;"></div>
+
         <h3 id="secure-question-host" style="font-size: 16px; margin-bottom: 12px;"></h3>
+        
+        <!-- Figure/Diagram Container -->
+        <div id="figure-container" style="display: none;"></div>
+        
+        <!-- Code Display Container -->
         <div id="code-container" style="display: none;"></div>
-        <div id="options-container"></div>
+
+        <!-- Dynamic Response Zone (MCQ or Descriptive Text Area) -->
+        <div id="response-container"></div>
 
         <div style="display: flex; justify-content: space-between; margin-top: 20px;">
             <button id="prev-btn" class="btn" onclick="goPrevious()">Previous</button>
@@ -283,29 +266,29 @@
 
     <!-- RESULT & REPORT BOX -->
     <div id="result-box" style="display: none;">
-        <!-- Student Completion Confirmation (Default View) -->
+        <!-- Student Completion Screen -->
         <div id="student-completion-view" style="text-align: center; padding: 20px 10px;">
             <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
-            <h2 style="color: #2c3e50; margin-bottom: 8px;">Quiz Submitted Successfully!</h2>
+            <h2 style="color: #2c3e50; margin-bottom: 8px;">Examination Submitted!</h2>
             <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">
-                Thank you, <strong id="submitted-student-name"></strong>. Your responses have been recorded securely.
+                Thank you, <strong id="submitted-student-name"></strong>. Your paper has been submitted to the evaluation system.
             </p>
             
             <div style="background: #f8fafc; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 8px; max-width: 380px; margin: 0 auto 20px auto;">
                 <label for="teacher-unlock-pin" style="display:block; font-size: 13px; font-weight: bold; color: #1e293b; margin-bottom: 6px;">
-                    🔒 Teacher Master Key (To View Scorecard):
+                    🔒 Master Key (To View Scorecard):
                 </label>
                 <input type="password" id="teacher-unlock-pin" placeholder="Enter Admin Password" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 14px; text-align: center;">
                 <button class="btn btn-next" style="width: 100%; margin-top: 10px;" onclick="unlockDetailedReport()">Unlock Result Dashboard</button>
             </div>
 
-            <button class="restart-btn" onclick="restartQuiz()">Log Out Session</button>
+            <button class="restart-btn" onclick="restartQuiz()">Exit Portal</button>
         </div>
 
-        <!-- Protected Teacher Report Card View -->
+        <!-- Protected Teacher Report View -->
         <div id="teacher-report-view" style="display: none; border-top: 2px dashed #cbd5e1; margin-top: 15px; padding-top: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 8px;">
-                <h3 style="color:#2c3e50; margin:0; font-size:16px;">📊 Consolidated Test Report</h3>
+                <h3 style="color:#2c3e50; margin:0; font-size:16px;">📊 Evaluation Scorecard</h3>
                 <div style="display: flex; gap: 6px;">
                     <button class="btn btn-submit" style="padding: 6px 10px; font-size: 12px; background: #059669;" onclick="downloadReportCSV()">📥 Download CSV</button>
                     <button class="btn btn-next" style="padding: 6px 10px; font-size: 12px;" onclick="window.print()">🖨️ Print</button>
@@ -339,43 +322,85 @@
     </div>
 </div>
 
+<div class="app-footer">
+    Designed By: Krishna Kr
+</div>
+
 <script>
     // --- SUPABASE CONFIGURATION ---
-    // Ensure SUPABASE_KEY is your valid anon JWT key from Supabase settings
     const SUPABASE_URL = "https://pqkjdtajklalzjmqkgln.supabase.co";
-    const SUPABASE_KEY = "YOUR_ACTUAL_ANON_JWT_KEY_HERE";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE";
     const MASTER_TEACHER_PASSWORD = "Admin@7055";
 
     let dbClientInstance = null;
-    if (typeof supabase !== "undefined" && SUPABASE_KEY !== "YOUR_ACTUAL_ANON_JWT_KEY_HERE") {
+    if (typeof supabase !== "undefined" && SUPABASE_KEY !== "") {
         dbClientInstance = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
 
-    // --- QUIZ DATA ---
+    // Populate Roll 1 to 100 dynamically on load
+    window.addEventListener("DOMContentLoaded", () => {
+        const rollSelect = document.getElementById("student-roll");
+        for (let i = 1; i <= 100; i++) {
+            const opt = document.createElement("option");
+            opt.value = i;
+            opt.innerText = `Roll No. ${i}`;
+            rollSelect.appendChild(opt);
+        }
+    });
+
+    // --- SAMPLE QUESTION BANK WITH CASE STUDY, FIGURES & EXPLANATORY QUESTIONS ---
     const quizDataset = {
-        class12: [
+        class9: [
             {
-                question: "Which of the following commands creates an empty Pandas DataFrame?",
-                options: ["pd.DataFrame()", "pd.EmptyFrame()", "pd.CreateDataFrame()", "pd.Series()"],
+                type: "mcq",
+                question: "Which of the following is considered the brain of the computer?",
+                options: ["RAM", "CPU", "Hard Disk", "Monitor"],
+                correct: 1
+            },
+            {
+                type: "descriptive",
+                question: "Explain the main functions of an Operating System in about 50 words.",
+                keywords: ["resource", "file", "memory", "hardware", "user", "process"],
+                maxMarks: 2
+            }
+        ],
+        class10: [
+            {
+                type: "mcq",
+                caseStudy: "Case Study 1: ABC School wants to create a blog to post daily homework assignments and notices online for students.",
+                question: "Which web service should the school use to create a personal online journal?",
+                options: ["Blog", "Web Browser", "Podcast", "FTP"],
                 correct: 0
             },
             {
-                question: "What will be the output of the following Python snippet?",
-                code: "import pandas as pd\ns = pd.Series([10, 20, 30], index=['a', 'b', 'c'])\nprint(s['b'])",
-                options: ["10", "20", "30", "KeyError"],
-                correct: 1
+                type: "descriptive",
+                caseStudy: "Case Study 1: ABC School wants to create a blog to post daily homework assignments and notices online for students.",
+                question: "Write short notes on Styles and Formatting in LibreOffice Writer in 50 words.",
+                keywords: ["style", "formatting", "document", "template", "font", "consistent"],
+                maxMarks: 2
             }
         ],
         class11: [
             {
-                question: "Which of the following is an immutable data type in Python?",
-                options: ["List", "Dictionary", "Tuple", "Set"],
-                correct: 2
+                type: "mcq",
+                question: "Identify the correct diagram element representing data flow in a flowchart:",
+                figureUrl: "https://via.placeholder.com/500x150?text=Flowchart+Diagram+Sample",
+                options: ["Rectangle", "Parallelogram", "Diamond", "Circle"],
+                correct: 1
+            }
+        ],
+        class12: [
+            {
+                type: "mcq",
+                question: "Which command creates an empty Pandas DataFrame?",
+                options: ["pd.DataFrame()", "pd.EmptyFrame()", "pd.CreateDataFrame()", "pd.Series()"],
+                correct: 0
             },
             {
-                question: "What is the output of 3 ** 2 ** 3 in Python?",
-                options: ["512", "6561", "729", "64"],
-                correct: 1
+                type: "descriptive",
+                question: "Briefly explain the difference between loc and iloc in Pandas DataFrames (50 words).",
+                keywords: ["label", "index", "integer", "location", "position"],
+                maxMarks: 2
             }
         ]
     };
@@ -390,9 +415,7 @@
     let userAnswers = [];
     let finalScore = 0;
     let timerInterval = null;
-    let timeRemainingSeconds = 900; // 15 Minutes
-
-    function encryptTextForHumanEyes(str) { return str; }
+    let timeRemainingSeconds = 900;
 
     async function checkOrSetDeviceLock(roll, classKey, name) {
         if (!dbClientInstance) return true;
@@ -404,9 +427,7 @@
                 .eq('class_key', classKey)
                 .maybeSingle();
 
-            if (data && data.is_locked) {
-                return false;
-            }
+            if (data && data.is_locked) return false;
 
             await dbClientInstance
                 .from('device_locks')
@@ -414,8 +435,7 @@
 
             return true;
         } catch (e) {
-            console.error("Lock System Exception:", e);
-            return true; 
+            return true;
         }
     }
 
@@ -427,27 +447,25 @@
                 .update({ is_locked: false })
                 .eq('roll_number', roll)
                 .eq('class_key', classKey);
-        } catch (e) {
-            console.error("Clear Lock Exception:", e);
-        }
+        } catch (e) {}
     }
 
     async function startQuiz() {
         studentName = document.getElementById("student-name").value.trim();
-        studentRoll = document.getElementById("student-roll").value.trim();
+        studentRoll = document.getElementById("student-roll").value;
         selectedClassKey = document.getElementById("class-select").value;
         
         const classSelectElem = document.getElementById("class-select");
         selectedClassLabel = classSelectElem.options[classSelectElem.selectedIndex].text;
 
-        if (!studentName || !studentRoll) {
-            alert("Please enter both Name and Roll Number to proceed.");
+        if (!studentName) {
+            alert("Please enter Student Full Name.");
             return;
         }
 
         const lockGranted = await checkOrSetDeviceLock(studentRoll, selectedClassKey, studentName);
         if (!lockGranted) {
-            alert("🔒 Session Locked! This Roll Number is actively marked in a test session. Contact your teacher to unlock.");
+            alert("🔒 Session Locked! Roll " + studentRoll + " is already taking the test. Contact your invigilator.");
             return;
         }
 
@@ -482,33 +500,61 @@
         document.getElementById("question-tracker").innerText = `Question ${currentQuestionIdx + 1} / ${quizData.length}`;
         document.getElementById("secure-question-host").innerText = currentQuiz.question;
 
+        // Case Study Passages
+        const caseStudyBox = document.getElementById("case-study-container");
+        if (currentQuiz.caseStudy) {
+            caseStudyBox.innerHTML = `<div class="case-study-card"><strong>📘 Case Study / Context:</strong><br>${currentQuiz.caseStudy}</div>`;
+            caseStudyBox.style.display = "block";
+        } else {
+            caseStudyBox.style.display = "none";
+        }
+
+        // Figures & Diagrams
+        const figureBox = document.getElementById("figure-container");
+        if (currentQuiz.figureUrl) {
+            figureBox.innerHTML = `<img src="${currentQuiz.figureUrl}" class="question-image" alt="Question Diagram">`;
+            figureBox.style.display = "block";
+        } else {
+            figureBox.style.display = "none";
+        }
+
+        // Code Boxes
         const codeBoxContainer = document.getElementById("code-container");
         if (currentQuiz.code) {
-            codeBoxContainer.innerHTML = `<div class="code-box">${encryptTextForHumanEyes(currentQuiz.code)}</div>`;
+            codeBoxContainer.innerHTML = `<div class="code-box">${currentQuiz.code}</div>`;
             codeBoxContainer.style.display = "block";
         } else {
-            codeBoxContainer.innerHTML = "";
             codeBoxContainer.style.display = "none";
         }
 
-        const optionsBox = document.getElementById("options-container");
-        optionsBox.innerHTML = "";
+        // Render Options (MCQ vs Descriptive 50-Word Input)
+        const responseBox = document.getElementById("response-container");
+        responseBox.innerHTML = "";
 
-        currentQuiz.options.forEach((optionText, idx) => {
-            const isChecked = userAnswers[currentQuestionIdx] === idx ? "checked" : "";
-            const optionElem = document.createElement("div");
-            optionElem.className = "option-container";
-            optionElem.onclick = () => selectOption(idx);
-
-            optionElem.innerHTML = `
-                <input type="radio" name="quiz-option" id="opt-${idx}" value="${idx}" ${isChecked} onclick="selectOption(${idx})">
-                <label for="opt-${idx}" class="option-label">${encryptTextForHumanEyes(optionText)}</label>
+        if (currentQuiz.type === "descriptive") {
+            const savedText = userAnswers[currentQuestionIdx] || "";
+            responseBox.innerHTML = `
+                <div class="input-group">
+                    <label>Write your answer (~50 words):</label>
+                    <textarea id="descriptive-input" rows="5" placeholder="Type your explanatory answer here..." oninput="saveDescriptiveAnswer(this.value)">${savedText}</textarea>
+                </div>
             `;
-            optionsBox.appendChild(optionElem);
-        });
+        } else { // Standard MCQ
+            currentQuiz.options.forEach((optionText, idx) => {
+                const isChecked = userAnswers[currentQuestionIdx] === idx ? "checked" : "";
+                const optionElem = document.createElement("div");
+                optionElem.className = "option-container";
+                optionElem.onclick = () => selectOption(idx);
+
+                optionElem.innerHTML = `
+                    <input type="radio" name="quiz-option" id="opt-${idx}" value="${idx}" ${isChecked} onclick="selectOption(${idx})">
+                    <label for="opt-${idx}" class="option-label">${optionText}</label>
+                `;
+                responseBox.appendChild(optionElem);
+            });
+        }
 
         document.getElementById("prev-btn").disabled = currentQuestionIdx === 0;
-
         const nextBtn = document.getElementById("next-btn");
         if (currentQuestionIdx === quizData.length - 1) {
             nextBtn.innerText = "Submit Test";
@@ -524,9 +570,11 @@
     function selectOption(index) {
         userAnswers[currentQuestionIdx] = index;
         const radios = document.getElementsByName("quiz-option");
-        radios.forEach((radio, idx) => {
-            radio.checked = idx === index;
-        });
+        radios.forEach((radio, idx) => { radio.checked = idx === index; });
+    }
+
+    function saveDescriptiveAnswer(val) {
+        userAnswers[currentQuestionIdx] = val;
     }
 
     function goNext() {
@@ -545,32 +593,51 @@
 
     async function calculateAndShowResults(autoSubmitted = false) {
         clearInterval(timerInterval);
-
-        if (autoSubmitted) {
-            alert("⏰ Time is up! Your quiz has been submitted automatically.");
-        }
+        if (autoSubmitted) alert("⏰ Time expired! Paper auto-submitted.");
 
         finalScore = 0;
         let wrongOrSkipped = 0;
         let detailedAnalysisHtml = "";
 
         quizData.forEach((q, idx) => {
-            const isCorrect = userAnswers[idx] === q.correct;
-            if (isCorrect) {
-                finalScore++;
+            let isCorrect = false;
+            let chosenText = "";
+            let correctText = "";
+
+            if (q.type === "descriptive") {
+                const ansText = (userAnswers[idx] || "").toLowerCase();
+                chosenText = userAnswers[idx] ? `"${userAnswers[idx]}"` : "Skipped";
+                
+                // Keyword-Based Automated Grading
+                let matchedCount = 0;
+                (q.keywords || []).forEach(kw => {
+                    if (ansText.includes(kw.toLowerCase())) matchedCount++;
+                });
+
+                if (matchedCount >= 2) {
+                    finalScore++;
+                    isCorrect = true;
+                } else {
+                    wrongOrSkipped++;
+                }
+                correctText = `Required Keywords: ${q.keywords.join(", ")}`;
             } else {
-                wrongOrSkipped++;
+                isCorrect = userAnswers[idx] === q.correct;
+                if (isCorrect) finalScore++;
+                else wrongOrSkipped++;
+
+                chosenText = userAnswers[idx] !== null ? q.options[userAnswers[idx]] : "Skipped";
+                correctText = q.options[q.correct];
             }
 
-            const chosenText = userAnswers[idx] !== null ? q.options[userAnswers[idx]] : "None (Skipped)";
             const statusColor = isCorrect ? "#16a34a" : "#dc2626";
             const statusIcon = isCorrect ? "✅" : "❌";
 
             detailedAnalysisHtml += `
-                <div class="wrong-item" style="border-left: 4px solid ${statusColor}; margin-bottom: 10px; padding: 8px 10px; background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                    <strong>Q${idx + 1}: ${q.question}</strong> <span style="font-size: 12px;">${statusIcon}</span><br>
-                    <span style="color: ${statusColor}; font-size: 13px;">Your Choice: ${chosenText}</span><br>
-                    ${!isCorrect ? `<span style="color: #16a34a; font-size: 13px;">Correct Answer: ${q.options[q.correct]}</span>` : ''}
+                <div style="border-left: 4px solid ${statusColor}; margin-bottom: 10px; padding: 8px 10px; background: #fff; border-radius: 4px;">
+                    <strong>Q${idx + 1}: ${q.question}</strong> <span>${statusIcon}</span><br>
+                    <span style="color: ${statusColor}; font-size: 13px;">Answer: ${chosenText}</span><br>
+                    ${!isCorrect ? `<span style="color: #16a34a; font-size: 13px;">Expected: ${correctText}</span>` : ''}
                 </div>
             `;
         });
@@ -578,25 +645,22 @@
         const totalQuestions = quizData.length;
         const accuracyRate = Math.round((finalScore / totalQuestions) * 100);
 
-        // Hide quiz interface, display completion screen
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
         document.getElementById("student-completion-view").style.display = "block";
         document.getElementById("teacher-report-view").style.display = "none";
 
         document.getElementById("submitted-student-name").innerText = `${studentName} (Roll ${studentRoll})`;
-
-        // Populate hidden teacher report fields
-        document.getElementById("score-text").innerText = `Student: ${studentName} | Class: ${selectedClassLabel} | Roll: ${studentRoll}\nFinal Score: ${finalScore} / ${totalQuestions}`;
+        document.getElementById("score-text").innerText = `Student: ${studentName} | Class: ${selectedClassLabel} | Roll: ${studentRoll}\nFinal Marks: ${finalScore} / ${totalQuestions}`;
+        
         document.getElementById("metric-correct-count").innerText = finalScore;
         document.getElementById("metric-wrong-count").innerText = wrongOrSkipped;
         document.getElementById("metric-total-marks").innerText = `${finalScore} / ${totalQuestions}`;
         document.getElementById("metric-accuracy-rate").innerText = `${accuracyRate}%`;
 
-        const reviewZone = document.getElementById("wrong-questions-review-zone");
-        reviewZone.innerHTML = `
-            <div class="wrong-review-panel" style="max-height: 350px;">
-                <div class="wrong-review-title" style="color: #1e293b; border-bottom-color: #cbd5e1;">📋 Itemized Question Breakdown</div>
+        document.getElementById("wrong-questions-review-zone").innerHTML = `
+            <div class="wrong-review-panel">
+                <div class="wrong-review-title">📋 Detailed Answer Evaluation</div>
                 ${detailedAnalysisHtml}
             </div>
         `;
@@ -610,123 +674,76 @@
             document.getElementById("student-completion-view").style.display = "none";
             document.getElementById("teacher-report-view").style.display = "block";
         } else {
-            alert("❌ Unauthorized! Incorrect Teacher Master Key.");
+            alert("❌ Access Denied: Incorrect Master Password.");
         }
     }
 
     function downloadReportCSV() {
         const totalQuestions = quizData.length;
         const accuracyRate = Math.round((finalScore / totalQuestions) * 100);
+        let csvRows = [
+            ["CITY PUBLIC SCHOOL, NAJIBABAD - EVALUATION REPORT CARD"],
+            ["Student Name", studentName],
+            ["Class", selectedClassLabel],
+            ["Roll Number", studentRoll],
+            ["Final Score", `${finalScore} / ${totalQuestions}`],
+            ["Accuracy Ratio", `${accuracyRate}%`],
+            [],
+            ["Q.No", "Question", "Student Answer", "Expected / Correct", "Status"]
+        ];
 
-        let csvRows = [];
-        
-        // Header info
-        csvRows.push(["STUDENT QUIZ REPORT CARD"]);
-        csvRows.push(["Student Name", studentName]);
-        csvRows.push(["Class", selectedClassLabel]);
-        csvRows.push(["Roll Number", studentRoll]);
-        csvRows.push(["Final Score", `${finalScore} / ${totalQuestions}`]);
-        csvRows.push(["Accuracy Ratio", `${accuracyRate}%`]);
-        csvRows.push([]); // Spacer row
-
-        // Questions header
-        csvRows.push(["Q.No", "Question", "Student Answer", "Correct Answer", "Status"]);
-
-        // Question rows
         quizData.forEach((q, idx) => {
-            const isCorrect = userAnswers[idx] === q.correct;
-            const chosenText = userAnswers[idx] !== null ? q.options[userAnswers[idx]] : "Skipped";
-            const correctText = q.options[q.correct];
-            const status = isCorrect ? "CORRECT" : "WRONG";
+            const isCorrect = userAnswers[idx] === q.correct || (q.type === 'descriptive' && userAnswers[idx]);
+            const chosenText = userAnswers[idx] !== null ? (q.type === 'mcq' ? q.options[userAnswers[idx]] : userAnswers[idx]) : "Skipped";
+            const correctText = q.type === 'mcq' ? q.options[q.correct] : q.keywords.join("; ");
+            const status = isCorrect ? "CORRECT" : "NEEDS_REVIEW";
 
-            const cleanQuestion = `"${q.question.replace(/"/g, '""')}"`;
-            const cleanChosen = `"${chosenText.replace(/"/g, '""')}"`;
-            const cleanCorrect = `"${correctText.replace(/"/g, '""')}"`;
-
-            csvRows.push([idx + 1, cleanQuestion, cleanChosen, cleanCorrect, status]);
+            csvRows.push([idx + 1, `"${q.question.replace(/"/g, '""')}"`, `"${chosenText.replace(/"/g, '""')}"`, `"${correctText.replace(/"/g, '""')}"`, status]);
         });
 
         const csvContent = "data:text/csv;charset=utf-8," + csvRows.map(e => e.join(",")).join("\n");
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        
-        const safeName = studentName.replace(/[^a-zA-Z0-9]/g, "_");
-        link.setAttribute("download", `${safeName}_Roll${studentRoll}_${selectedClassKey}_Report.csv`);
-        
+        link.setAttribute("download", `${studentName}_Roll${studentRoll}_Report.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
 
-    // --- ADMIN PANEL FUNCTIONS ---
     async function accessAdminPanel() {
         const pass = document.getElementById("admin-pass-input").value.trim();
-        if (pass === MASTER_TEACHER_PASSWORD) {
-            await renderLockoutManagerZone();
-        } else {
-            alert("❌ Access Denied: Incorrect Admin Password.");
-        }
+        if (pass === MASTER_TEACHER_PASSWORD) await renderLockoutManagerZone();
+        else alert("❌ Incorrect Password.");
     }
 
     async function renderLockoutManagerZone() {
         const zone = document.getElementById("admin-unblock-zone");
-        zone.innerHTML = "<span style='font-size:12px; color:#666;'>Loading active locks...</span>";
-
-        if (!dbClientInstance) {
-            zone.innerHTML = "<span style='font-size:12px; color:#dc2626;'>Database connection uninitialized. Ensure valid API key.</span>";
-            return;
-        }
+        if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>DB Instance Uninitialized</span>";
 
         try {
-            const { data, error } = await dbClientInstance
-                .from('device_locks')
-                .select('*')
-                .eq('is_locked', true);
-
-            if (error) throw error;
-
-            if (!data || data.length === 0) {
-                zone.innerHTML = "<span style='font-size:12px; color:#16a34a; font-weight:bold;'>No active lockouts recorded.</span>";
-                return;
-            }
+            const { data } = await dbClientInstance.from('device_locks').select('*').eq('is_locked', true);
+            if (!data || data.length === 0) return zone.innerHTML = "<span style='color:green;'>No Active Device Locks</span>";
 
             let html = "";
             data.forEach(item => {
-                html += `
-                    <div class="unblock-list-item">
-                        <span>🔒 ${item.student_name} (${item.class_key.toUpperCase()} - Roll ${item.roll_number})</span>
-                        <span class="unblock-action-link" onclick="executeAdminUnlock('${item.roll_number}', '${item.class_key}')">Unlock</span>
-                    </div>
-                `;
+                html += `<div class="unblock-list-item">
+                    <span>🔒 ${item.student_name} (${item.class_key} - Roll ${item.roll_number})</span>
+                    <span class="unblock-action-link" onclick="executeAdminUnlock('${item.roll_number}', '${item.class_key}')">Unlock</span>
+                </div>`;
             });
             zone.innerHTML = html;
-        } catch (e) {
-            zone.innerHTML = `<span style='font-size:12px; color:#dc2626;'>Error: ${e.message}</span>`;
-        }
+        } catch (e) { zone.innerHTML = e.message; }
     }
 
     async function executeAdminUnlock(roll, classKey) {
         await clearLockFromSystem(roll, classKey);
-        alert(`Session unlocked for Roll ${roll} (${classKey})`);
-        await renderLockoutManagerZone();
-    }
-
-    async function executeForceManualUnlock() {
-        const classKey = document.getElementById("manual-reset-class").value;
-        const roll = document.getElementById("manual-reset-roll").value.trim();
-        if (!roll) return alert("Please enter a roll number.");
-
-        await clearLockFromSystem(roll, classKey);
-        alert(`Cleared DB lock for Class: ${classKey}, Roll: ${roll}`);
-        document.getElementById("manual-reset-roll").value = "";
+        alert(`Roll ${roll} unlocked!`);
         await renderLockoutManagerZone();
     }
 
     async function restartQuiz() {
-        if (studentRoll) {
-            await clearLockFromSystem(studentRoll, selectedClassKey);
-        }
+        if (studentRoll) await clearLockFromSystem(studentRoll, selectedClassKey);
         location.reload();
     }
 </script>

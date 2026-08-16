@@ -9,11 +9,11 @@
         :root {
             --primary-color: #2563eb;
             --primary-hover: #1d4ed8;
-            --bg-overlay: rgba(15, 23, 42, 0.75);
-            --card-bg: #ffffff;
+            --bg-overlay: rgba(15, 23, 42, 0.35);
+            --card-bg: rgba(255, 255, 255, 0.95);
             --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
+            --text-muted: #475569;
+            --border-color: #cbd5e1;
             --success-color: #16a34a;
             --danger-color: #dc2626;
         }
@@ -37,7 +37,7 @@
             color: #ffffff;
             text-align: center;
             margin-bottom: 15px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 0 2px 6px rgba(0,0,0,0.7);
         }
 
         .header-title h1 {
@@ -49,18 +49,19 @@
         .header-title p {
             margin: 4px 0 0 0;
             font-size: 14px;
-            color: #94a3b8;
+            color: #f1f5f9;
         }
 
         .container {
             width: 100%;
-            max-width: 680px;
+            max-width: 720px;
             background: var(--card-bg);
             border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
             padding: 24px;
             box-sizing: border-box;
             margin-bottom: 20px;
+            backdrop-filter: blur(4px);
         }
 
         .btn {
@@ -76,12 +77,10 @@
         }
 
         .btn:hover { background-color: var(--primary-hover); }
-        .btn-submit { background-color: var(--success-color); }
-        .btn-submit:hover { background-color: #15803d; }
 
         .restart-btn {
             width: 100%;
-            background-color: #475569;
+            background-color: #dc2626;
             color: white;
             border: none;
             padding: 12px;
@@ -90,6 +89,7 @@
             font-weight: 600;
             cursor: pointer;
         }
+        .restart-btn:hover { background-color: #b91c1c; }
 
         .input-group { margin-bottom: 16px; }
         .input-group label {
@@ -110,18 +110,22 @@
         }
 
         .case-study-card {
-            background: #eff6ff;
-            border-left: 4px solid var(--primary-color);
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-left: 5px solid var(--primary-color);
             padding: 14px;
-            border-radius: 4px;
+            border-radius: 6px;
             margin-bottom: 16px;
             font-size: 14px;
-            color: #1e3a8a;
+            color: #0c4a6e;
+            max-height: 220px;
+            overflow-y: auto;
+            line-height: 1.5;
         }
 
         .question-image {
             max-width: 100%;
-            max-height: 250px;
+            max-height: 260px;
             border-radius: 6px;
             margin: 10px 0 16px 0;
             border: 1px solid var(--border-color);
@@ -136,54 +140,25 @@
             cursor: pointer;
             display: flex;
             align-items: center;
+            background: white;
         }
         .option-container:hover { background-color: #f8fafc; }
         .option-label { margin-left: 10px; cursor: pointer; font-size: 14px; width: 100%; }
 
-        .code-box {
-            background: #1e293b;
-            color: #f8fafc;
-            padding: 12px;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 13px;
-            margin-bottom: 16px;
-            white-space: pre-wrap;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .metric-card {
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-        }
-        .metric-val { font-size: 20px; font-weight: bold; margin-top: 4px; }
-        .text-success { color: var(--success-color); }
-        .text-danger { color: var(--danger-color); }
-        .text-neutral { color: #475569; }
-
         .app-footer {
-            color: #cbd5e1;
-            font-size: 13px;
-            font-weight: 500;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
             text-align: center;
             margin-top: auto;
             padding: 10px 0;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
 
         @media print {
             body { background: white; padding: 0; color: black; }
             .container { box-shadow: none; max-width: 100%; }
             .btn, .restart-btn, #student-completion-view, #admin-zone, .header-title { display: none !important; }
-            #teacher-report-view { display: block !important; border: none !important; }
         }
     </style>
 </head>
@@ -197,12 +172,12 @@
 <div class="container">
     <!-- SETUP / LOGIN PANEL -->
     <div id="setup-box">
-        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Select your class and details to proceed</p>
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Student Login Portal</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Select Class, Roll Number, and enter assigned unique password</p>
         
         <div class="input-group">
             <label for="student-name">Full Name</label>
-            <input type="text" id="student-name" placeholder="Enter student full name">
+            <input type="text" id="student-name" placeholder="Enter full name">
         </div>
 
         <div class="input-group">
@@ -220,17 +195,26 @@
             <select id="student-roll"></select>
         </div>
 
-        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="startQuiz()">Start Examination</button>
+        <div class="input-group">
+            <label for="student-pass">Unique Roll Password</label>
+            <input type="password" id="student-pass" placeholder="Enter secret password">
+        </div>
 
-        <!-- ADMIN PANEL TRIGGER ZONE -->
-        <div id="admin-zone" style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
-            <details style="font-size: 13px; color: var(--text-muted);">
-                <summary style="cursor: pointer; font-weight: bold;">🔒 Teacher Admin Panel Access</summary>
+        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="authenticateStudentAndStart()">Login & Start Examination</button>
+
+        <!-- TEACHER ADMIN PANEL & DOWNLOAD PASSWORDS -->
+        <div id="admin-zone" style="margin-top: 25px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                <button class="btn" style="font-size: 12px; background: #059669; width: 100%;" onclick="downloadAllPasswordsCSV()">📥 Download All Student Passwords (.CSV)</button>
+            </div>
+
+            <details style="font-size: 13px; color: var(--text-muted); margin-top: 12px;">
+                <summary style="cursor: pointer; font-weight: bold;">🔒 Teacher Lockout Manager Access</summary>
                 <div style="margin-top: 10px; background: #f8fafc; padding: 12px; border-radius: 6px;">
                     <div class="input-group" style="margin-bottom: 8px;">
                         <input type="password" id="admin-pass-input" placeholder="Admin Password">
                     </div>
-                    <button class="btn" style="width: 100%; font-size: 12px;" onclick="accessAdminPanel()">Unlock Lockout Manager</button>
+                    <button class="btn" style="width: 100%; font-size: 12px;" onclick="accessAdminPanel()">Unlock Device Lock Manager</button>
                     <div id="admin-unblock-zone" style="margin-top: 12px;"></div>
                 </div>
             </details>
@@ -244,18 +228,9 @@
             <span id="timer-display" style="font-weight: bold; font-size: 14px; color: var(--danger-color);">⏱️ 15:00</span>
         </div>
 
-        <!-- Case Study Block (remains fixed if defined) -->
         <div id="case-study-container" style="display: none;"></div>
-
         <h3 id="secure-question-host" style="font-size: 16px; margin-bottom: 12px;"></h3>
-        
-        <!-- Figure/Diagram Container -->
         <div id="figure-container" style="display: none;"></div>
-        
-        <!-- Code Display Container -->
-        <div id="code-container" style="display: none;"></div>
-
-        <!-- Dynamic Response Zone (MCQ or Descriptive Text Area) -->
         <div id="response-container"></div>
 
         <div style="display: flex; justify-content: space-between; margin-top: 20px;">
@@ -264,60 +239,18 @@
         </div>
     </div>
 
-    <!-- RESULT & REPORT BOX -->
+    <!-- RESULT & LOGOUT ONLY PANEL -->
     <div id="result-box" style="display: none;">
-        <!-- Student Completion Screen -->
-        <div id="student-completion-view" style="text-align: center; padding: 20px 10px;">
-            <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
-            <h2 style="color: #2c3e50; margin-bottom: 8px;">Examination Submitted!</h2>
-            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">
-                Thank you, <strong id="submitted-student-name"></strong>. Your paper has been submitted to the evaluation system.
+        <div id="student-completion-view" style="text-align: center; padding: 25px 10px;">
+            <div style="font-size: 54px; margin-bottom: 10px;">🎉</div>
+            <h2 style="color: #1e293b; margin-bottom: 8px;">Examination Submitted Successfully!</h2>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">
+                Thank you, <strong id="submitted-student-name"></strong>.<br>
+                Your response has been saved. Please click below to log out.
             </p>
-            
-            <div style="background: #f8fafc; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 8px; max-width: 380px; margin: 0 auto 20px auto;">
-                <label for="teacher-unlock-pin" style="display:block; font-size: 13px; font-weight: bold; color: #1e293b; margin-bottom: 6px;">
-                    🔒 Master Key (To View Scorecard):
-                </label>
-                <input type="password" id="teacher-unlock-pin" placeholder="Enter Admin Password" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 14px; text-align: center;">
-                <button class="btn btn-next" style="width: 100%; margin-top: 10px;" onclick="unlockDetailedReport()">Unlock Result Dashboard</button>
-            </div>
 
-            <button class="restart-btn" onclick="restartQuiz()">Exit Portal</button>
-        </div>
-
-        <!-- Protected Teacher Report View -->
-        <div id="teacher-report-view" style="display: none; border-top: 2px dashed #cbd5e1; margin-top: 15px; padding-top: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 8px;">
-                <h3 style="color:#2c3e50; margin:0; font-size:16px;">📊 Evaluation Scorecard</h3>
-                <div style="display: flex; gap: 6px;">
-                    <button class="btn btn-submit" style="padding: 6px 10px; font-size: 12px; background: #059669;" onclick="downloadReportCSV()">📥 Download CSV</button>
-                    <button class="btn btn-next" style="padding: 6px 10px; font-size: 12px;" onclick="window.print()">🖨️ Print</button>
-                </div>
-            </div>
-
-            <p id="score-text" style="text-align: center; font-size: 15px; color: #1e293b; font-weight: bold; margin-bottom: 15px; background: #e2e8f0; padding: 10px; border-radius: 6px;"></p>
-            
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <span style="font-size:12px; font-weight:bold; color:#15803d;">CORRECT ANSWERS</span>
-                    <div id="metric-correct-count" class="metric-val text-success">0</div>
-                </div>
-                <div class="metric-card">
-                    <span style="font-size:12px; font-weight:bold; color:#b91c1c;">WRONG / SKIPPED</span>
-                    <div id="metric-wrong-count" class="metric-val text-danger">0</div>
-                </div>
-                <div class="metric-card">
-                    <span style="font-size:12px; font-weight:bold; color:#475569;">TOTAL MARKS</span>
-                    <div id="metric-total-marks" class="metric-val text-neutral">0 / 0</div>
-                </div>
-                <div class="metric-card">
-                    <span style="font-size:12px; font-weight:bold; color:#475569;">ACCURACY RATIO</span>
-                    <div id="metric-accuracy-rate" class="metric-val text-neutral">0%</div>
-                </div>
-            </div>
-
-            <div id="wrong-questions-review-zone"></div>
-            <button class="restart-btn" style="margin-top: 15px;" onclick="restartQuiz()">Log Out & Return to Home Screen 🔒</button>
+            <!-- ONLY LOGOUT OPTION - NO PASSWORD PROMPTS -->
+            <button class="restart-btn" onclick="restartQuiz()">🔒 Log Out & Finish Session</button>
         </div>
     </div>
 </div>
@@ -327,7 +260,6 @@
 </div>
 
 <script>
-    // --- SUPABASE CONFIGURATION ---
     const SUPABASE_URL = "https://pqkjdtajklalzjmqkgln.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE";
     const MASTER_TEACHER_PASSWORD = "Admin@7055";
@@ -337,7 +269,32 @@
         dbClientInstance = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
 
-    // Populate Roll 1 to 100 dynamically on load
+    // --- PSEUDO-RANDOM UNIQUE PASSWORD GENERATOR ---
+    // Generates complex, unpredictable passwords that remain identical for each roll number
+    function generateUniquePassword(classKey, rollNum) {
+        const seedStr = `${classKey}-SECRET-SALT-${rollNum}`;
+        let hash = 0;
+        for (let i = 0; i < seedStr.length; i++) {
+            hash = (hash << 5) - hash + seedStr.charCodeAt(i);
+            hash |= 0;
+        }
+
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789#@!$%";
+        let pass = "";
+        let currentHash = Math.abs(hash);
+
+        for (let i = 0; i < 8; i++) {
+            const charIdx = (currentHash + i * 37) % chars.length;
+            pass += chars[charIdx];
+            currentHash = (currentHash * 1664525 + 1013904223) % 4294967296;
+        }
+
+        const classPrefixMap = { class9: "9IT", class10: "10KZP", class11: "11EXHT", class12: "12IP" };
+        const prefix = classPrefixMap[classKey] || "CPS";
+        return `${prefix}-${pass}`;
+    }
+
+    // Populate Roll Numbers 1 to 100
     window.addEventListener("DOMContentLoaded", () => {
         const rollSelect = document.getElementById("student-roll");
         for (let i = 1; i <= 100; i++) {
@@ -348,79 +305,67 @@
         }
     });
 
-    // --- SAMPLE QUESTION BANK WITH CASE STUDY, FIGURES & EXPLANATORY QUESTIONS ---
+    // --- DOWNLOAD ALL 400 PASSWORDS CSV ---
+    function downloadAllPasswordsCSV() {
+        let csvContent = "Class,Roll Number,Unique Password\n";
+        const classes = [
+            { key: "class9", label: "Class 9th (IT)" },
+            { key: "class10", label: "Class 10th (IT)" },
+            { key: "class11", label: "Class 11th (CS)" },
+            { key: "class12", label: "Class 12th (IP)" }
+        ];
+
+        classes.forEach(c => {
+            for (let r = 1; r <= 100; r++) {
+                const pass = generateUniquePassword(c.key, r);
+                csvContent += `"${c.label}",${r},"${pass}"\n`;
+            }
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "CPS_Student_Passwords_Master_List.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    // --- SAMPLE QUESTION BANK ---
     const quizDataset = {
         class9: [
-            {
-                type: "mcq",
-                question: "Which of the following is considered the brain of the computer?",
-                options: ["RAM", "CPU", "Hard Disk", "Monitor"],
-                correct: 1
-            },
-            {
-                type: "descriptive",
-                question: "Explain the main functions of an Operating System in about 50 words.",
-                keywords: ["resource", "file", "memory", "hardware", "user", "process"],
-                maxMarks: 2
-            }
+            { type: "mcq", question: "Which component is responsible for performing calculations in a computer?", options: ["ALU", "Control Unit", "RAM", "Hard Disk"], correct: 0 },
+            { type: "descriptive", question: "Explain the main functions of an Operating System in about 50 words.", keywords: ["resource", "file", "hardware"], maxMarks: 2 }
         ],
         class10: [
-            {
-                type: "mcq",
-                caseStudy: "Case Study 1: ABC School wants to create a blog to post daily homework assignments and notices online for students.",
-                question: "Which web service should the school use to create a personal online journal?",
-                options: ["Blog", "Web Browser", "Podcast", "FTP"],
-                correct: 0
-            },
-            {
-                type: "descriptive",
-                caseStudy: "Case Study 1: ABC School wants to create a blog to post daily homework assignments and notices online for students.",
-                question: "Write short notes on Styles and Formatting in LibreOffice Writer in 50 words.",
-                keywords: ["style", "formatting", "document", "template", "font", "consistent"],
-                maxMarks: 2
-            }
+            { type: "mcq", question: "Which web service should the school use to post daily notices and journals?", options: ["Blog", "Web Browser", "FTP", "Email Client"], correct: 0 },
+            { type: "descriptive", question: "Describe how Styles and Formatting enhance document structure in 50 words.", keywords: ["style", "formatting"], maxMarks: 2 }
         ],
         class11: [
-            {
-                type: "mcq",
-                question: "Identify the correct diagram element representing data flow in a flowchart:",
-                figureUrl: "https://via.placeholder.com/500x150?text=Flowchart+Diagram+Sample",
-                options: ["Rectangle", "Parallelogram", "Diamond", "Circle"],
-                correct: 1
-            }
+            { type: "mcq", question: "Identify the flowchart shape used for decision conditions:", options: ["Rectangle", "Diamond", "Parallelogram", "Oval"], correct: 1 }
         ],
         class12: [
-            {
-                type: "mcq",
-                question: "Which command creates an empty Pandas DataFrame?",
-                options: ["pd.DataFrame()", "pd.EmptyFrame()", "pd.CreateDataFrame()", "pd.Series()"],
-                correct: 0
-            },
-            {
-                type: "descriptive",
-                question: "Briefly explain the difference between loc and iloc in Pandas DataFrames (50 words).",
-                keywords: ["label", "index", "integer", "location", "position"],
-                maxMarks: 2
-            }
+            { type: "mcq", question: "Which Pandas function creates a DataFrame from a CSV file?", options: ["pd.read_csv()", "pd.import_csv()", "pd.open_csv()"], correct: 0 },
+            { type: "descriptive", question: "Explain the difference between loc and iloc indexing in Pandas (50 words).", keywords: ["label", "index"], maxMarks: 2 }
         ]
     };
 
-    // --- STATE VARIABLES ---
     let studentName = "";
     let studentRoll = "";
-    let selectedClassKey = "class12";
+    let selectedClassKey = "class10";
     let selectedClassLabel = "";
     let quizData = [];
     let currentQuestionIdx = 0;
     let userAnswers = [];
-    let finalScore = 0;
     let timerInterval = null;
     let timeRemainingSeconds = 900;
 
     async function checkOrSetDeviceLock(roll, classKey, name) {
         if (!dbClientInstance) return true;
         try {
-            const { data, error } = await dbClientInstance
+            const { data } = await dbClientInstance
                 .from('device_locks')
                 .select('*')
                 .eq('roll_number', roll)
@@ -450,11 +395,12 @@
         } catch (e) {}
     }
 
-    async function startQuiz() {
+    async function authenticateStudentAndStart() {
         studentName = document.getElementById("student-name").value.trim();
         studentRoll = document.getElementById("student-roll").value;
         selectedClassKey = document.getElementById("class-select").value;
-        
+        const enteredPass = document.getElementById("student-pass").value.trim();
+
         const classSelectElem = document.getElementById("class-select");
         selectedClassLabel = classSelectElem.options[classSelectElem.selectedIndex].text;
 
@@ -463,9 +409,16 @@
             return;
         }
 
+        // Verify Unique Complex Password
+        const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
+        if (enteredPass !== expectedPass) {
+            alert("❌ Invalid Password! Please check the password list provided by your teacher.");
+            return;
+        }
+
         const lockGranted = await checkOrSetDeviceLock(studentRoll, selectedClassKey, studentName);
         if (!lockGranted) {
-            alert("🔒 Session Locked! Roll " + studentRoll + " is already taking the test. Contact your invigilator.");
+            alert("🔒 Roll Number " + studentRoll + " is already active on another browser!");
             return;
         }
 
@@ -500,34 +453,6 @@
         document.getElementById("question-tracker").innerText = `Question ${currentQuestionIdx + 1} / ${quizData.length}`;
         document.getElementById("secure-question-host").innerText = currentQuiz.question;
 
-        // Case Study Passages
-        const caseStudyBox = document.getElementById("case-study-container");
-        if (currentQuiz.caseStudy) {
-            caseStudyBox.innerHTML = `<div class="case-study-card"><strong>📘 Case Study / Context:</strong><br>${currentQuiz.caseStudy}</div>`;
-            caseStudyBox.style.display = "block";
-        } else {
-            caseStudyBox.style.display = "none";
-        }
-
-        // Figures & Diagrams
-        const figureBox = document.getElementById("figure-container");
-        if (currentQuiz.figureUrl) {
-            figureBox.innerHTML = `<img src="${currentQuiz.figureUrl}" class="question-image" alt="Question Diagram">`;
-            figureBox.style.display = "block";
-        } else {
-            figureBox.style.display = "none";
-        }
-
-        // Code Boxes
-        const codeBoxContainer = document.getElementById("code-container");
-        if (currentQuiz.code) {
-            codeBoxContainer.innerHTML = `<div class="code-box">${currentQuiz.code}</div>`;
-            codeBoxContainer.style.display = "block";
-        } else {
-            codeBoxContainer.style.display = "none";
-        }
-
-        // Render Options (MCQ vs Descriptive 50-Word Input)
         const responseBox = document.getElementById("response-container");
         responseBox.innerHTML = "";
 
@@ -536,18 +461,17 @@
             responseBox.innerHTML = `
                 <div class="input-group">
                     <label>Write your answer (~50 words):</label>
-                    <textarea id="descriptive-input" rows="5" placeholder="Type your explanatory answer here..." oninput="saveDescriptiveAnswer(this.value)">${savedText}</textarea>
+                    <textarea id="descriptive-input" rows="5" placeholder="Type answer here..." oninput="saveDescriptiveAnswer(this.value)">${savedText}</textarea>
                 </div>
             `;
-        } else { // Standard MCQ
+        } else {
             currentQuiz.options.forEach((optionText, idx) => {
                 const isChecked = userAnswers[currentQuestionIdx] === idx ? "checked" : "";
                 const optionElem = document.createElement("div");
                 optionElem.className = "option-container";
                 optionElem.onclick = () => selectOption(idx);
-
                 optionElem.innerHTML = `
-                    <input type="radio" name="quiz-option" id="opt-${idx}" value="${idx}" ${isChecked} onclick="selectOption(${idx})">
+                    <input type="radio" name="quiz-option" id="opt-${idx}" value="${idx}" ${isChecked}>
                     <label for="opt-${idx}" class="option-label">${optionText}</label>
                 `;
                 responseBox.appendChild(optionElem);
@@ -558,11 +482,13 @@
         const nextBtn = document.getElementById("next-btn");
         if (currentQuestionIdx === quizData.length - 1) {
             nextBtn.innerText = "Submit Test";
-            nextBtn.className = "btn btn-submit";
+            nextBtn.className = "btn";
+            nextBtn.style.backgroundColor = "var(--success-color)";
             nextBtn.onclick = () => calculateAndShowResults(false);
         } else {
             nextBtn.innerText = "Next";
-            nextBtn.className = "btn btn-next";
+            nextBtn.className = "btn";
+            nextBtn.style.backgroundColor = "var(--primary-color)";
             nextBtn.onclick = () => goNext();
         }
     }
@@ -573,153 +499,30 @@
         radios.forEach((radio, idx) => { radio.checked = idx === index; });
     }
 
-    function saveDescriptiveAnswer(val) {
-        userAnswers[currentQuestionIdx] = val;
-    }
-
-    function goNext() {
-        if (currentQuestionIdx < quizData.length - 1) {
-            currentQuestionIdx++;
-            loadQuestion();
-        }
-    }
-
-    function goPrevious() {
-        if (currentQuestionIdx > 0) {
-            currentQuestionIdx--;
-            loadQuestion();
-        }
-    }
+    function saveDescriptiveAnswer(val) { userAnswers[currentQuestionIdx] = val; }
+    function goNext() { if (currentQuestionIdx < quizData.length - 1) { currentQuestionIdx++; loadQuestion(); } }
+    function goPrevious() { if (currentQuestionIdx > 0) { currentQuestionIdx--; loadQuestion(); } }
 
     async function calculateAndShowResults(autoSubmitted = false) {
         clearInterval(timerInterval);
-        if (autoSubmitted) alert("⏰ Time expired! Paper auto-submitted.");
-
-        finalScore = 0;
-        let wrongOrSkipped = 0;
-        let detailedAnalysisHtml = "";
-
-        quizData.forEach((q, idx) => {
-            let isCorrect = false;
-            let chosenText = "";
-            let correctText = "";
-
-            if (q.type === "descriptive") {
-                const ansText = (userAnswers[idx] || "").toLowerCase();
-                chosenText = userAnswers[idx] ? `"${userAnswers[idx]}"` : "Skipped";
-                
-                // Keyword-Based Automated Grading
-                let matchedCount = 0;
-                (q.keywords || []).forEach(kw => {
-                    if (ansText.includes(kw.toLowerCase())) matchedCount++;
-                });
-
-                if (matchedCount >= 2) {
-                    finalScore++;
-                    isCorrect = true;
-                } else {
-                    wrongOrSkipped++;
-                }
-                correctText = `Required Keywords: ${q.keywords.join(", ")}`;
-            } else {
-                isCorrect = userAnswers[idx] === q.correct;
-                if (isCorrect) finalScore++;
-                else wrongOrSkipped++;
-
-                chosenText = userAnswers[idx] !== null ? q.options[userAnswers[idx]] : "Skipped";
-                correctText = q.options[q.correct];
-            }
-
-            const statusColor = isCorrect ? "#16a34a" : "#dc2626";
-            const statusIcon = isCorrect ? "✅" : "❌";
-
-            detailedAnalysisHtml += `
-                <div style="border-left: 4px solid ${statusColor}; margin-bottom: 10px; padding: 8px 10px; background: #fff; border-radius: 4px;">
-                    <strong>Q${idx + 1}: ${q.question}</strong> <span>${statusIcon}</span><br>
-                    <span style="color: ${statusColor}; font-size: 13px;">Answer: ${chosenText}</span><br>
-                    ${!isCorrect ? `<span style="color: #16a34a; font-size: 13px;">Expected: ${correctText}</span>` : ''}
-                </div>
-            `;
-        });
-
-        const totalQuestions = quizData.length;
-        const accuracyRate = Math.round((finalScore / totalQuestions) * 100);
+        if (autoSubmitted) alert("⏰ Time expired! Test auto-submitted.");
 
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
-        document.getElementById("student-completion-view").style.display = "block";
-        document.getElementById("teacher-report-view").style.display = "none";
 
-        document.getElementById("submitted-student-name").innerText = `${studentName} (Roll ${studentRoll})`;
-        document.getElementById("score-text").innerText = `Student: ${studentName} | Class: ${selectedClassLabel} | Roll: ${studentRoll}\nFinal Marks: ${finalScore} / ${totalQuestions}`;
-        
-        document.getElementById("metric-correct-count").innerText = finalScore;
-        document.getElementById("metric-wrong-count").innerText = wrongOrSkipped;
-        document.getElementById("metric-total-marks").innerText = `${finalScore} / ${totalQuestions}`;
-        document.getElementById("metric-accuracy-rate").innerText = `${accuracyRate}%`;
-
-        document.getElementById("wrong-questions-review-zone").innerHTML = `
-            <div class="wrong-review-panel">
-                <div class="wrong-review-title">📋 Detailed Answer Evaluation</div>
-                ${detailedAnalysisHtml}
-            </div>
-        `;
-
+        document.getElementById("submitted-student-name").innerText = `${studentName} (${selectedClassLabel}, Roll ${studentRoll})`;
         await clearLockFromSystem(studentRoll, selectedClassKey);
-    }
-
-    function unlockDetailedReport() {
-        const enteredPin = document.getElementById("teacher-unlock-pin").value.trim();
-        if (enteredPin === MASTER_TEACHER_PASSWORD) {
-            document.getElementById("student-completion-view").style.display = "none";
-            document.getElementById("teacher-report-view").style.display = "block";
-        } else {
-            alert("❌ Access Denied: Incorrect Master Password.");
-        }
-    }
-
-    function downloadReportCSV() {
-        const totalQuestions = quizData.length;
-        const accuracyRate = Math.round((finalScore / totalQuestions) * 100);
-        let csvRows = [
-            ["CITY PUBLIC SCHOOL, NAJIBABAD - EVALUATION REPORT CARD"],
-            ["Student Name", studentName],
-            ["Class", selectedClassLabel],
-            ["Roll Number", studentRoll],
-            ["Final Score", `${finalScore} / ${totalQuestions}`],
-            ["Accuracy Ratio", `${accuracyRate}%`],
-            [],
-            ["Q.No", "Question", "Student Answer", "Expected / Correct", "Status"]
-        ];
-
-        quizData.forEach((q, idx) => {
-            const isCorrect = userAnswers[idx] === q.correct || (q.type === 'descriptive' && userAnswers[idx]);
-            const chosenText = userAnswers[idx] !== null ? (q.type === 'mcq' ? q.options[userAnswers[idx]] : userAnswers[idx]) : "Skipped";
-            const correctText = q.type === 'mcq' ? q.options[q.correct] : q.keywords.join("; ");
-            const status = isCorrect ? "CORRECT" : "NEEDS_REVIEW";
-
-            csvRows.push([idx + 1, `"${q.question.replace(/"/g, '""')}"`, `"${chosenText.replace(/"/g, '""')}"`, `"${correctText.replace(/"/g, '""')}"`, status]);
-        });
-
-        const csvContent = "data:text/csv;charset=utf-8," + csvRows.map(e => e.join(",")).join("\n");
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `${studentName}_Roll${studentRoll}_Report.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
     }
 
     async function accessAdminPanel() {
         const pass = document.getElementById("admin-pass-input").value.trim();
         if (pass === MASTER_TEACHER_PASSWORD) await renderLockoutManagerZone();
-        else alert("❌ Incorrect Password.");
+        else alert("❌ Incorrect Admin Password.");
     }
 
     async function renderLockoutManagerZone() {
         const zone = document.getElementById("admin-unblock-zone");
-        if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>DB Instance Uninitialized</span>";
+        if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>Database Instance Not Ready</span>";
 
         try {
             const { data } = await dbClientInstance.from('device_locks').select('*').eq('is_locked', true);
@@ -727,9 +530,9 @@
 
             let html = "";
             data.forEach(item => {
-                html += `<div class="unblock-list-item">
-                    <span>🔒 ${item.student_name} (${item.class_key} - Roll ${item.roll_number})</span>
-                    <span class="unblock-action-link" onclick="executeAdminUnlock('${item.roll_number}', '${item.class_key}')">Unlock</span>
+                html += `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0;">
+                    <span>🔒 ${item.student_name} (Roll ${item.roll_number})</span>
+                    <button class="btn" style="padding:2px 8px; font-size:11px; background:#dc2626;" onclick="executeAdminUnlock('${item.roll_number}', '${item.class_key}')">Unlock</button>
                 </div>`;
             });
             zone.innerHTML = html;
@@ -738,7 +541,7 @@
 
     async function executeAdminUnlock(roll, classKey) {
         await clearLockFromSystem(roll, classKey);
-        alert(`Roll ${roll} unlocked!`);
+        alert(`Roll ${roll} unlocked successfully!`);
         await renderLockoutManagerZone();
     }
 

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brainiac Bowl - City Public School, Najibabad</title>
+    <!-- CHANGE YOUR APP TITLE HERE -->
+    <title>Your App Name - City Public School, Najibabad</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -48,7 +49,7 @@
 
         .container {
             width: 100%;
-            max-width: 720px;
+            max-width: 780px;
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
@@ -116,6 +117,23 @@
         .option-container:hover { background-color: #f8fafc; }
         .option-label { margin-left: 10px; cursor: pointer; font-size: 14px; width: 100%; }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        table th, table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #e2e8f0;
+        }
+
         .app-footer {
             color: #ffffff;
             font-size: 14px;
@@ -130,7 +148,8 @@
 <body>
 
 <div class="header-title">
-    <h1>CITY PUBLIC SCHOOL, NAJIBABAD</h1>
+    <!-- CHANGE YOUR HEADER APP NAME HERE -->
+    <h1>YOUR APP NAME HERE</h1>
 </div>
 
 <div class="container">
@@ -160,8 +179,8 @@
         </div>
 
         <div class="input-group" id="pass-group">
-            <label for="student-pass">Unique Roll Password</label>
-            <input type="password" id="student-pass" placeholder="Enter secret password">
+            <label for="student-pass">Unique Roll Password (6 Characters)</label>
+            <input type="password" id="student-pass" placeholder="Enter 6-digit password">
         </div>
 
         <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login</button>
@@ -170,9 +189,14 @@
     <!-- ADMIN CONTROL PANEL VIEW -->
     <div id="admin-box" style="display: none;">
         <h2 style="text-align: center; color: #059669; margin-bottom: 10px;">🔒 Teacher Admin Panel</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Manage student passwords and active locks</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Manage student passwords, device locks & test submissions</p>
 
         <button class="btn" style="font-size: 14px; background: #059669; width: 100%; margin-bottom: 15px;" onclick="downloadAllPasswordsCSV()">📥 Download All Student Passwords (.CSV)</button>
+
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+            <h4 style="margin: 0 0 10px 0; color: var(--text-main);">📋 Student Test Submissions (All 400 Students)</h4>
+            <div id="admin-submissions-zone" style="max-height: 250px; overflow-y: auto;">Loading submissions...</div>
+        </div>
 
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
             <h4 style="margin: 0 0 10px 0; color: var(--text-main);">Active Device Locks</h4>
@@ -205,7 +229,7 @@
             <h2 style="color: #1e293b; margin-bottom: 8px;">Examination Submitted Successfully!</h2>
             <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">
                 Thank you, <strong id="submitted-student-name"></strong>.<br>
-                Your response has been saved.
+                Your response and score summary have been saved to the server.
             </p>
             <button class="restart-btn" onclick="restartQuiz()">🔒 Log Out & Finish Session</button>
         </div>
@@ -217,6 +241,7 @@
 </div>
 
 <script>
+    // Supabase Configuration
     const SUPABASE_URL = "https://pqkjdtajklalzjmqkgln.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE";
     const MASTER_TEACHER_PASSWORD = "Admin@7055";
@@ -240,17 +265,16 @@
         return x - Math.floor(x);
     }
 
+    // STRICT 6-DIGIT ALPHANUMERIC PASSWORD GENERATOR (Letters & Numbers Only)
     function generateUniquePassword(classKey, rollNum) {
         let seed = getSeedFromString(`${classKey}-SECRET-SALT-${rollNum}`);
-        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789#@!";
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         let pass = "";
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 6; i++) {
             const charIdx = Math.floor(seededRandom(seed + i * 37) * chars.length);
             pass += chars[charIdx];
         }
-        const classPrefixMap = { class9: "9IT", class10: "10KZP", class11: "11EXHT", class12: "12IP" };
-        const prefix = classPrefixMap[classKey] || "CPS";
-        return `${prefix}-${pass}`;
+        return pass;
     }
 
     function shuffleArrayForRoll(array, rollNum, seedOffset = 0) {
@@ -273,8 +297,9 @@
         }
     });
 
+    // CSV DOWNLOAD ENGINE
     function downloadAllPasswordsCSV() {
-        let csvContent = "Class,Roll Number,Unique Password\n";
+        let csvRows = ["Class,Roll Number,6-Digit Alphanumeric Password"];
         const classes = [
             { key: "class9", label: "Class 9th (IT)" },
             { key: "class10", label: "Class 10th (IT)" },
@@ -285,13 +310,15 @@
         classes.forEach(c => {
             for (let r = 1; r <= 100; r++) {
                 const pass = generateUniquePassword(c.key, r);
-                csvContent += `"${c.label}",${r},"${pass}"\n`;
+                csvRows.push(`"${c.label}",${r},"${pass}"`);
             }
         });
 
-        const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+        const csvString = csvRows.join("\n");
+        const blob = new Blob(["\uFEFF" + csvString], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
+        link.setAttribute("href", url);
         link.setAttribute("download", "CPS_Student_Passwords_Master_List.csv");
         document.body.appendChild(link);
         link.click();
@@ -331,15 +358,13 @@
     function handleLoginSubmit() {
         const inputVal = document.getElementById("student-name").value.trim();
         
-        // ADMIN MODE CHECK
         if (inputVal === MASTER_TEACHER_PASSWORD) {
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("admin-box").style.display = "block";
-            renderLockoutManagerZone();
+            renderAdminDashboardData();
             return;
         }
 
-        // TEACHER BYPASS OR REGULAR STUDENT
         const isTeacherMode = (inputVal.toLowerCase() === "teachers");
         authenticateStudentAndStart(inputVal, isTeacherMode);
     }
@@ -389,7 +414,6 @@
             return;
         }
 
-        // PASSWORD VALIDATION (Skipped if Name is 'teachers')
         if (!bypassPassword) {
             const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
             if (enteredPass !== expectedPass) {
@@ -497,11 +521,71 @@
         clearInterval(timerInterval);
         if (autoSubmitted) alert("⏰ Time expired! Test auto-submitted.");
 
+        let mcqCorrectCount = 0;
+        let totalMcqs = 0;
+        let summaryText = "";
+
+        quizData.forEach((q, idx) => {
+            const answerVal = userAnswers[idx];
+            if (q.type === "mcq") {
+                totalMcqs++;
+                const isCorrect = (answerVal === q.correct);
+                if (isCorrect) mcqCorrectCount++;
+                summaryText += `Q${idx + 1} (MCQ): ${isCorrect ? 'Correct' : 'Incorrect'}\n`;
+            } else {
+                summaryText += `Q${idx + 1} (Descriptive): ${answerVal || 'Blank'}\n`;
+            }
+        });
+
+        const scoreSummary = `${mcqCorrectCount} / ${totalMcqs} MCQs Correct`;
+
+        // Automatically Save Result to Supabase
+        if (dbClientInstance) {
+            try {
+                await dbClientInstance.from('student_submissions').insert([{
+                    student_name: studentName,
+                    roll_number: studentRoll,
+                    class_label: selectedClassLabel,
+                    score_summary: scoreSummary,
+                    details: summaryText,
+                    submitted_at: new Date().toISOString()
+                }]);
+            } catch (e) { console.error("Database save error:", e); }
+        }
+
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
-
         document.getElementById("submitted-student-name").innerText = `${studentName} (${selectedClassLabel}, Roll ${studentRoll})`;
         await clearLockFromSystem(studentRoll, selectedClassKey);
+    }
+
+    async function renderAdminDashboardData() {
+        await renderSubmissionsZone();
+        await renderLockoutManagerZone();
+    }
+
+    async function renderSubmissionsZone() {
+        const zone = document.getElementById("admin-submissions-zone");
+        if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>Database Instance Not Ready</span>";
+
+        try {
+            const { data } = await dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
+            if (!data || data.length === 0) return zone.innerHTML = "<span>No submissions recorded yet.</span>";
+
+            let html = "<table><thead><tr><th>Name</th><th>Class</th><th>Roll</th><th>Score</th><th>Submitted At</th></tr></thead><tbody>";
+            data.forEach(item => {
+                const dateStr = new Date(item.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                html += `<tr>
+                    <td>${item.student_name}</td>
+                    <td>${item.class_label}</td>
+                    <td>${item.roll_number}</td>
+                    <td><strong>${item.score_summary}</strong></td>
+                    <td>${dateStr}</td>
+                </tr>`;
+            });
+            html += "</tbody></table>";
+            zone.innerHTML = html;
+        } catch (e) { zone.innerHTML = "Table missing or database sync error."; }
     }
 
     async function renderLockoutManagerZone() {
@@ -526,7 +610,7 @@
     async function executeAdminUnlock(roll, classKey) {
         await clearLockFromSystem(roll, classKey);
         alert(`Roll ${roll} unlocked successfully!`);
-        await renderLockoutManagerZone();
+        await renderAdminDashboardData();
     }
 
     async function restartQuiz() {

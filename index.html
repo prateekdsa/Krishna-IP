@@ -237,9 +237,15 @@
 <div class="app-footer">Designed By Krishna Kumar</div>
 
 <script>
-    // Supabase Configuration
-    const SUPABASE_URL = "https://pqkjdtajklalzjmqkgln.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE";
+    // Supabase Configuration (Refreshed to reference Netlify Injected Variables with hardcoded fallbacks)
+    const SUPABASE_URL = (typeof window.ENV !== "undefined" && window.ENV.SUPABASE_URL) 
+        ? window.ENV.SUPABASE_URL 
+        : "https://pqkjdtajklalzjmqkgln.supabase.co";
+
+    const SUPABASE_KEY = (typeof window.ENV !== "undefined" && window.ENV.SUPABASE_ANON_KEY) 
+        ? window.ENV.SUPABASE_ANON_KEY 
+        : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE";
+
     const MASTER_TEACHER_PASSWORD = "Admin@7055";
 
     let dbClientInstance = null;

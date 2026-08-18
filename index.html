@@ -204,11 +204,11 @@
     <!-- LOGIN PANEL -->
     <div id="setup-box">
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal Login</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Select Class, Section, Subject & enter your Roll No & 6-Digit Password.</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Select Class, Section, Subject & enter your Roll No & Password.</p>
         
         <div class="input-group">
             <label for="student-name">Full Name</label>
-            <input type="text" id="student-name" placeholder="Enter full name">
+            <input type="text" id="student-name" placeholder="Enter full name (or 'Teacher' for Admin)">
         </div>
 
         <div class="input-group" id="class-group">
@@ -218,22 +218,20 @@
                 <option value="class9B">Class 9th - Section B (Max 50 Students)</option>
                 <option value="class10A">Class 10th - Section A (Max 50 Students)</option>
                 <option value="class10B">Class 10th - Section B (Max 50 Students)</option>
-                <option value="class11">Class 11th - Section A (Max 65 Students)</option>
-                <option value="class11">Class 11th - Section B (Max 20 Students)</option>
-                <option value="class12">Class 12th - Section A (Max 60 Students)</option>
-                <option value="class12">Class 12th - Section B (Max 20 Students)</option>
+                <option value="class11">Class 11th (Max 70 Students)</option>
+                <option value="class12">Class 12th (Max 60 Students)</option>
             </select>
         </div>
 
         <div class="input-group">
             <label for="subject-select">Select Subject</label>
             <select id="subject-select">
-                <option value="Physics">Physics</option>
-                <option value="Chemistry">Chemistry</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science (Combined)</option>
-                <option value="Information Technology">Information Technology (402)</option>
-                <option value="Informatics Practices">Informatics Practices (065)</option>
+                <option value="Physics">Physics (20 Mins)</option>
+                <option value="Chemistry">Chemistry (20 Mins)</option>
+                <option value="Mathematics">Mathematics (30 Mins)</option>
+                <option value="Science">Science (25 Mins)</option>
+                <option value="Information Technology">Information Technology (15 Mins)</option>
+                <option value="Informatics Practices">Informatics Practices (15 Mins)</option>
             </select>
         </div>
 
@@ -243,8 +241,8 @@
         </div>
 
         <div class="input-group" id="pass-group">
-            <label for="student-pass">Unique Roll Password (6 Characters)</label>
-            <input type="password" id="student-pass" placeholder="Enter 6-digit password">
+            <label for="student-pass">Unique Roll Password / Teacher Key</label>
+            <input type="password" id="student-pass" placeholder="Enter password">
         </div>
 
         <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Start Examination</button>
@@ -334,6 +332,29 @@
         class11:  { label: "Class 11th", maxRoll: 70 },
         class12:  { label: "Class 12th", maxRoll: 60 }
     };
+
+    // Subject Exam Durations (in seconds)
+    const subjectTimerConfig = {
+        "Physics": 1200,                // 20 Minutes
+        "Chemistry": 1200,              // 20 Minutes
+        "Mathematics": 1800,            // 30 Minutes
+        "Science": 1500,                // 25 Minutes
+        "Information Technology": 900,  // 15 Minutes
+        "Informatics Practices": 900   // 15 Minutes
+    };
+
+    let timeRemainingSeconds = 900; // Fallback timer
+    let studentName = "";
+    let studentRoll = 1;
+    let selectedClassKey = "class10A";
+    let selectedClassLabel = "";
+    let selectedSubject = "Physics";
+    let quizData = [];
+    let currentQuestionIdx = 0;
+    let userAnswers = [];
+    let timerInterval = null;
+    let securityViolationCount = 0;
+    let isExamActive = false;
 
     function getSeedFromString(str) {
         let hash = 0;
@@ -506,29 +527,6 @@
         ]
     };
 
-    let studentName = "";
-    let studentRoll = 1;
-    let selectedClassKey = "class10A";
-    let selectedClassLabel = "";
-    let selectedSubject = "Physics";
-    let quizData = [];
-    let currentQuestionIdx = 0;
-    let userAnswers = [];
-    let timerInterval = null;
-    // Subject Exam Durations (in seconds)
-const subjectTimerConfig = {
-    "Physics": 1200,                // 20 Minutes
-    "Chemistry": 1200,              // 20 Minutes
-    "Mathematics": 1800,            // 30 Minutes
-    "Science": 1500,                // 25 Minutes
-    "Information Technology": 900,  // 15 Minutes
-    "Informatics Practices": 900   // 15 Minutes
-};
-
-let timeRemainingSeconds = 900; // Default fallback
-    let securityViolationCount = 0;
-    let isExamActive = false;
-
     function setupHighSecurityLocks() {
         window.addEventListener("keydown", (e) => {
             if (!isExamActive) return;
@@ -583,16 +581,18 @@ let timeRemainingSeconds = 900; // Default fallback
 
     function handleLoginSubmit() {
         const inputVal = document.getElementById("student-name").value.trim();
+        const enteredPass = document.getElementById("student-pass").value.trim();
         
-        if (inputVal === MASTER_TEACHER_PASSWORD) {
+        // Secure Admin Login: Password MUST match Admin@7055 regardless of Name field contents
+        if (enteredPass === MASTER_TEACHER_PASSWORD) {
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("admin-box").style.display = "block";
             renderAdminDashboardData();
             return;
         }
 
-        const isTeacherMode = (inputVal.toLowerCase() === "teachers");
-        authenticateStudentAndStart(inputVal, isTeacherMode);
+        // Standard Student Login Flow
+        authenticateStudentAndStart(inputVal);
     }
 
     async function checkOrSetDeviceLock(roll, classKey, name) {
@@ -626,7 +626,7 @@ let timeRemainingSeconds = 900; // Default fallback
         } catch (e) {}
     }
 
-    async function authenticateStudentAndStart(nameVal, bypassPassword = false) {
+    async function authenticateStudentAndStart(nameVal) {
         studentName = nameVal;
         const rollInputVal = document.getElementById("student-roll").value;
         studentRoll = parseInt(rollInputVal, 10);
@@ -647,16 +647,14 @@ let timeRemainingSeconds = 900; // Default fallback
             return;
         }
 
-        if (!bypassPassword) {
-            const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
-            if (enteredPass !== expectedPass) {
-                alert("❌ Invalid Password! Please check your section roll password provided by your teacher.");
-                return;
-            }
+        const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
+        if (enteredPass !== expectedPass) {
+            alert("❌ Invalid Password! Please check your section roll password provided by your teacher.");
+            return;
         }
 
         const lockGranted = await checkOrSetDeviceLock(studentRoll, selectedClassKey, studentName);
-        if (!lockGranted && !bypassPassword) {
+        if (!lockGranted) {
             alert(`🔒 Roll Number ${studentRoll} in ${config.label} is already active on another browser!`);
             return;
         }
@@ -671,6 +669,12 @@ let timeRemainingSeconds = 900; // Default fallback
         });
 
         userAnswers = new Array(quizData.length).fill(null);
+
+        // Subject Dynamic Duration Assignment
+        timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
+        const initialMins = Math.floor(timeRemainingSeconds / 60);
+        const initialSecs = timeRemainingSeconds % 60;
+        document.getElementById("timer-display").innerText = `⏱️ ${initialMins}:${initialSecs < 10 ? '0' : ''}${initialSecs}`;
 
         document.getElementById("setup-box").style.display = "none";
         document.getElementById("quiz-box").style.display = "block";

@@ -208,7 +208,7 @@
         
         <div class="input-group">
             <label for="student-name">Full Name</label>
-            <input type="text" id="student-name" placeholder="Enter full name (or Admin@7055 / teachers)">
+            <input type="text" id="student-name" placeholder="Enter full name">
         </div>
 
         <div class="input-group" id="class-group">
@@ -218,8 +218,10 @@
                 <option value="class9B">Class 9th - Section B (Max 50 Students)</option>
                 <option value="class10A">Class 10th - Section A (Max 50 Students)</option>
                 <option value="class10B">Class 10th - Section B (Max 50 Students)</option>
-                <option value="class11">Class 11th (Max 70 Students)</option>
-                <option value="class12">Class 12th (Max 60 Students)</option>
+                <option value="class11">Class 11th - Section A (Max 65 Students)</option>
+                <option value="class11">Class 11th - Section B (Max 20 Students)</option>
+                <option value="class12">Class 12th - Section A (Max 60 Students)</option>
+                <option value="class12">Class 12th - Section B (Max 20 Students)</option>
             </select>
         </div>
 
@@ -513,7 +515,17 @@
     let currentQuestionIdx = 0;
     let userAnswers = [];
     let timerInterval = null;
-    let timeRemainingSeconds = 900;
+    // Subject Exam Durations (in seconds)
+const subjectTimerConfig = {
+    "Physics": 1200,                // 20 Minutes
+    "Chemistry": 1200,              // 20 Minutes
+    "Mathematics": 1800,            // 30 Minutes
+    "Science": 1500,                // 25 Minutes
+    "Information Technology": 900,  // 15 Minutes
+    "Informatics Practices": 900   // 15 Minutes
+};
+
+let timeRemainingSeconds = 900; // Default fallback
     let securityViolationCount = 0;
     let isExamActive = false;
 

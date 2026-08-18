@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>City Public School, Najibabad</title>
 
+    <!-- Native Median App Flag to Block Android Hardware & Long-press Screenshots -->
     <meta name="median-secure" content="true">
     <meta name="gonative-secure" content="true">
 
@@ -23,7 +24,6 @@
             --warning-color: #d97706;
         }
 
-        /* Anti-Cheat UI Protection CSS */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
@@ -38,7 +38,6 @@
             min-height: 100vh;
             box-sizing: border-box;
 
-            /* Disable Text Selection & Touch Callouts */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -129,7 +128,6 @@
         .option-container:hover { background-color: #f8fafc; }
         .option-label { margin-left: 10px; cursor: pointer; font-size: 14px; width: 100%; }
 
-        /* Rich Media Question Elements (Tables, Diagrams, Formulas) */
         .q-rich-media {
             margin: 12px 0;
             padding: 12px;
@@ -203,18 +201,19 @@
 </div>
 
 <div class="container">
+    <!-- LOGIN PANEL -->
     <div id="setup-box">
-        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Exam Portal Login</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Select Class, Section, Subject & enter your 6-Digit Password.</p>
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Portal Login</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Select Class, Section, Subject & enter your Roll No & 6-Digit Password.</p>
         
         <div class="input-group">
             <label for="student-name">Full Name</label>
-            <input type="text" id="student-name" placeholder="Enter full name">
+            <input type="text" id="student-name" placeholder="Enter full name (or Admin@7055 / teachers)">
         </div>
 
         <div class="input-group" id="class-group">
             <label for="class-select">Select Class & Section</label>
-            <select id="class-select" onchange="updateRollOptions()">
+            <select id="class-select" onchange="updateRollLimits()">
                 <option value="class9A">Class 9th - Section A (Max 50 Students)</option>
                 <option value="class9B">Class 9th - Section B (Max 50 Students)</option>
                 <option value="class10A">Class 10th - Section A (Max 50 Students)</option>
@@ -227,20 +226,18 @@
         <div class="input-group">
             <label for="subject-select">Select Subject</label>
             <select id="subject-select">
-                <option value="Maths">Maths</option>
-                <option value="English">English</option>
                 <option value="Physics">Physics</option>
                 <option value="Chemistry">Chemistry</option>
                 <option value="Mathematics">Mathematics</option>
                 <option value="Science">Science (Combined)</option>
-                <option value="Information Technology">Information Technology</option>
-                <option value="Informatics Practices">Informatics Practices</option>
+                <option value="Information Technology">Information Technology (402)</option>
+                <option value="Informatics Practices">Informatics Practices (065)</option>
             </select>
         </div>
 
         <div class="input-group" id="roll-group">
-            <label for="student-roll" id="roll-label">Select Roll Number</label>
-            <select id="student-roll"></select>
+            <label for="student-roll" id="roll-label">Enter Roll Number (1 to 50)</label>
+            <input type="number" id="student-roll" min="1" max="50" placeholder="e.g. 12">
         </div>
 
         <div class="input-group" id="pass-group">
@@ -251,6 +248,7 @@
         <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Start Examination</button>
     </div>
 
+    <!-- ADMIN CONTROL PANEL VIEW -->
     <div id="admin-box" style="display: none;">
         <h2 style="text-align: center; color: #059669; margin-bottom: 10px;">🔒 Teacher Admin Panel</h2>
         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Manage student passwords, device locks & live test submissions</p>
@@ -270,6 +268,7 @@
         <button class="restart-btn" onclick="location.reload()">Back to Login</button>
     </div>
 
+    <!-- QUIZ INTERFACE -->
     <div id="quiz-box" style="display: none;">
         <div class="security-banner">
             <span>🔒 HIGH SECURITY EXAM ENVIRONMENT ACTIVE</span>
@@ -293,6 +292,7 @@
         </div>
     </div>
 
+    <!-- RESULT & LOGOUT PANEL -->
     <div id="result-box" style="display: none;">
         <div id="student-completion-view" style="text-align: center; padding: 25px 10px;">
             <div style="font-size: 54px; margin-bottom: 10px;">🎉</div>
@@ -309,7 +309,6 @@
 <div class="app-footer">Designed By Krishna Kumar</div>
 
 <script>
-    // Supabase Configuration with dynamic Netlify environment variable fallbacks
     const SUPABASE_URL = (typeof window.ENV !== "undefined" && window.ENV.SUPABASE_URL) 
         ? window.ENV.SUPABASE_URL 
         : "https://pqkjdtajklalzjmqkgln.supabase.co";
@@ -325,7 +324,6 @@
         dbClientInstance = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
 
-    // Class & Section Configuration Capping Rules
     const classConfig = {
         class9A:  { label: "Class 9th - Section A", maxRoll: 50 },
         class9B:  { label: "Class 9th - Section B", maxRoll: 50 },
@@ -335,7 +333,6 @@
         class12:  { label: "Class 12th", maxRoll: 60 }
     };
 
-    // Seeded Hashing for 6-Digit Deterministic Passwords
     function getSeedFromString(str) {
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
@@ -371,28 +368,20 @@
         return shuffled;
     }
 
-    function updateRollOptions() {
+    function updateRollLimits() {
         const classKey = document.getElementById("class-select").value;
         const config = classConfig[classKey] || { maxRoll: 50 };
-        const rollSelect = document.getElementById("student-roll");
-        rollSelect.innerHTML = "";
-
-        for (let i = 1; i <= config.maxRoll; i++) {
-            const opt = document.createElement("option");
-            opt.value = i;
-            opt.innerText = `Roll No. ${i}`;
-            rollSelect.appendChild(opt);
-        }
-
-        document.getElementById("roll-label").innerText = `Select Roll Number (1 to ${config.maxRoll})`;
+        const rollInput = document.getElementById("student-roll");
+        
+        rollInput.max = config.maxRoll;
+        document.getElementById("roll-label").innerText = `Enter Roll Number (1 to ${config.maxRoll})`;
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-        updateRollOptions();
+        updateRollLimits();
         setupHighSecurityLocks();
     });
 
-    // CSV DOWNLOAD FOR ALL 330 STUDENTS ACROSS NEW SECTIONS
     function downloadAllPasswordsCSV() {
         let csvRows = ["Class & Section,Roll Number,6-Digit Password"];
 
@@ -415,7 +404,6 @@
         document.body.removeChild(link);
     }
 
-    // ADVANCED QUESTION DATASET (Supporting Tables, Diagrams, SVG Charts & Images)
     const quizDataset = {
         Physics: [
             {
@@ -504,12 +492,6 @@
                 question: "Which web service should the school use to post daily notices and journals?",
                 options: ["Blog", "Web Browser", "FTP", "Email Client"],
                 correct: 0
-            },
-            {
-                type: "descriptive",
-                question: "Describe how Styles and Formatting enhance document structure in 50 words.",
-                keywords: ["style", "formatting"],
-                maxMarks: 2
             }
         ],
         "Informatics Practices": [
@@ -535,13 +517,332 @@
     let securityViolationCount = 0;
     let isExamActive = false;
 
-    // HIGH SECURITY & ANTI-CHEAT ENFORCEMENT ENGINE
     function setupHighSecurityLocks() {
-        // Prevent Keyboard Shortcuts (Screenshots, Snipping Tool, DevTools)
         window.addEventListener("keydown", (e) => {
             if (!isExamActive) return;
 
-            // Block F12, PrintScreen, Ctrl+Shift+I/J/C, Ctrl+U, Win+Shift+S, Cmd+Shift+3/4/5
             if (
                 e.key === "F12" ||
-                e.
+                e.key === "PrintScreen" ||
+                (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) ||
+                (e.ctrlKey && e.key.toUpperCase() === "U") ||
+                (e.metaKey && e.shiftKey) || 
+                (e.key === "Meta")
+            ) {
+                e.preventDefault();
+                e.stopPropagation();
+                registerSecurityViolation("Screenshot / Inspector shortcut blocked!");
+                return false;
+            }
+        });
+
+        window.addEventListener("blur", () => {
+            if (isExamActive) {
+                registerSecurityViolation("Tab switch or minimization detected!");
+            }
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (isExamActive && document.hidden) {
+                registerSecurityViolation("Leaving examination screen is restricted!");
+            }
+        });
+
+        if (window.Median || window.gonative) {
+            try {
+                if (window.Median?.screen?.setSecure) window.Median.screen.setSecure(true);
+                if (window.gonative?.screen?.setSecure) window.gonative.screen.setSecure(true);
+            } catch (err) {}
+        }
+    }
+
+    function registerSecurityViolation(reason) {
+        if (!isExamActive) return;
+        securityViolationCount++;
+        document.getElementById("cheat-warning-count").innerText = `Warnings: ${securityViolationCount}/2`;
+
+        if (securityViolationCount >= 2) {
+            alert(`⚠️ EXAM TERMINATED!\nReason: ${reason}\nMultiple cheating/minimization attempts detected.`);
+            calculateAndShowResults(true);
+        } else {
+            alert(`⚠️ SECURITY WARNING (${securityViolationCount}/2):\n${reason}\nSwitching tabs or minimizing will auto-submit your exam!`);
+        }
+    }
+
+    function handleLoginSubmit() {
+        const inputVal = document.getElementById("student-name").value.trim();
+        
+        if (inputVal === MASTER_TEACHER_PASSWORD) {
+            document.getElementById("setup-box").style.display = "none";
+            document.getElementById("admin-box").style.display = "block";
+            renderAdminDashboardData();
+            return;
+        }
+
+        const isTeacherMode = (inputVal.toLowerCase() === "teachers");
+        authenticateStudentAndStart(inputVal, isTeacherMode);
+    }
+
+    async function checkOrSetDeviceLock(roll, classKey, name) {
+        if (!dbClientInstance) return true;
+        try {
+            const { data } = await dbClientInstance
+                .from('device_locks')
+                .select('*')
+                .eq('roll_number', roll)
+                .eq('class_key', classKey)
+                .maybeSingle();
+
+            if (data && data.is_locked) return false;
+
+            await dbClientInstance
+                .from('device_locks')
+                .upsert({ roll_number: roll, class_key: classKey, student_name: name, is_locked: true });
+
+            return true;
+        } catch (e) { return true; }
+    }
+
+    async function clearLockFromSystem(roll, classKey) {
+        if (!dbClientInstance) return;
+        try {
+            await dbClientInstance
+                .from('device_locks')
+                .update({ is_locked: false })
+                .eq('roll_number', roll)
+                .eq('class_key', classKey);
+        } catch (e) {}
+    }
+
+    async function authenticateStudentAndStart(nameVal, bypassPassword = false) {
+        studentName = nameVal;
+        const rollInputVal = document.getElementById("student-roll").value;
+        studentRoll = parseInt(rollInputVal, 10);
+        selectedClassKey = document.getElementById("class-select").value;
+        selectedSubject = document.getElementById("subject-select").value;
+        const enteredPass = document.getElementById("student-pass").value.trim();
+
+        const config = classConfig[selectedClassKey];
+        selectedClassLabel = `${config.label} (${selectedSubject})`;
+
+        if (!studentName) {
+            alert("Please enter Full Name.");
+            return;
+        }
+
+        if (!studentRoll || isNaN(studentRoll) || studentRoll < 1 || studentRoll > config.maxRoll) {
+            alert(`Please enter a valid Roll Number between 1 and ${config.maxRoll}.`);
+            return;
+        }
+
+        if (!bypassPassword) {
+            const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
+            if (enteredPass !== expectedPass) {
+                alert("❌ Invalid Password! Please check your section roll password provided by your teacher.");
+                return;
+            }
+        }
+
+        const lockGranted = await checkOrSetDeviceLock(studentRoll, selectedClassKey, studentName);
+        if (!lockGranted && !bypassPassword) {
+            alert(`🔒 Roll Number ${studentRoll} in ${config.label} is already active on another browser!`);
+            return;
+        }
+
+        const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
+        quizData = shuffleArrayForRoll(rawQuestions, studentRoll);
+        
+        quizData.forEach((q, idx) => {
+            if (q.type === "mcq" && q.options) {
+                q.options = shuffleArrayForRoll(q.options, studentRoll, idx + 10);
+            }
+        });
+
+        userAnswers = new Array(quizData.length).fill(null);
+
+        document.getElementById("setup-box").style.display = "none";
+        document.getElementById("quiz-box").style.display = "block";
+
+        isExamActive = true;
+        securityViolationCount = 0;
+        currentQuestionIdx = 0;
+        startTimer();
+        loadQuestion();
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeRemainingSeconds--;
+            const mins = Math.floor(timeRemainingSeconds / 60);
+            const secs = timeRemainingSeconds % 60;
+            document.getElementById("timer-display").innerText = `⏱️ ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+            if (timeRemainingSeconds <= 0) {
+                clearInterval(timerInterval);
+                calculateAndShowResults(true);
+            }
+        }, 1000);
+    }
+
+    function loadQuestion() {
+        const currentQuiz = quizData[currentQuestionIdx];
+        document.getElementById("question-tracker").innerText = `Question ${currentQuestionIdx + 1} / ${quizData.length}`;
+        document.getElementById("secure-question-host").innerText = currentQuiz.question;
+
+        const mediaHost = document.getElementById("question-media-host");
+        mediaHost.innerHTML = currentQuiz.mediaHTML || "";
+
+        const responseBox = document.getElementById("response-container");
+        responseBox.innerHTML = "";
+
+        if (currentQuiz.type === "descriptive") {
+            const savedText = userAnswers[currentQuestionIdx] || "";
+            responseBox.innerHTML = `
+                <div class="input-group">
+                    <label>Write your answer (~50 words):</label>
+                    <textarea id="descriptive-input" rows="5" placeholder="Type answer here..." oninput="saveDescriptiveAnswer(this.value)">${savedText}</textarea>
+                </div>
+            `;
+        } else {
+            currentQuiz.options.forEach((optionText, idx) => {
+                const isChecked = userAnswers[currentQuestionIdx] === idx ? "checked" : "";
+                const optionElem = document.createElement("div");
+                optionElem.className = "option-container";
+                optionElem.onclick = () => selectOption(idx);
+                optionElem.innerHTML = `
+                    <input type="radio" name="quiz-option" id="opt-${idx}" value="${idx}" ${isChecked}>
+                    <label for="opt-${idx}" class="option-label">${optionText}</label>
+                `;
+                responseBox.appendChild(optionElem);
+            });
+        }
+
+        document.getElementById("prev-btn").disabled = currentQuestionIdx === 0;
+        const nextBtn = document.getElementById("next-btn");
+        if (currentQuestionIdx === quizData.length - 1) {
+            nextBtn.innerText = "Submit Test";
+            nextBtn.className = "btn";
+            nextBtn.style.backgroundColor = "var(--success-color)";
+            nextBtn.onclick = () => calculateAndShowResults(false);
+        } else {
+            nextBtn.innerText = "Next";
+            nextBtn.className = "btn";
+            nextBtn.style.backgroundColor = "var(--primary-color)";
+            nextBtn.onclick = () => goNext();
+        }
+    }
+
+    function selectOption(index) {
+        userAnswers[currentQuestionIdx] = index;
+        const radios = document.getElementsByName("quiz-option");
+        radios.forEach((radio, idx) => { radio.checked = idx === index; });
+    }
+
+    function saveDescriptiveAnswer(val) { userAnswers[currentQuestionIdx] = val; }
+    function goNext() { if (currentQuestionIdx < quizData.length - 1) { currentQuestionIdx++; loadQuestion(); } }
+    function goPrevious() { if (currentQuestionIdx > 0) { currentQuestionIdx--; loadQuestion(); } }
+
+    async function calculateAndShowResults(autoSubmitted = false) {
+        isExamActive = false;
+        clearInterval(timerInterval);
+        if (autoSubmitted) alert("⏰ Test submitted automatically due to timeout or security violation.");
+
+        let mcqCorrectCount = 0;
+        let totalMcqs = 0;
+        let summaryText = "";
+
+        quizData.forEach((q, idx) => {
+            const answerVal = userAnswers[idx];
+            if (q.type === "mcq") {
+                totalMcqs++;
+                const isCorrect = (answerVal === q.correct);
+                if (isCorrect) mcqCorrectCount++;
+                summaryText += `Q${idx + 1} (MCQ): ${isCorrect ? 'Correct' : 'Incorrect'}\n`;
+            } else {
+                summaryText += `Q${idx + 1} (Descriptive): ${answerVal || 'Blank'}\n`;
+            }
+        });
+
+        const scoreSummary = `${mcqCorrectCount} / ${totalMcqs} MCQs Correct`;
+
+        if (dbClientInstance) {
+            try {
+                await dbClientInstance.from('student_submissions').insert([{
+                    student_name: studentName,
+                    roll_number: studentRoll,
+                    class_label: selectedClassLabel,
+                    score_summary: scoreSummary,
+                    details: summaryText,
+                    submitted_at: new Date().toISOString()
+                }]);
+            } catch (e) { console.error("Database save error:", e); }
+        }
+
+        document.getElementById("quiz-box").style.display = "none";
+        document.getElementById("result-box").style.display = "block";
+        document.getElementById("submitted-student-name").innerText = `${studentName} (${selectedClassLabel}, Roll ${studentRoll})`;
+        await clearLockFromSystem(studentRoll, selectedClassKey);
+    }
+
+    async function renderAdminDashboardData() {
+        await renderSubmissionsZone();
+        await renderLockoutManagerZone();
+    }
+
+    async function renderSubmissionsZone() {
+        const zone = document.getElementById("admin-submissions-zone");
+        if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>Database Instance Not Ready</span>";
+
+        try {
+            const { data } = await dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
+            if (!data || data.length === 0) return zone.innerHTML = "<span>No submissions recorded yet.</span>";
+
+            let html = "<table class='admin-table'><thead><tr><th>Name</th><th>Class & Subject</th><th>Roll</th><th>Score</th><th>Submitted At</th></tr></thead><tbody>";
+            data.forEach(item => {
+                const dateStr = new Date(item.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                html += `<tr>
+                    <td>${item.student_name}</td>
+                    <td>${item.class_label}</td>
+                    <td>${item.roll_number}</td>
+                    <td><strong>${item.score_summary}</strong></td>
+                    <td>${dateStr}</td>
+                </tr>`;
+            });
+            html += "</tbody></table>";
+            zone.innerHTML = html;
+        } catch (e) { zone.innerHTML = "Table missing or database sync error."; }
+    }
+
+    async function renderLockoutManagerZone() {
+        const zone = document.getElementById("admin-unblock-zone");
+        if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>Database Instance Not Ready</span>";
+
+        try {
+            const { data } = await dbClientInstance.from('device_locks').select('*').eq('is_locked', true);
+            if (!data || data.length === 0) return zone.innerHTML = "<span style='color:green;'>No Active Device Locks</span>";
+
+            let html = "";
+            data.forEach(item => {
+                html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #e2e8f0;">
+                    <span style="font-size:13px;">🔒 ${item.student_name} (Roll ${item.roll_number})</span>
+                    <button class="btn" style="padding:4px 10px; font-size:12px; background:#dc2626;" onclick="executeAdminUnlock('${item.roll_number}', '${item.class_key}')">Unlock</button>
+                </div>`;
+            });
+            zone.innerHTML = html;
+        } catch (e) { zone.innerHTML = e.message; }
+    }
+
+    async function executeAdminUnlock(roll, classKey) {
+        await clearLockFromSystem(roll, classKey);
+        alert(`Roll ${roll} unlocked successfully!`);
+        await renderAdminDashboardData();
+    }
+
+    async function restartQuiz() {
+        if (studentRoll) await clearLockFromSystem(studentRoll, selectedClassKey);
+        location.reload();
+    }
+</script>
+</body>
+</html>

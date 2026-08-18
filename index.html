@@ -2,22 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>City Public School, Najibabad</title>
+
+    <meta name="median-secure" content="true">
+    <meta name="gonative-secure" content="true">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary-color: #2563eb;
             --primary-hover: #1d4ed8;
-            --bg-overlay: rgba(15, 23, 42, 0.35);
-            --card-bg: rgba(255, 255, 255, 0.95);
+            --bg-overlay: rgba(15, 23, 42, 0.40);
+            --card-bg: rgba(255, 255, 255, 0.96);
             --text-main: #0f172a;
             --text-muted: #475569;
             --border-color: #cbd5e1;
             --success-color: #16a34a;
             --danger-color: #dc2626;
+            --warning-color: #d97706;
         }
 
+        /* Anti-Cheat UI Protection CSS */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
@@ -31,24 +37,31 @@
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
+
+            /* Disable Text Selection & Touch Callouts */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
 
         .header-title {
             color: #ffffff;
             text-align: center;
             margin-bottom: 20px;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
         }
 
         .header-title h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 26px;
             letter-spacing: 1px;
         }
 
         .container {
             width: 100%;
-            max-width: 780px;
+            max-width: 820px;
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
@@ -74,7 +87,7 @@
 
         .restart-btn {
             width: 100%;
-            background-color: #dc2626;
+            background-color: var(--danger-color);
             color: white;
             border: none;
             padding: 12px;
@@ -116,21 +129,60 @@
         .option-container:hover { background-color: #f8fafc; }
         .option-label { margin-left: 10px; cursor: pointer; font-size: 14px; width: 100%; }
 
-        table {
+        /* Rich Media Question Elements (Tables, Diagrams, Formulas) */
+        .q-rich-media {
+            margin: 12px 0;
+            padding: 12px;
+            background: #f1f5f9;
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .q-rich-media img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            display: block;
+            margin: 0 auto;
+        }
+        .q-rich-media table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            font-size: 13px;
+        }
+        .q-rich-media table th, .q-rich-media table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 10px;
+            text-align: center;
+        }
+        .q-rich-media table th { background: #e2e8f0; }
+
+        table.admin-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
             font-size: 13px;
         }
-
-        table th, table td {
+        table.admin-table th, table.admin-table td {
             border: 1px solid var(--border-color);
             padding: 8px 10px;
             text-align: left;
         }
+        table.admin-table th { background-color: #e2e8f0; }
 
-        table th {
-            background-color: #e2e8f0;
+        .security-banner {
+            background-color: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .app-footer {
@@ -144,17 +196,16 @@
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
 
 <div class="header-title">
     <h1>CITY PUBLIC SCHOOL, NAJIBABAD</h1>
 </div>
 
 <div class="container">
-    <!-- LOGIN PANEL -->
     <div id="setup-box">
-        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Portal Login</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Enter Name, select Class, Roll & Password.</p>
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Exam Portal Login</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Select Class, Section, Subject & enter your 6-Digit Password.</p>
         
         <div class="input-group">
             <label for="student-name">Full Name</label>
@@ -162,17 +213,33 @@
         </div>
 
         <div class="input-group" id="class-group">
-            <label for="class-select">Select Class</label>
-            <select id="class-select">
-                <option value="class9">Class 9th (Information Technology - 402)</option>
-                <option value="class10">Class 10th (Information Technology - 402)</option>
-                <option value="class11">Class 11th (Informatics Practices - 065)</option>
-                <option value="class12">Class 12th (Informatics Practices - 065)</option>
+            <label for="class-select">Select Class & Section</label>
+            <select id="class-select" onchange="updateRollOptions()">
+                <option value="class9A">Class 9th - Section A (Max 50 Students)</option>
+                <option value="class9B">Class 9th - Section B (Max 50 Students)</option>
+                <option value="class10A">Class 10th - Section A (Max 50 Students)</option>
+                <option value="class10B">Class 10th - Section B (Max 50 Students)</option>
+                <option value="class11">Class 11th (Max 70 Students)</option>
+                <option value="class12">Class 12th (Max 60 Students)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="subject-select">Select Subject</label>
+            <select id="subject-select">
+                <option value="Maths">Maths</option>
+                <option value="English">English</option>
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science (Combined)</option>
+                <option value="Information Technology">Information Technology</option>
+                <option value="Informatics Practices">Informatics Practices</option>
             </select>
         </div>
 
         <div class="input-group" id="roll-group">
-            <label for="student-roll">Select Roll Number (1 to 100)</label>
+            <label for="student-roll" id="roll-label">Select Roll Number</label>
             <select id="student-roll"></select>
         </div>
 
@@ -181,18 +248,17 @@
             <input type="password" id="student-pass" placeholder="Enter 6-digit password">
         </div>
 
-        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login</button>
+        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Start Examination</button>
     </div>
 
-    <!-- ADMIN CONTROL PANEL VIEW -->
     <div id="admin-box" style="display: none;">
         <h2 style="text-align: center; color: #059669; margin-bottom: 10px;">🔒 Teacher Admin Panel</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Manage student passwords, device locks & test submissions</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Manage student passwords, device locks & live test submissions</p>
 
-        <button class="btn" style="font-size: 14px; background: #059669; width: 100%; margin-bottom: 15px;" onclick="downloadAllPasswordsCSV()">📊 Download Roll & Passwords List (.CSV / Excel)</button>
+        <button class="btn" style="font-size: 14px; background: #059669; width: 100%; margin-bottom: 15px;" onclick="downloadAllPasswordsCSV()">📊 Download Full Password List (330 Students - .CSV / Excel)</button>
 
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-            <h4 style="margin: 0 0 10px 0; color: var(--text-main);">📋 Student Test Submissions (All 400 Students)</h4>
+            <h4 style="margin: 0 0 10px 0; color: var(--text-main);">📋 Live Student Test Submissions</h4>
             <div id="admin-submissions-zone" style="max-height: 250px; overflow-y: auto;">Loading submissions...</div>
         </div>
 
@@ -204,14 +270,21 @@
         <button class="restart-btn" onclick="location.reload()">Back to Login</button>
     </div>
 
-    <!-- QUIZ INTERFACE -->
     <div id="quiz-box" style="display: none;">
+        <div class="security-banner">
+            <span>🔒 HIGH SECURITY EXAM ENVIRONMENT ACTIVE</span>
+            <span id="cheat-warning-count">Warnings: 0/2</span>
+        </div>
+
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
             <span id="question-tracker" style="font-weight: bold; font-size: 14px;">Question 1 / 10</span>
             <span id="timer-display" style="font-weight: bold; font-size: 14px; color: var(--danger-color);">⏱️ 15:00</span>
         </div>
 
-        <h3 id="secure-question-host" style="font-size: 16px; margin-bottom: 12px;"></h3>
+        <h3 id="secure-question-host" style="font-size: 16px; margin-bottom: 8px;"></h3>
+        
+        <div id="question-media-host"></div>
+
         <div id="response-container"></div>
 
         <div style="display: flex; justify-content: space-between; margin-top: 20px;">
@@ -220,14 +293,13 @@
         </div>
     </div>
 
-    <!-- RESULT & LOGOUT PANEL -->
     <div id="result-box" style="display: none;">
         <div id="student-completion-view" style="text-align: center; padding: 25px 10px;">
             <div style="font-size: 54px; margin-bottom: 10px;">🎉</div>
             <h2 style="color: #1e293b; margin-bottom: 8px;">Examination Submitted Successfully!</h2>
             <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">
                 Thank you, <strong id="submitted-student-name"></strong>.<br>
-                Your response and score summary have been saved to the server.
+                Your response, subject sheet, and score summary have been saved securely.
             </p>
             <button class="restart-btn" onclick="restartQuiz()">🔒 Log Out & Finish Session</button>
         </div>
@@ -237,7 +309,7 @@
 <div class="app-footer">Designed By Krishna Kumar</div>
 
 <script>
-    // Supabase Configuration (Refreshed to reference Netlify Injected Variables with hardcoded fallbacks)
+    // Supabase Configuration with dynamic Netlify environment variable fallbacks
     const SUPABASE_URL = (typeof window.ENV !== "undefined" && window.ENV.SUPABASE_URL) 
         ? window.ENV.SUPABASE_URL 
         : "https://pqkjdtajklalzjmqkgln.supabase.co";
@@ -253,6 +325,17 @@
         dbClientInstance = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
 
+    // Class & Section Configuration Capping Rules
+    const classConfig = {
+        class9A:  { label: "Class 9th - Section A", maxRoll: 50 },
+        class9B:  { label: "Class 9th - Section B", maxRoll: 50 },
+        class10A: { label: "Class 10th - Section A", maxRoll: 50 },
+        class10B: { label: "Class 10th - Section B", maxRoll: 50 },
+        class11:  { label: "Class 11th", maxRoll: 70 },
+        class12:  { label: "Class 12th", maxRoll: 60 }
+    };
+
+    // Seeded Hashing for 6-Digit Deterministic Passwords
     function getSeedFromString(str) {
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
@@ -267,7 +350,6 @@
         return x - Math.floor(x);
     }
 
-    // STRICT 6-DIGIT ALPHANUMERIC PASSWORD GENERATOR
     function generateUniquePassword(classKey, rollNum) {
         let seed = getSeedFromString(`${classKey}-SECRET-SALT-${rollNum}`);
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -289,30 +371,36 @@
         return shuffled;
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
+    function updateRollOptions() {
+        const classKey = document.getElementById("class-select").value;
+        const config = classConfig[classKey] || { maxRoll: 50 };
         const rollSelect = document.getElementById("student-roll");
-        for (let i = 1; i <= 100; i++) {
+        rollSelect.innerHTML = "";
+
+        for (let i = 1; i <= config.maxRoll; i++) {
             const opt = document.createElement("option");
             opt.value = i;
             opt.innerText = `Roll No. ${i}`;
             rollSelect.appendChild(opt);
         }
+
+        document.getElementById("roll-label").innerText = `Select Roll Number (1 to ${config.maxRoll})`;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        updateRollOptions();
+        setupHighSecurityLocks();
     });
 
-    // EXCEL-COMPATIBLE CSV DOWNLOAD (ALL 400 STUDENTS)
+    // CSV DOWNLOAD FOR ALL 330 STUDENTS ACROSS NEW SECTIONS
     function downloadAllPasswordsCSV() {
-        let csvRows = ["Class,Roll Number,6-Digit Password"];
-        const classes = [
-            { key: "class9", label: "Class 9th (IT)" },
-            { key: "class10", label: "Class 10th (IT)" },
-            { key: "class11", label: "Class 11th (CS)" },
-            { key: "class12", label: "Class 12th (IP)" }
-        ];
+        let csvRows = ["Class & Section,Roll Number,6-Digit Password"];
 
-        classes.forEach(c => {
-            for (let r = 1; r <= 100; r++) {
-                const pass = generateUniquePassword(c.key, r);
-                csvRows.push(`"${c.label}",${r},"${pass}"`);
+        Object.keys(classConfig).forEach(key => {
+            const conf = classConfig[key];
+            for (let r = 1; r <= conf.maxRoll; r++) {
+                const pass = generateUniquePassword(key, r);
+                csvRows.push(`"${conf.label}",${r},"${pass}"`);
             }
         });
 
@@ -321,303 +409,139 @@
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", "CPS_Student_Roll_Passwords_List.csv");
+        link.setAttribute("download", "CPS_Student_Passwords_Master_List.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
 
+    // ADVANCED QUESTION DATASET (Supporting Tables, Diagrams, SVG Charts & Images)
     const quizDataset = {
-        class9: [
-            { type: "mcq", question: "Which component is responsible for performing calculations in a computer?", options: ["ALU", "Control Unit", "RAM", "Hard Disk"], correct: 0 },
-            { type: "descriptive", question: "Explain the main functions of an Operating System in about 50 words.", keywords: ["resource", "file", "hardware"], maxMarks: 2 }
+        Physics: [
+            {
+                type: "mcq",
+                question: "Examine the circuit diagram table below. Calculate the total current (I) flowing through the circuit:",
+                mediaHTML: `
+                    <div class="q-rich-media">
+                        <table>
+                            <tr><th>Resistor</th><th>Resistance (Ω)</th><th>Voltage (V)</th></tr>
+                            <tr><td>R1</td><td>10 Ω</td><td>20 V</td></tr>
+                            <tr><td>R2</td><td>20 Ω</td><td>20 V</td></tr>
+                        </table>
+                    </div>
+                `,
+                options: ["1.0 A", "3.0 A", "1.5 A", "2.5 A"],
+                correct: 1
+            },
+            {
+                type: "mcq",
+                question: "Which wave property determines the loudness of a sound wave shown in the diagram?",
+                mediaHTML: `
+                    <div class="q-rich-media" style="text-align:center;">
+                        <svg width="220" height="80" viewBox="0 0 220 80">
+                            <path d="M 0 40 Q 25 10, 50 40 T 100 40 T 150 40 T 200 40" fill="none" stroke="#2563eb" stroke-width="3"/>
+                            <line x1="0" y1="40" x2="220" y2="40" stroke="#cbd5e1" stroke-dasharray="4"/>
+                        </svg>
+                        <p style="font-size:11px; color:#64748b; margin:4px 0 0 0;">Transverse Wave Displacement</p>
+                    </div>
+                `,
+                options: ["Frequency", "Amplitude", "Wavelength", "Velocity"],
+                correct: 1
+            }
         ],
-        class10: [
-            { type: "mcq", question: "Which web service should the school use to post daily notices and journals?", options: ["Blog", "Web Browser", "FTP", "Email Client"], correct: 0 },
-            { type: "descriptive", question: "Describe how Styles and Formatting enhance document structure in 50 words.", keywords: ["style", "formatting"], maxMarks: 2 },
-            { type: "mcq", question: "What type of network covers a single building or school campus?", options: ["LAN", "WAN", "MAN", "PAN"], correct: 0 }
+        Chemistry: [
+            {
+                type: "mcq",
+                question: "Based on the pH test data table below, identify the substance that is strongly basic:",
+                mediaHTML: `
+                    <div class="q-rich-media">
+                        <table>
+                            <tr><th>Solution</th><th>pH Value</th><th>Litmus Effect</th></tr>
+                            <tr><td>Sample A</td><td>2.4</td><td>Red</td></tr>
+                            <tr><td>Sample B</td><td>7.0</td><td>No Change</td></tr>
+                            <tr><td>Sample C</td><td>13.1</td><td>Blue</td></tr>
+                        </table>
+                    </div>
+                `,
+                options: ["Sample A", "Sample B", "Sample C", "None of these"],
+                correct: 2
+            }
         ],
-        class11: [
-            { type: "mcq", question: "Identify the flowchart shape used for decision conditions:", options: ["Rectangle", "Diamond", "Parallelogram", "Oval"], correct: 1 },
-            { type: "mcq", question: "Which keyword is used to declare a function in Python?", options: ["def", "function", "define", "func"], correct: 0 }
+        Mathematics: [
+            {
+                type: "mcq",
+                question: "Find the value of x from the geometric right-triangle figure specification:",
+                mediaHTML: `
+                    <div class="q-rich-media" style="text-align:center;">
+                        <svg width="180" height="100" viewBox="0 0 180 100">
+                            <polygon points="20,80 140,80 140,20" fill="none" stroke="#059669" stroke-width="3"/>
+                            <text x="75" y="95" font-size="12" fill="#0f172a">Base = 12</text>
+                            <text x="148" y="55" font-size="12" fill="#0f172a">Height = 5</text>
+                            <text x="65" y="45" font-size="12" fill="#dc2626">x = ?</text>
+                        </svg>
+                    </div>
+                `,
+                options: ["13", "15", "17", "14"],
+                correct: 0
+            }
         ],
-        class12: [
-            { type: "mcq", question: "Which Pandas function creates a DataFrame from a CSV file?", options: ["pd.read_csv()", "pd.import_csv()", "pd.open_csv()"], correct: 0 },
-            { type: "descriptive", question: "Explain the difference between loc and iloc indexing in Pandas (50 words).", keywords: ["label", "index"], maxMarks: 2 }
+        Science: [
+            {
+                type: "mcq",
+                question: "Which organelle in the plant cell diagram below produces ATP energy via cellular respiration?",
+                mediaHTML: `
+                    <div class="q-rich-media" style="text-align:center;">
+                        <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=400&q=80" alt="Cell Organelle" style="max-height:140px;">
+                    </div>
+                `,
+                options: ["Mitochondria", "Chloroplast", "Nucleus", "Ribosome"],
+                correct: 0
+            }
+        ],
+        "Information Technology": [
+            {
+                type: "mcq",
+                question: "Which web service should the school use to post daily notices and journals?",
+                options: ["Blog", "Web Browser", "FTP", "Email Client"],
+                correct: 0
+            },
+            {
+                type: "descriptive",
+                question: "Describe how Styles and Formatting enhance document structure in 50 words.",
+                keywords: ["style", "formatting"],
+                maxMarks: 2
+            }
+        ],
+        "Informatics Practices": [
+            {
+                type: "mcq",
+                question: "Which Pandas function creates a DataFrame from a CSV file?",
+                options: ["pd.read_csv()", "pd.import_csv()", "pd.open_csv()"],
+                correct: 0
+            }
         ]
     };
 
     let studentName = "";
     let studentRoll = 1;
-    let selectedClassKey = "class10";
+    let selectedClassKey = "class10A";
     let selectedClassLabel = "";
+    let selectedSubject = "Physics";
     let quizData = [];
     let currentQuestionIdx = 0;
     let userAnswers = [];
     let timerInterval = null;
     let timeRemainingSeconds = 900;
+    let securityViolationCount = 0;
+    let isExamActive = false;
 
-    function handleLoginSubmit() {
-        const inputVal = document.getElementById("student-name").value.trim();
-        
-        if (inputVal === MASTER_TEACHER_PASSWORD) {
-            document.getElementById("setup-box").style.display = "none";
-            document.getElementById("admin-box").style.display = "block";
-            renderAdminDashboardData();
-            return;
-        }
+    // HIGH SECURITY & ANTI-CHEAT ENFORCEMENT ENGINE
+    function setupHighSecurityLocks() {
+        // Prevent Keyboard Shortcuts (Screenshots, Snipping Tool, DevTools)
+        window.addEventListener("keydown", (e) => {
+            if (!isExamActive) return;
 
-        const isTeacherMode = (inputVal.toLowerCase() === "teachers");
-        authenticateStudentAndStart(inputVal, isTeacherMode);
-    }
-
-    async function checkOrSetDeviceLock(roll, classKey, name) {
-        if (!dbClientInstance) return true;
-        try {
-            const { data } = await dbClientInstance
-                .from('device_locks')
-                .select('*')
-                .eq('roll_number', roll)
-                .eq('class_key', classKey)
-                .maybeSingle();
-
-            if (data && data.is_locked) return false;
-
-            await dbClientInstance
-                .from('device_locks')
-                .upsert({ roll_number: roll, class_key: classKey, student_name: name, is_locked: true });
-
-            return true;
-        } catch (e) { return true; }
-    }
-
-    async function clearLockFromSystem(roll, classKey) {
-        if (!dbClientInstance) return;
-        try {
-            await dbClientInstance
-                .from('device_locks')
-                .update({ is_locked: false })
-                .eq('roll_number', roll)
-                .eq('class_key', classKey);
-        } catch (e) {}
-    }
-
-    async function authenticateStudentAndStart(nameVal, bypassPassword = false) {
-        studentName = nameVal;
-        studentRoll = parseInt(document.getElementById("student-roll").value, 10);
-        selectedClassKey = document.getElementById("class-select").value;
-        const enteredPass = document.getElementById("student-pass").value.trim();
-
-        const classSelectElem = document.getElementById("class-select");
-        selectedClassLabel = classSelectElem.options[classSelectElem.selectedIndex].text;
-
-        if (!studentName) {
-            alert("Please enter Full Name.");
-            return;
-        }
-
-        if (!bypassPassword) {
-            const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
-            if (enteredPass !== expectedPass) {
-                alert("❌ Invalid Password! Please check the password list provided by your teacher.");
-                return;
-            }
-        }
-
-        const lockGranted = await checkOrSetDeviceLock(studentRoll, selectedClassKey, studentName);
-        if (!lockGranted && !bypassPassword) {
-            alert("🔒 Roll Number " + studentRoll + " is already active on another browser!");
-            return;
-        }
-
-        const rawQuestions = quizDataset[selectedClassKey] || [];
-        quizData = shuffleArrayForRoll(rawQuestions, studentRoll);
-        
-        quizData.forEach((q, idx) => {
-            if (q.type === "mcq" && q.options) {
-                q.options = shuffleArrayForRoll(q.options, studentRoll, idx + 10);
-            }
-        });
-
-        userAnswers = new Array(quizData.length).fill(null);
-
-        document.getElementById("setup-box").style.display = "none";
-        document.getElementById("quiz-box").style.display = "block";
-
-        currentQuestionIdx = 0;
-        startTimer();
-        loadQuestion();
-    }
-
-    function startTimer() {
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            timeRemainingSeconds--;
-            const mins = Math.floor(timeRemainingSeconds / 60);
-            const secs = timeRemainingSeconds % 60;
-            document.getElementById("timer-display").innerText = `⏱️ ${mins}:${secs < 10 ? '0' : ''}${secs}`;
-
-            if (timeRemainingSeconds <= 0) {
-                clearInterval(timerInterval);
-                calculateAndShowResults(true);
-            }
-        }, 1000);
-    }
-
-    function loadQuestion() {
-        const currentQuiz = quizData[currentQuestionIdx];
-        document.getElementById("question-tracker").innerText = `Question ${currentQuestionIdx + 1} / ${quizData.length}`;
-        document.getElementById("secure-question-host").innerText = currentQuiz.question;
-
-        const responseBox = document.getElementById("response-container");
-        responseBox.innerHTML = "";
-
-        if (currentQuiz.type === "descriptive") {
-            const savedText = userAnswers[currentQuestionIdx] || "";
-            responseBox.innerHTML = `
-                <div class="input-group">
-                    <label>Write your answer (~50 words):</label>
-                    <textarea id="descriptive-input" rows="5" placeholder="Type answer here..." oninput="saveDescriptiveAnswer(this.value)">${savedText}</textarea>
-                </div>
-            `;
-        } else {
-            currentQuiz.options.forEach((optionText, idx) => {
-                const isChecked = userAnswers[currentQuestionIdx] === idx ? "checked" : "";
-                const optionElem = document.createElement("div");
-                optionElem.className = "option-container";
-                optionElem.onclick = () => selectOption(idx);
-                optionElem.innerHTML = `
-                    <input type="radio" name="quiz-option" id="opt-${idx}" value="${idx}" ${isChecked}>
-                    <label for="opt-${idx}" class="option-label">${optionText}</label>
-                `;
-                responseBox.appendChild(optionElem);
-            });
-        }
-
-        document.getElementById("prev-btn").disabled = currentQuestionIdx === 0;
-        const nextBtn = document.getElementById("next-btn");
-        if (currentQuestionIdx === quizData.length - 1) {
-            nextBtn.innerText = "Submit Test";
-            nextBtn.className = "btn";
-            nextBtn.style.backgroundColor = "var(--success-color)";
-            nextBtn.onclick = () => calculateAndShowResults(false);
-        } else {
-            nextBtn.innerText = "Next";
-            nextBtn.className = "btn";
-            nextBtn.style.backgroundColor = "var(--primary-color)";
-            nextBtn.onclick = () => goNext();
-        }
-    }
-
-    function selectOption(index) {
-        userAnswers[currentQuestionIdx] = index;
-        const radios = document.getElementsByName("quiz-option");
-        radios.forEach((radio, idx) => { radio.checked = idx === index; });
-    }
-
-    function saveDescriptiveAnswer(val) { userAnswers[currentQuestionIdx] = val; }
-    function goNext() { if (currentQuestionIdx < quizData.length - 1) { currentQuestionIdx++; loadQuestion(); } }
-    function goPrevious() { if (currentQuestionIdx > 0) { currentQuestionIdx--; loadQuestion(); } }
-
-    async function calculateAndShowResults(autoSubmitted = false) {
-        clearInterval(timerInterval);
-        if (autoSubmitted) alert("⏰ Time expired! Test auto-submitted.");
-
-        let mcqCorrectCount = 0;
-        let totalMcqs = 0;
-        let summaryText = "";
-
-        quizData.forEach((q, idx) => {
-            const answerVal = userAnswers[idx];
-            if (q.type === "mcq") {
-                totalMcqs++;
-                const isCorrect = (answerVal === q.correct);
-                if (isCorrect) mcqCorrectCount++;
-                summaryText += `Q${idx + 1} (MCQ): ${isCorrect ? 'Correct' : 'Incorrect'}\n`;
-            } else {
-                summaryText += `Q${idx + 1} (Descriptive): ${answerVal || 'Blank'}\n`;
-            }
-        });
-
-        const scoreSummary = `${mcqCorrectCount} / ${totalMcqs} MCQs Correct`;
-
-        if (dbClientInstance) {
-            try {
-                await dbClientInstance.from('student_submissions').insert([{
-                    student_name: studentName,
-                    roll_number: studentRoll,
-                    class_label: selectedClassLabel,
-                    score_summary: scoreSummary,
-                    details: summaryText,
-                    submitted_at: new Date().toISOString()
-                }]);
-            } catch (e) { console.error("Database save error:", e); }
-        }
-
-        document.getElementById("quiz-box").style.display = "none";
-        document.getElementById("result-box").style.display = "block";
-        document.getElementById("submitted-student-name").innerText = `${studentName} (${selectedClassLabel}, Roll ${studentRoll})`;
-        await clearLockFromSystem(studentRoll, selectedClassKey);
-    }
-
-    async function renderAdminDashboardData() {
-        await renderSubmissionsZone();
-        await renderLockoutManagerZone();
-    }
-
-    async function renderSubmissionsZone() {
-        const zone = document.getElementById("admin-submissions-zone");
-        if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>Database Instance Not Ready</span>";
-
-        try {
-            const { data } = await dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
-            if (!data || data.length === 0) return zone.innerHTML = "<span>No submissions recorded yet.</span>";
-
-            let html = "<table><thead><tr><th>Name</th><th>Class</th><th>Roll</th><th>Score</th><th>Submitted At</th></tr></thead><tbody>";
-            data.forEach(item => {
-                const dateStr = new Date(item.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                html += `<tr>
-                    <td>${item.student_name}</td>
-                    <td>${item.class_label}</td>
-                    <td>${item.roll_number}</td>
-                    <td><strong>${item.score_summary}</strong></td>
-                    <td>${dateStr}</td>
-                </tr>`;
-            });
-            html += "</tbody></table>";
-            zone.innerHTML = html;
-        } catch (e) { zone.innerHTML = "Table missing or database sync error."; }
-    }
-
-    async function renderLockoutManagerZone() {
-        const zone = document.getElementById("admin-unblock-zone");
-        if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>Database Instance Not Ready</span>";
-
-        try {
-            const { data } = await dbClientInstance.from('device_locks').select('*').eq('is_locked', true);
-            if (!data || data.length === 0) return zone.innerHTML = "<span style='color:green;'>No Active Device Locks</span>";
-
-            let html = "";
-            data.forEach(item => {
-                html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #e2e8f0;">
-                    <span style="font-size:13px;">🔒 ${item.student_name} (Roll ${item.roll_number})</span>
-                    <button class="btn" style="padding:4px 10px; font-size:12px; background:#dc2626;" onclick="executeAdminUnlock('${item.roll_number}', '${item.class_key}')">Unlock</button>
-                </div>`;
-            });
-            zone.innerHTML = html;
-        } catch (e) { zone.innerHTML = e.message; }
-    }
-
-    async function executeAdminUnlock(roll, classKey) {
-        await clearLockFromSystem(roll, classKey);
-        alert(`Roll ${roll} unlocked successfully!`);
-        await renderAdminDashboardData();
-    }
-
-    async function restartQuiz() {
-        if (studentRoll) await clearLockFromSystem(studentRoll, selectedClassKey);
-        location.reload();
-    }
-</script>
-</body>
-</html>
+            // Block F12, PrintScreen, Ctrl+Shift+I/J/C, Ctrl+U, Win+Shift+S, Cmd+Shift+3/4/5
+            if (
+                e.key === "F12" ||
+                e.

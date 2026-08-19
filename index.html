@@ -208,7 +208,7 @@
         
         <div class="input-group">
             <label for="student-name">Full Name</label>
-            <input type="text" id="student-name" placeholder="Enter full name (or 'Teacher' for Admin)">
+            <input type="text" id="student-name" placeholder="Enter full name (or leave as 'Teacher')">
         </div>
 
         <div class="input-group" id="class-group">
@@ -584,21 +584,15 @@
         const nameVal = document.getElementById("student-name").value.trim().toLowerCase();
         const enteredPass = document.getElementById("student-pass").value.trim();
 
-        // Check for Teacher / Admin Credentials
-        if (enteredPass === MASTER_TEACHER_PASSWORD || nameVal === "teachers" || nameVal === "teacher" || nameVal === "admin@7055") {
-            if (enteredPass !== MASTER_TEACHER_PASSWORD && enteredPass !== "") {
-                alert("❌ Invalid Teacher Admin Password!");
-                return;
-            }
-            if (enteredPass === MASTER_TEACHER_PASSWORD) {
-                document.getElementById("setup-box").style.display = "none";
-                document.getElementById("admin-box").style.display = "block";
-                renderAdminDashboardData();
-                return;
-            }
+        // Admin Bypass Check: Immediately open panel if Admin@7055 is present
+        if (enteredPass === MASTER_TEACHER_PASSWORD || nameVal === MASTER_TEACHER_PASSWORD.toLowerCase()) {
+            document.getElementById("setup-box").style.display = "none";
+            document.getElementById("admin-box").style.display = "block";
+            renderAdminDashboardData();
+            return;
         }
 
-        // Standard Student Login
+        // Standard Student Login Flow
         authenticateStudentAndStart(document.getElementById("student-name").value.trim());
     }
 
@@ -677,7 +671,6 @@
 
         userAnswers = new Array(quizData.length).fill(null);
 
-        // Dynamic timer load per subject
         timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
         const initialMins = Math.floor(timeRemainingSeconds / 60);
         const initialSecs = timeRemainingSeconds % 60;

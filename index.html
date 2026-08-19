@@ -83,6 +83,13 @@
 
         .btn:hover { background-color: var(--primary-hover); }
 
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+
         .restart-btn {
             width: 100%;
             background-color: var(--danger-color);
@@ -330,7 +337,10 @@
         </div>
 
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-            <h4 style="margin: 0 0 10px 0; color: var(--text-main);">📋 Live Student Test Submissions</h4>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="margin: 0; color: var(--text-main);">📋 Live Student Test Submissions</h4>
+                <button class="btn btn-danger" style="padding: 4px 10px; font-size: 12px;" onclick="deleteAllFilteredSubmissions()">Delete Filtered Tests</button>
+            </div>
             <div id="admin-submissions-zone" style="max-height: 250px; overflow-y: auto;">Loading submissions...</div>
         </div>
 
@@ -511,22 +521,21 @@
         const selectedSubjectFilter = document.getElementById("admin-subject-select").value;
 
         try {
-            const { data } = await dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
-            if (!data || data.length === 0) return alert("No submission data available to export.");
-
-            let filteredData = data;
+            let query = dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
 
             if (selectedClassFilter !== "All") {
-                filteredData = filteredData.filter(item => item.class_label && item.class_label.includes(selectedClassFilter));
+                query = query.ilike('class_label', `%${selectedClassFilter}%`);
             }
             if (selectedSubjectFilter !== "All") {
-                filteredData = filteredData.filter(item => item.class_label && item.class_label.includes(selectedSubjectFilter));
+                query = query.ilike('class_label', `%${selectedSubjectFilter}%`);
             }
 
-            if (filteredData.length === 0) return alert(`No records found matching filters.`);
+            const { data, error } = await query;
+            if (error) throw error;
+            if (!data || data.length === 0) return alert("No submission data available to export.");
 
             let csvRows = ["Student Name,Class & Subject,Roll Number,Score Summary,Submitted At"];
-            filteredData.forEach(item => {
+            data.forEach(item => {
                 let scoreOnly = item.score_summary || "0";
                 if (scoreOnly.includes("/")) scoreOnly = scoreOnly.split("/")[0].trim();
                 csvRows.push(`"${item.student_name}","${item.class_label}",${item.roll_number},"${scoreOnly}","${item.submitted_at}"`);
@@ -546,7 +555,6 @@
         }
     }
 
-    // Dynamic, universal parsing for tables, images, and embedded vector SVG diagrams
     function extractMediaTextForExport(mediaHTML) {
         if (!mediaHTML) return "";
         let parsedText = "\n   [ATTACHED DIAGRAM / TABLE / MEDIA]:\n";
@@ -554,7 +562,6 @@
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = mediaHTML;
 
-        // 1. Process and format HTML Tables with dynamic cell padding
         const tables = tempDiv.querySelectorAll('table');
         tables.forEach(tbl => {
             const rows = tbl.querySelectorAll('tr');
@@ -587,14 +594,12 @@
             }
         });
 
-        // 2. Extract Image References
         const imgs = tempDiv.querySelectorAll('img');
         imgs.forEach(img => {
             const altText = img.alt ? ` (${img.alt})` : '';
             parsedText += `   [Image Asset]: ${img.src}${altText}\n`;
         });
 
-        // 3. Universal Dynamic SVG-to-ASCII Parser
         const svgs = tempDiv.querySelectorAll('svg');
         svgs.forEach((svgElement) => {
             let labels = [];
@@ -607,20 +612,17 @@
             parsedText += `   +---------------------------------------+\n`;
             parsedText += `   | FIGURE / DIAGRAM ATTACHED             |\n`;
 
-            // Detect geometric polygons/triangles
             if (svgElement.querySelector('polygon, triangle') || svgElement.innerHTML.includes('polygon')) {
                 parsedText += `   |  |\\                                   |\n`;
                 parsedText += `   |  | \\  (Hypotenuse)                    |\n`;
                 parsedText += `   |  |___\\                                |\n`;
             } 
-            // Detect wave/curved paths
             else if (svgElement.querySelector('path') || svgElement.innerHTML.includes('path')) {
                 parsedText += `   |    _  - -  _                          |\n`;
                 parsedText += `   |  /           \\                        |\n`;
                 parsedText += `   | - - - - - - - -\\ - - - - - - - - - -  |\n`;
                 parsedText += `   |                 \\ _  - -  _           |\n`;
             } 
-            // Generic shapes/circuits
             else {
                 parsedText += `   |  [=== Vector Graphics Asset ===]      |\n`;
             }
@@ -947,12 +949,6 @@
 
         const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
         quizData = shuffleArrayForRoll(rawQuestions, studentRoll);
-        
-        quizData.forEach((q, idx) => {
-            if (q.type === "mcq" && q.options) {
-                q.options = shuffleArrayForRoll(q.options, studentRoll, idx + 10);
-            }
-        });
 
         userAnswers = new Array(quizData.length).fill(null);
 
@@ -1064,14 +1060,18 @@
 
         if (dbClientInstance) {
             try {
-                await dbClientInstance.from('student_submissions').insert([{
+                const { error } = await dbClientInstance.from('student_submissions').insert([{
                     student_name: studentName,
                     roll_number: studentRoll,
                     class_label: selectedClassLabel,
                     score_summary: scoreSummary,
                     submitted_at: new Date().toISOString()
                 }]);
-            } catch (e) { console.error("Database save error:", e); }
+                if (error) throw error;
+            } catch (e) {
+                alert("Submission Save Error: " + e.message);
+                console.error("Database save error:", e);
+            }
         }
 
         document.getElementById("quiz-box").style.display = "none";
@@ -1095,25 +1095,22 @@
         const filterSubject = document.getElementById("admin-subject-select").value;
 
         try {
-            const { data } = await dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
-            if (!data || data.length === 0) return zone.innerHTML = "<span>No submissions recorded yet.</span>";
-
-            let filteredData = data;
+            let query = dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
 
             if (filterClass !== "All") {
-                filteredData = filteredData.filter(item => item.class_label && item.class_label.includes(filterClass));
+                query = query.ilike('class_label', `%${filterClass}%`);
             }
-
             if (filterSubject !== "All") {
-                filteredData = filteredData.filter(item => item.class_label && item.class_label.includes(filterSubject));
+                query = query.ilike('class_label', `%${filterSubject}%`);
             }
 
-            if (filteredData.length === 0) {
-                return zone.innerHTML = `<span>No submissions found matching criteria.</span>`;
-            }
+            const { data, error } = await query;
+            if (error) throw error;
 
-            let html = "<table class='admin-table'><thead><tr><th>Name</th><th>Class & Subject</th><th>Roll</th><th>Score Summary</th><th>Submitted At</th></tr></thead><tbody>";
-            filteredData.forEach(item => {
+            if (!data || data.length === 0) return zone.innerHTML = "<span>No submissions recorded matching filters.</span>";
+
+            let html = "<table class='admin-table'><thead><tr><th>Name</th><th>Class & Subject</th><th>Roll</th><th>Score</th><th>Submitted At</th><th>Actions</th></tr></thead><tbody>";
+            data.forEach(item => {
                 const dateStr = new Date(item.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 
                 let scoreOnly = item.score_summary || "0";
@@ -1125,11 +1122,69 @@
                     <td>${item.roll_number}</td>
                     <td><strong>${scoreOnly}</strong></td>
                     <td>${dateStr}</td>
+                    <td>
+                        <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deleteSubmissionById('${item.id}')">Delete</button>
+                    </td>
                 </tr>`;
             });
             html += "</tbody></table>";
             zone.innerHTML = html;
-        } catch (e) { zone.innerHTML = "Table missing or database sync error."; }
+        } catch (e) { zone.innerHTML = "Error fetching submissions: " + e.message; }
+    }
+
+    async function deleteSubmissionById(id) {
+        if (!dbClientInstance) return alert("Database Not Available");
+        if (!confirm("Are you sure you want to delete this specific test submission?")) return;
+
+        try {
+            const { error } = await dbClientInstance
+                .from('student_submissions')
+                .delete()
+                .eq('id', id);
+
+            if (error) throw error;
+
+            alert("Submission deleted successfully.");
+            renderSubmissionsZone();
+        } catch (e) {
+            alert("Failed to delete submission: " + e.message);
+        }
+    }
+
+    async function deleteAllFilteredSubmissions() {
+        if (!dbClientInstance) return alert("Database Not Available");
+        
+        const filterClass = document.getElementById("admin-class-select").value;
+        const filterSubject = document.getElementById("admin-subject-select").value;
+
+        let confirmMsg = "Are you sure you want to delete ALL test submissions matching current filters?";
+        if (filterClass === "All" && filterSubject === "All") {
+            confirmMsg = "⚠️ WARNING: You are about to DELETE ALL STUDENT TEST SUBMISSIONS from the database! Proceed?";
+        }
+
+        if (!confirm(confirmMsg)) return;
+
+        try {
+            let query = dbClientInstance.from('student_submissions').delete();
+
+            if (filterClass !== "All") {
+                query = query.ilike('class_label', `%${filterClass}%`);
+            } else {
+                query = query.neq('id', '00000000-0000-0000-0000-000000000000'); 
+            }
+
+            if (filterSubject !== "All") {
+                query = query.ilike('class_label', `%${filterSubject}%`);
+            }
+
+            const { error } = await query;
+            if (error) throw error;
+
+            alert("Filtered submissions deleted successfully.");
+            renderSubmissionsZone();
+        } catch (e) {
+            alert("Failed to delete submissions: " + e.message);
+        }
     }
 
     async function renderLockoutManagerZone() {
@@ -1144,7 +1199,7 @@
             data.forEach(item => {
                 html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #e2e8f0;">
                     <span style="font-size:13px;">🔒 ${item.student_name} (Roll ${item.roll_number})</span>
-                    <button class="btn" style="padding:4px 10px; font-size:12px; background:#dc2626;" onclick="executeAdminUnlock('${item.roll_number}', '${item.class_key}')">Unlock</button>
+                    <button class="btn btn-danger" style="padding:4px 10px; font-size:12px;" onclick="executeAdminUnlock('${item.roll_number}', '${item.class_key}')">Unlock</button>
                 </div>`;
             });
             zone.innerHTML = html;

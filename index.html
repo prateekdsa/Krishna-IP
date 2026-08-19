@@ -291,7 +291,7 @@
     <!-- ADMIN CONTROL PANEL VIEW -->
     <div id="admin-box" style="display: none;">
         <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 System Admin Portal</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, master keys, and subject-wise logs</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, question papers, and system logs</p>
 
         <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px; display: flex; gap: 10px;">
             <div style="flex: 1;">
@@ -323,9 +323,12 @@
             </div>
         </div>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <button class="btn" style="font-size: 13px; background: #059669; flex: 1;" onclick="downloadAllPasswordsCSV()">📊 All Student Passwords (.CSV)</button>
-            <button class="btn" style="font-size: 13px; background: #2563eb; flex: 1;" onclick="downloadFilteredResultsCSV()">📥 Export Filtered Results (.CSV)</button>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" style="font-size: 13px; background: #059669; flex: 1;" onclick="downloadAllPasswordsCSV()">📊 Passwords (.CSV)</button>
+                <button class="btn" style="font-size: 13px; background: #2563eb; flex: 1;" onclick="downloadFilteredResultsCSV()">📥 Filtered Results (.CSV)</button>
+            </div>
+            <button class="btn" style="font-size: 13px; background: #d97706; width: 100%;" onclick="downloadQuestionPaper()">📄 Download Selected Question Paper (.TXT)</button>
         </div>
 
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
@@ -372,11 +375,8 @@
             <h2 style="color: #1e293b; margin-bottom: 8px;">Examination Submitted Successfully!</h2>
             <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">
                 Thank you, <strong id="submitted-student-name"></strong>.<br>
-                Your total score: <strong id="submitted-score" style="color: var(--primary-color);"></strong>
+                Total Score Secured: <strong id="submitted-score" style="color: var(--primary-color);"></strong>
             </p>
-            
-            <!-- Detailed breakdown list -->
-            <div id="detailed-score-summary" style="text-align: left; background: #f8fafc; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; max-height: 250px; overflow-y: auto; font-size: 13px; margin-bottom: 20px;"></div>
 
             <button class="restart-btn" onclick="restartQuiz()">🔒 Log Out & Finish Session</button>
         </div>
@@ -507,6 +507,7 @@
         document.body.removeChild(link);
     }
 
+    // EXPORT FILTERED RESULTS TO CSV (Without Detailed Log column, total score only)
     async function downloadFilteredResultsCSV() {
         if (!dbClientInstance) return alert("Database Connection Error!");
         const selectedClassFilter = document.getElementById("admin-class-select").value;
@@ -527,10 +528,11 @@
 
             if (filteredData.length === 0) return alert(`No records found matching filters.`);
 
-            let csvRows = ["Student Name,Class & Subject,Roll Number,Score Summary,Submitted At,Detailed Log"];
+            let csvRows = ["Student Name,Class & Subject,Roll Number,Score Summary,Submitted At"];
             filteredData.forEach(item => {
-                const cleanLog = item.details ? item.details.replace(/\n/g, " | ") : "";
-                csvRows.push(`"${item.student_name}","${item.class_label}",${item.roll_number},"${item.score_summary}","${item.submitted_at}","${cleanLog}"`);
+                let scoreOnly = item.score_summary || "0";
+                if (scoreOnly.includes("/")) scoreOnly = scoreOnly.split("/")[0].trim();
+                csvRows.push(`"${item.student_name}","${item.class_label}",${item.roll_number},"${scoreOnly}","${item.submitted_at}"`);
             });
 
             const csvString = csvRows.join("\n");
@@ -545,6 +547,42 @@
         } catch (e) {
             alert("Failed to export results: " + e.message);
         }
+    }
+
+    // DOWNLOAD QUESTION PAPER FEATURE (ADMIN PANEL)
+    function downloadQuestionPaper() {
+        const filterSubject = document.getElementById("admin-subject-select").value;
+        const targetSubject = filterSubject === "All" ? "Physics" : filterSubject;
+        const questions = quizDataset[targetSubject];
+
+        if (!questions || questions.length === 0) {
+            return alert(`No question paper found for ${targetSubject}`);
+        }
+
+        let paperContent = `=========================================\n`;
+        paperContent += `      CITY PUBLIC SCHOOL, NAJIBABAD      \n`;
+        paperContent += `      QUESTION PAPER: ${targetSubject.toUpperCase()}     \n`;
+        paperContent += `=========================================\n\n`;
+
+        questions.forEach((q, idx) => {
+            paperContent += `Q${idx + 1}. ${q.question}\n`;
+            if (q.options) {
+                q.options.forEach((opt, oIdx) => {
+                    paperContent += `   (${String.fromCharCode(65 + oIdx)}) ${opt}\n`;
+                });
+                paperContent += `   [Correct Option: (${String.fromCharCode(65 + q.correct)}) ${q.options[q.correct]}]\n`;
+            }
+            paperContent += `\n-----------------------------------------\n\n`;
+        });
+
+        const blob = new Blob([paperContent], { type: "text/plain;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Question_Paper_${targetSubject.replace(/\s+/g, '_')}.txt`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     const quizDataset = {
@@ -704,7 +742,6 @@
         const cleanedName = rawNameInput.toLowerCase().replace(/\s+/g, '');
         const enteredPass = document.getElementById("student-pass").value.trim();
 
-        // DIRECT ADMIN PORTAL ACCESS
         if (rawNameInput === MASTER_TEACHER_PASSWORD || enteredPass === MASTER_TEACHER_PASSWORD) {
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("admin-box").style.display = "block";
@@ -712,7 +749,6 @@
             return;
         }
 
-        // TEACHER LOGIN
         const isTeacherLogin = VALID_TEACHER_LOGINS.includes(cleanedName) || cleanedName === "teacher";
         if (isTeacherLogin) {
             loggedInTeacherName = rawNameInput || "Teacher";
@@ -722,7 +758,6 @@
             return;
         }
 
-        // STANDARD STUDENT LOGIN
         authenticateStudentAndStart(rawNameInput);
     }
 
@@ -923,49 +958,18 @@
         if (autoSubmitted) alert("⏰ Test submitted automatically due to timeout or security violation.");
 
         let totalMarks = 0;
-        let maxMarks = quizData.length; // 1 mark per question
-        let detailedLog = "";
-        let resultHTML = "";
 
         quizData.forEach((q, idx) => {
             const answerVal = userAnswers[idx];
-            let userAnsText = "Not Attempted";
-            let correctAnsText = "";
-            let isCorrect = false;
-
-            if (q.type === "mcq") {
-                correctAnsText = q.options[q.correct];
-                if (answerVal !== null && answerVal !== undefined) {
-                    userAnsText = q.options[answerVal];
-                    if (answerVal === q.correct) {
-                        isCorrect = true;
-                        totalMarks += 1;
-                    }
+            if (q.type === "mcq" && answerVal !== null && answerVal !== undefined) {
+                if (answerVal === q.correct) {
+                    totalMarks += 1;
                 }
-            } else {
-                userAnsText = answerVal || "Blank";
-                correctAnsText = "Manual Grading Required";
             }
-
-            const statusText = isCorrect ? "Correct (+1)" : "Incorrect (0)";
-            
-            // Detailed Log string for Database/CSV
-            detailedLog += `Q${idx + 1}: ${q.question} | Marked: ${userAnsText} | Correct: ${correctAnsText} | Result: ${statusText}\n`;
-
-            // HTML Display for Student UI
-            resultHTML += `
-                <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #cbd5e1;">
-                    <strong>Q${idx + 1}: ${q.question}</strong><br>
-                    <span style="color:${isCorrect ? 'var(--success-color)' : 'var(--danger-color)'}">
-                        Your Answer: ${userAnsText}
-                    </span><br>
-                    <span style="color:#475569;">Correct Answer: ${correctAnsText}</span><br>
-                    <small>Marks: <strong>${isCorrect ? '1 / 1' : '0 / 1'}</strong></small>
-                </div>
-            `;
         });
 
-        const scoreSummary = `${totalMarks} / ${maxMarks} Marks`;
+        // Store ONLY numeric total marks in Score Summary (e.g. "1")
+        const scoreSummary = `${totalMarks}`;
 
         if (dbClientInstance) {
             try {
@@ -974,7 +978,6 @@
                     roll_number: studentRoll,
                     class_label: selectedClassLabel,
                     score_summary: scoreSummary,
-                    details: detailedLog,
                     submitted_at: new Date().toISOString()
                 }]);
             } catch (e) { console.error("Database save error:", e); }
@@ -983,8 +986,7 @@
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
         document.getElementById("submitted-student-name").innerText = `${studentName} (${selectedClassLabel})`;
-        document.getElementById("submitted-score").innerText = scoreSummary;
-        document.getElementById("detailed-score-summary").innerHTML = resultHTML;
+        document.getElementById("submitted-score").innerText = `${totalMarks} Marks`;
 
         await clearLockFromSystem(studentRoll, selectedClassKey);
     }
@@ -1019,14 +1021,19 @@
                 return zone.innerHTML = `<span>No submissions found matching criteria.</span>`;
             }
 
-            let html = "<table class='admin-table'><thead><tr><th>Name</th><th>Class & Subject</th><th>Roll</th><th>Marks</th><th>Submitted At</th></tr></thead><tbody>";
+            // Render table without Detailed Log column
+            let html = "<table class='admin-table'><thead><tr><th>Name</th><th>Class & Subject</th><th>Roll</th><th>Score Summary</th><th>Submitted At</th></tr></thead><tbody>";
             filteredData.forEach(item => {
                 const dateStr = new Date(item.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                let scoreOnly = item.score_summary || "0";
+                if (scoreOnly.includes("/")) scoreOnly = scoreOnly.split("/")[0].trim();
+
                 html += `<tr>
                     <td>${item.student_name}</td>
                     <td>${item.class_label}</td>
                     <td>${item.roll_number}</td>
-                    <td><strong>${item.score_summary}</strong></td>
+                    <td><strong>${scoreOnly}</strong></td>
                     <td>${dateStr}</td>
                 </tr>`;
             });

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>City Public School, Najibabad</title>
 
-    <!-- Native Median App Flag to Block Android Hardware & Long-press Screenshots -->
     <meta name="median-secure" content="true">
     <meta name="gonative-secure" content="true">
 
@@ -204,11 +203,15 @@
     <!-- LOGIN PANEL -->
     <div id="setup-box">
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal Login</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Students: Select details and enter credentials.<br>Teachers: Enter Teacher ID (e.g. Teacher1, Teacher2) in Full Name to bypass.</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
+            <strong>Students:</strong> Fill out all details.<br>
+            <strong>Teachers:</strong> Enter <code>Teacher1</code> to <code>Teacher25</code> to take an exam.<br>
+            <strong>Admin:</strong> Enter Admin Key in password field.
+        </p>
         
         <div class="input-group">
             <label for="student-name">Full Name / Teacher ID</label>
-            <input type="text" id="student-name" placeholder="Enter Full Name )">
+            <input type="text" id="student-name" placeholder="Enter Full Name">
         </div>
 
         <div class="input-group" id="class-group">
@@ -243,21 +246,42 @@
         </div>
 
         <div class="input-group" id="pass-group">
-            <label for="student-pass">Unique Roll Password</label>
-            <input type="password" id="student-pass" placeholder="Enter 6-digit password">
+            <label for="student-pass">Unique Roll Password / Admin Key</label>
+            <input type="password" id="student-pass" placeholder="Enter 6-digit password or Admin Key">
         </div>
 
-        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Start Examination</button>
+        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Proceed</button>
     </div>
 
-    <!-- ADMIN CONTROL PANEL VIEW -->
-    <div id="admin-box" style="display: none;">
-        <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 Admin Panel</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;" id="admin-welcome-text">Logged in as Teacher</p>
+    <!-- TEACHER SUBJECT SELECTION SCREEN (Appears after Teacher Login) -->
+    <div id="teacher-subject-box" style="display: none;">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Welcome Teacher!</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;" id="teacher-greeting-text">Select the subject test you wish to take:</p>
 
-        <!-- Dynamic Subject Selection inside Admin Panel -->
+        <div class="input-group">
+            <label for="teacher-chosen-subject">Select Examination Subject</label>
+            <select id="teacher-chosen-subject">
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science (Combined)</option>
+                <option value="Information Technology">Information Technology (402)</option>
+                <option value="Informatics Practices">Informatics Practices (065)</option>
+            </select>
+        </div>
+
+        <button class="btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="startTeacherExam()">Start Teacher Exam Session</button>
+        <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="location.reload()">Back to Login</button>
+    </div>
+
+    <!-- ADMIN CONTROL PANEL VIEW (Only accessible via Admin@7055) -->
+    <div id="admin-box" style="display: none;">
+        <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 System Admin Portal</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, master keys, and subject-wise logs</p>
+
+        <!-- Dynamic Subject Filter inside Admin Panel -->
         <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px;">
-            <label for="admin-subject-select" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 6px; color: var(--text-main);">Active Exam Subject View:</label>
+            <label for="admin-subject-select" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 6px; color: var(--text-main);">Select Subject View / Export:</label>
             <select id="admin-subject-select" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);" onchange="filterAdminBySubject()">
                 <option value="All">All Subjects</option>
                 <option value="Physics">Physics</option>
@@ -269,7 +293,10 @@
             </select>
         </div>
 
-        <button class="btn" style="font-size: 14px; background: #059669; width: 100%; margin-bottom: 15px;" onclick="downloadAllPasswordsCSV()">📊 Download Full Password List (330 Students - .CSV / Excel)</button>
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button class="btn" style="font-size: 13px; background: #059669; flex: 1;" onclick="downloadAllPasswordsCSV()">📊 All Student Passwords (.CSV)</button>
+            <button class="btn" style="font-size: 13px; background: #2563eb; flex: 1;" onclick="downloadSubjectWiseResultsCSV()">📥 Export Subject Results (.CSV)</button>
+        </div>
 
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
             <h4 style="margin: 0 0 10px 0; color: var(--text-main);">📋 Live Student Test Submissions</h4>
@@ -281,7 +308,7 @@
             <div id="admin-unblock-zone">Loading locks...</div>
         </div>
 
-        <button class="restart-btn" onclick="location.reload()">Back to Login</button>
+        <button class="restart-btn" onclick="location.reload()">Exit Admin Portal</button>
     </div>
 
     <!-- QUIZ INTERFACE -->
@@ -373,6 +400,7 @@
     let timerInterval = null;
     let securityViolationCount = 0;
     let isExamActive = false;
+    let loggedInTeacherName = "";
 
     function getSeedFromString(str) {
         let hash = 0;
@@ -443,6 +471,40 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+
+    async function downloadSubjectWiseResultsCSV() {
+        if (!dbClientInstance) return alert("Database Connection Error!");
+        const selectedSubjectFilter = document.getElementById("admin-subject-select").value;
+
+        try {
+            const { data } = await dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
+            if (!data || data.length === 0) return alert("No submission data available to export.");
+
+            const filteredData = selectedSubjectFilter === "All" 
+                ? data 
+                : data.filter(item => item.class_label && item.class_label.includes(selectedSubjectFilter));
+
+            if (filteredData.length === 0) return alert(`No records found for subject: ${selectedSubjectFilter}`);
+
+            let csvRows = ["Student Name,Class & Subject,Roll Number,Score Summary,Submitted At,Detailed Log"];
+            filteredData.forEach(item => {
+                const cleanLog = item.details ? item.details.replace(/\n/g, " | ") : "";
+                csvRows.push(`"${item.student_name}","${item.class_label}",${item.roll_number},"${item.score_summary}","${item.submitted_at}","${cleanLog}"`);
+            });
+
+            const csvString = csvRows.join("\n");
+            const blob = new Blob(["\uFEFF" + csvString], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `CPS_Submissions_${selectedSubjectFilter.replace(/\s+/g, '_')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            alert("Failed to export results: " + e.message);
+        }
     }
 
     const quizDataset = {
@@ -602,26 +664,52 @@
         const cleanedName = rawNameInput.toLowerCase().replace(/\s+/g, '');
         const enteredPass = document.getElementById("student-pass").value.trim();
 
-        // Check if the input is a Teacher login (Teacher1 through Teacher25, "teacher", or Admin Key)
-        const isTeacherLogin = 
-            VALID_TEACHER_LOGINS.includes(cleanedName) || 
-            cleanedName === "teacher" || 
-            cleanedName === MASTER_TEACHER_PASSWORD.toLowerCase() ||
-            enteredPass === MASTER_TEACHER_PASSWORD;
-
-        if (isTeacherLogin) {
+        // 1. ISOLATED ADMIN PORTAL ACCESS
+        if (enteredPass === MASTER_TEACHER_PASSWORD) {
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("admin-box").style.display = "block";
-            
-            const teacherDisplay = rawNameInput ? rawNameInput : "Teacher Admin";
-            document.getElementById("admin-welcome-text").innerText = `Logged in as: ${teacherDisplay}`;
-            
             renderAdminDashboardData();
-            return; // Instantly bypasses student roll, class & password validation!
+            return;
         }
 
-        // Proceed to Standard Student Authentication
+        // 2. TEACHER LOGIN FOR EXAM TAKING ONLY (Teacher1 to Teacher25)
+        const isTeacherLogin = VALID_TEACHER_LOGINS.includes(cleanedName) || cleanedName === "teacher";
+        if (isTeacherLogin) {
+            loggedInTeacherName = rawNameInput || "Teacher";
+            document.getElementById("setup-box").style.display = "none";
+            document.getElementById("teacher-subject-box").style.display = "block";
+            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, please choose a subject to begin your exam session:`;
+            return; // Bypasses roll, section, and student password requirements!
+        }
+
+        // 3. STANDARD STUDENT LOGIN
         authenticateStudentAndStart(rawNameInput);
+    }
+
+    function startTeacherExam() {
+        selectedSubject = document.getElementById("teacher-chosen-subject").value;
+        studentName = `${loggedInTeacherName} (Teacher Evaluation)`;
+        studentRoll = 999;
+        selectedClassKey = "class10A";
+        selectedClassLabel = `Teacher Evaluation (${selectedSubject})`;
+
+        document.getElementById("teacher-subject-box").style.display = "none";
+        document.getElementById("quiz-box").style.display = "block";
+
+        const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
+        quizData = JSON.parse(JSON.stringify(rawQuestions));
+        userAnswers = new Array(quizData.length).fill(null);
+
+        timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
+        const initialMins = Math.floor(timeRemainingSeconds / 60);
+        const initialSecs = timeRemainingSeconds % 60;
+        document.getElementById("timer-display").innerText = `⏱️ ${initialMins}:${initialSecs < 10 ? '0' : ''}${initialSecs}`;
+
+        isExamActive = true;
+        securityViolationCount = 0;
+        currentQuestionIdx = 0;
+        startTimer();
+        loadQuestion();
     }
 
     async function checkOrSetDeviceLock(roll, classKey, name) {
@@ -825,7 +913,7 @@
 
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
-        document.getElementById("submitted-student-name").innerText = `${studentName} (${selectedClassLabel}, Roll ${studentRoll})`;
+        document.getElementById("submitted-student-name").innerText = `${studentName} (${selectedClassLabel})`;
         await clearLockFromSystem(studentRoll, selectedClassKey);
     }
 

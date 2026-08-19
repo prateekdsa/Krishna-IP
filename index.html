@@ -507,7 +507,6 @@
         document.body.removeChild(link);
     }
 
-    // EXPORT FILTERED RESULTS TO CSV (Without Detailed Log column, total score only)
     async function downloadFilteredResultsCSV() {
         if (!dbClientInstance) return alert("Database Connection Error!");
         const selectedClassFilter = document.getElementById("admin-class-select").value;
@@ -549,7 +548,39 @@
         }
     }
 
-    // DOWNLOAD QUESTION PAPER FEATURE (ADMIN PANEL)
+    // Helper to parse embedded HTML/SVG media into ASCII text representation for question papers
+    function extractMediaTextForExport(mediaHTML) {
+        if (!mediaHTML) return "";
+        let parsedText = "\n   [ATTACHED DIAGRAM / TABLE / MEDIA]:\n";
+        
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = mediaHTML;
+
+        // Parse HTML Tables into ASCII layout
+        const tables = tempDiv.querySelectorAll('table');
+        tables.forEach(tbl => {
+            const rows = tbl.querySelectorAll('tr');
+            rows.forEach(r => {
+                const cols = Array.from(r.querySelectorAll('th, td')).map(c => c.innerText.trim());
+                parsedText += `   | ${cols.join(' | ')} |\n`;
+            });
+        });
+
+        // Parse Image URLs
+        const imgs = tempDiv.querySelectorAll('img');
+        imgs.forEach(img => {
+            parsedText += `   Image Reference URL: ${img.src}\n`;
+        });
+
+        // Handle SVG vector descriptors
+        const svgs = tempDiv.querySelectorAll('svg');
+        if (svgs.length > 0 && tables.length === 0 && imgs.length === 0) {
+            parsedText += `   (Vector Geometric Diagram / Circuit Figure Attached)\n`;
+        }
+
+        return parsedText;
+    }
+
     function downloadQuestionPaper() {
         const filterSubject = document.getElementById("admin-subject-select").value;
         const targetSubject = filterSubject === "All" ? "Physics" : filterSubject;
@@ -566,6 +597,11 @@
 
         questions.forEach((q, idx) => {
             paperContent += `Q${idx + 1}. ${q.question}\n`;
+            
+            if (q.mediaHTML) {
+                paperContent += extractMediaTextForExport(q.mediaHTML);
+            }
+
             if (q.options) {
                 q.options.forEach((opt, oIdx) => {
                     paperContent += `   (${String.fromCharCode(65 + oIdx)}) ${opt}\n`;
@@ -607,7 +643,7 @@
                 question: "Which wave property determines the loudness of a sound wave shown in the diagram?",
                 mediaHTML: `
                     <div class="q-rich-media" style="text-align:center;">
-                        <svg width="220" height="80" viewBox="0 0 220 80">
+                        <svg width="220" height="80" viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg">
                             <path d="M 0 40 Q 25 10, 50 40 T 100 40 T 150 40 T 200 40" fill="none" stroke="#2563eb" stroke-width="3"/>
                             <line x1="0" y1="40" x2="220" y2="40" stroke="#cbd5e1" stroke-dasharray="4"/>
                         </svg>
@@ -642,7 +678,7 @@
                 question: "Find the value of x from the geometric right-triangle figure specification:",
                 mediaHTML: `
                     <div class="q-rich-media" style="text-align:center;">
-                        <svg width="180" height="100" viewBox="0 0 180 100">
+                        <svg width="180" height="100" viewBox="0 0 180 100" xmlns="http://www.w3.org/2000/svg">
                             <polygon points="20,80 140,80 140,20" fill="none" stroke="#059669" stroke-width="3"/>
                             <text x="75" y="95" font-size="12" fill="#0f172a">Base = 12</text>
                             <text x="148" y="55" font-size="12" fill="#0f172a">Height = 5</text>
@@ -660,7 +696,7 @@
                 question: "Which organelle in the plant cell diagram below produces ATP energy via cellular respiration?",
                 mediaHTML: `
                     <div class="q-rich-media" style="text-align:center;">
-                        <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=400&q=80" alt="Cell Organelle" style="max-height:140px;">
+                        <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=400&q=80" alt="Cell Organelle" style="max-height:140px;" crossorigin="anonymous">
                     </div>
                 `,
                 options: ["Mitochondria", "Chloroplast", "Nucleus", "Ribosome"],
@@ -968,7 +1004,6 @@
             }
         });
 
-        // Store ONLY numeric total marks in Score Summary (e.g. "1")
         const scoreSummary = `${totalMarks}`;
 
         if (dbClientInstance) {
@@ -1021,7 +1056,6 @@
                 return zone.innerHTML = `<span>No submissions found matching criteria.</span>`;
             }
 
-            // Render table without Detailed Log column
             let html = "<table class='admin-table'><thead><tr><th>Name</th><th>Class & Subject</th><th>Roll</th><th>Score Summary</th><th>Submitted At</th></tr></thead><tbody>";
             filteredData.forEach(item => {
                 const dateStr = new Date(item.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

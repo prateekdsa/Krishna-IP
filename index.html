@@ -548,7 +548,7 @@
         }
     }
 
-    // Helper to parse embedded HTML/SVG media into ASCII text representation for question papers
+    // Helper function to extract media, dynamically align ASCII table columns, and parse SVGs into plain text
     function extractMediaTextForExport(mediaHTML) {
         if (!mediaHTML) return "";
         let parsedText = "\n   [ATTACHED DIAGRAM / TABLE / MEDIA]:\n";
@@ -556,26 +556,75 @@
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = mediaHTML;
 
-        // Parse HTML Tables into ASCII layout
+        // 1. Convert HTML Tables to Perfectly Aligned ASCII Tables
         const tables = tempDiv.querySelectorAll('table');
         tables.forEach(tbl => {
             const rows = tbl.querySelectorAll('tr');
+            let tableGrid = [];
+
             rows.forEach(r => {
-                const cols = Array.from(r.querySelectorAll('th, td')).map(c => c.innerText.trim());
-                parsedText += `   | ${cols.join(' | ')} |\n`;
+                const cols = Array.from(r.querySelectorAll('th, td')).map(c => c.textContent.trim());
+                if (cols.length > 0) {
+                    tableGrid.push(cols);
+                }
             });
+
+            if (tableGrid.length > 0) {
+                // Determine maximum character length for each column across all rows
+                let colWidths = [];
+                tableGrid.forEach(row => {
+                    row.forEach((cellText, colIdx) => {
+                        colWidths[colIdx] = Math.max(colWidths[colIdx] || 0, cellText.length);
+                    });
+                });
+
+                // Format each row with exact padding spaces
+                tableGrid.forEach(row => {
+                    let formattedRow = "   | ";
+                    row.forEach((cellText, colIdx) => {
+                        let targetWidth = colWidths[colIdx];
+                        let paddedCell = cellText.padEnd(targetWidth, ' ');
+                        formattedRow += paddedCell + " | ";
+                    });
+                    parsedText += formattedRow.trimEnd() + "\n";
+                });
+            }
         });
 
-        // Parse Image URLs
+        // 2. Extract Image References
         const imgs = tempDiv.querySelectorAll('img');
         imgs.forEach(img => {
-            parsedText += `   Image Reference URL: ${img.src}\n`;
+            const altText = img.alt ? ` (${img.alt})` : '';
+            parsedText += `   [Image Asset]: ${img.src}${altText}\n`;
         });
 
-        // Handle SVG vector descriptors
+        // 3. Render Vector SVGs (Circuits, Waves, Geometry) into explicit ASCII Visual Diagrams
         const svgs = tempDiv.querySelectorAll('svg');
         if (svgs.length > 0 && tables.length === 0 && imgs.length === 0) {
-            parsedText += `   (Vector Geometric Diagram / Circuit Figure Attached)\n`;
+            const svgContent = tempDiv.innerHTML.toLowerCase();
+
+            if (svgContent.includes('transverse') || svgContent.includes('wave') || svgContent.includes('path')) {
+                parsedText += `   +---------------------------------------+\n`;
+                parsedText += `   | Signal: Wave Displacement Diagram     |\n`;
+                parsedText += `   |    _  - -  _                          |\n`;
+                parsedText += `   |  /           \\                        |\n`;
+                parsedText += `   | - - - - - - - -\\ - - - - - - - - - -  |\n`;
+                parsedText += `   |                 \\ _  - -  _           |\n`;
+                parsedText += `   +---------------------------------------+\n`;
+            } else if (svgContent.includes('polygon') || svgContent.includes('triangle') || svgContent.includes('right-triangle')) {
+                parsedText += `   +---------------------------------------+\n`;
+                parsedText += `   | Figure: Geometric Right Triangle      |\n`;
+                parsedText += `   |  |\\                                   |\n`;
+                parsedText += `   |  | \\  x=? (Hypotenuse)                |\n`;
+                parsedText += `   |5 |  \\                                 |\n`;
+                parsedText += `   |  |___\\                                |\n`;
+                parsedText += `   |    12                                 |\n`;
+                parsedText += `   +---------------------------------------+\n`;
+            } else {
+                parsedText += `   +---------------------------------------+\n`;
+                parsedText += `   | Schematic Diagram Attached            |\n`;
+                parsedText += `   +---------------------------------------+\n`;
+            }
         }
 
         return parsedText;

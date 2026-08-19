@@ -205,13 +205,13 @@
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal Login</h2>
         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
             <strong>Students:</strong> Fill out all details.<br>
-            <strong>Teachers:</strong> Enter <code>Teacher1</code> to <code>Teacher25</code> to take an exam.<br>
-            <strong>Admin:</strong> Enter Admin Key in password field.
+            <strong>Teachers:</strong> Enter <code>Teacher1</code> to <code>Teacher25</code> in Name.<br>
+            <strong>Admin:</strong> Enter Admin Key (<code>Admin@7055</code>) in Name or Password field.
         </p>
         
         <div class="input-group">
-            <label for="student-name">Full Name / Teacher ID</label>
-            <input type="text" id="student-name" placeholder="Enter Full Name">
+            <label for="student-name">Full Name / Teacher ID / Admin Key</label>
+            <input type="text" id="student-name" placeholder="Enter Full Name, Teacher ID, or Admin@7055">
         </div>
 
         <div class="input-group" id="class-group">
@@ -221,10 +221,10 @@
                 <option value="class9B">Class 9th - Section B (Max 50 Students)</option>
                 <option value="class10A">Class 10th - Section A (Max 50 Students)</option>
                 <option value="class10B">Class 10th - Section B (Max 50 Students)</option>
-                <option value="class11">Class 11th - Section A (Max 65 Students)</option>
-                <option value="class11">Class 11th - Section B (Max 20 Students)</option>
-                <option value="class12">Class 12th - Section A (Max 60 Students)</option>
-                <option value="class12">Class 12th - Section B (Max 20 Students)</option>
+                <option value="class11A">Class 11th - Section A (Max 65 Students)</option>
+                <option value="class11B">Class 11th - Section B (Max 20 Students)</option>
+                <option value="class12A">Class 12th - Section A (Max 60 Students)</option>
+                <option value="class12B">Class 12th - Section B (Max 20 Students)</option>
             </select>
         </div>
 
@@ -253,10 +253,24 @@
         <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Proceed</button>
     </div>
 
-    <!-- TEACHER SUBJECT SELECTION SCREEN (Appears after Teacher Login) -->
+    <!-- TEACHER SETUP SCREEN -->
     <div id="teacher-subject-box" style="display: none;">
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Welcome Teacher!</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;" id="teacher-greeting-text">Select the subject test you wish to take:</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;" id="teacher-greeting-text">Select class and subject to begin your exam session:</p>
+
+        <div class="input-group">
+            <label for="teacher-chosen-class">Select Class & Section</label>
+            <select id="teacher-chosen-class">
+                <option value="class9A">Class 9th - Section A</option>
+                <option value="class9B">Class 9th - Section B</option>
+                <option value="class10A">Class 10th - Section A</option>
+                <option value="class10B">Class 10th - Section B</option>
+                <option value="class11A">Class 11th - Section A</option>
+                <option value="class11B">Class 11th - Section B</option>
+                <option value="class12A">Class 12th - Section A</option>
+                <option value="class12B">Class 12th - Section B</option>
+            </select>
+        </div>
 
         <div class="input-group">
             <label for="teacher-chosen-subject">Select Examination Subject</label>
@@ -274,28 +288,44 @@
         <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="location.reload()">Back to Login</button>
     </div>
 
-    <!-- ADMIN CONTROL PANEL VIEW (Only accessible via Admin@7055) -->
+    <!-- ADMIN CONTROL PANEL VIEW -->
     <div id="admin-box" style="display: none;">
         <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 System Admin Portal</h2>
         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, master keys, and subject-wise logs</p>
 
-        <!-- Dynamic Subject Filter inside Admin Panel -->
-        <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px;">
-            <label for="admin-subject-select" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 6px; color: var(--text-main);">Select Subject View / Export:</label>
-            <select id="admin-subject-select" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);" onchange="filterAdminBySubject()">
-                <option value="All">All Subjects</option>
-                <option value="Physics">Physics</option>
-                <option value="Chemistry">Chemistry</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science (Combined)</option>
-                <option value="Information Technology">Information Technology (402)</option>
-                <option value="Informatics Practices">Informatics Practices (065)</option>
-            </select>
+        <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px; display: flex; gap: 10px;">
+            <div style="flex: 1;">
+                <label for="admin-class-select" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 6px; color: var(--text-main);">Filter Class:</label>
+                <select id="admin-class-select" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);" onchange="renderSubmissionsZone()">
+                    <option value="All">All Classes</option>
+                    <option value="Class 9th - Section A">Class 9th - Section A</option>
+                    <option value="Class 9th - Section B">Class 9th - Section B</option>
+                    <option value="Class 10th - Section A">Class 10th - Section A</option>
+                    <option value="Class 10th - Section B">Class 10th - Section B</option>
+                    <option value="Class 11th - Section A">Class 11th - Section A</option>
+                    <option value="Class 11th - Section B">Class 11th - Section B</option>
+                    <option value="Class 12th - Section A">Class 12th - Section A</option>
+                    <option value="Class 12th - Section B">Class 12th - Section B</option>
+                    <option value="Teacher Evaluation">Teacher Evaluation</option>
+                </select>
+            </div>
+            <div style="flex: 1;">
+                <label for="admin-subject-select" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 6px; color: var(--text-main);">Filter Subject:</label>
+                <select id="admin-subject-select" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);" onchange="renderSubmissionsZone()">
+                    <option value="All">All Subjects</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science (Combined)</option>
+                    <option value="Information Technology">Information Technology (402)</option>
+                    <option value="Informatics Practices">Informatics Practices (065)</option>
+                </select>
+            </div>
         </div>
 
         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
             <button class="btn" style="font-size: 13px; background: #059669; flex: 1;" onclick="downloadAllPasswordsCSV()">📊 All Student Passwords (.CSV)</button>
-            <button class="btn" style="font-size: 13px; background: #2563eb; flex: 1;" onclick="downloadSubjectWiseResultsCSV()">📥 Export Subject Results (.CSV)</button>
+            <button class="btn" style="font-size: 13px; background: #2563eb; flex: 1;" onclick="downloadFilteredResultsCSV()">📥 Export Filtered Results (.CSV)</button>
         </div>
 
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
@@ -340,10 +370,14 @@
         <div id="student-completion-view" style="text-align: center; padding: 25px 10px;">
             <div style="font-size: 54px; margin-bottom: 10px;">🎉</div>
             <h2 style="color: #1e293b; margin-bottom: 8px;">Examination Submitted Successfully!</h2>
-            <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">
                 Thank you, <strong id="submitted-student-name"></strong>.<br>
-                Your response, subject sheet, and score summary have been saved securely.
+                Your total score: <strong id="submitted-score" style="color: var(--primary-color);"></strong>
             </p>
+            
+            <!-- Detailed breakdown list -->
+            <div id="detailed-score-summary" style="text-align: left; background: #f8fafc; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; max-height: 250px; overflow-y: auto; font-size: 13px; margin-bottom: 20px;"></div>
+
             <button class="restart-btn" onclick="restartQuiz()">🔒 Log Out & Finish Session</button>
         </div>
     </div>
@@ -361,8 +395,6 @@
         : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE";
 
     const MASTER_TEACHER_PASSWORD = "Admin@7055";
-
-    // Build array of 25 teacher logins: teacher1, teacher2, ... teacher25
     const VALID_TEACHER_LOGINS = Array.from({ length: 25 }, (_, i) => `teacher${i + 1}`);
 
     let dbClientInstance = null;
@@ -375,8 +407,10 @@
         class9B:  { label: "Class 9th - Section B", maxRoll: 50 },
         class10A: { label: "Class 10th - Section A", maxRoll: 50 },
         class10B: { label: "Class 10th - Section B", maxRoll: 50 },
-        class11:  { label: "Class 11th", maxRoll: 70 },
-        class12:  { label: "Class 12th", maxRoll: 60 }
+        class11A: { label: "Class 11th - Section A", maxRoll: 65 },
+        class11B: { label: "Class 11th - Section B", maxRoll: 20 },
+        class12A: { label: "Class 12th - Section A", maxRoll: 60 },
+        class12B: { label: "Class 12th - Section B", maxRoll: 20 }
     };
 
     const subjectTimerConfig = {
@@ -473,19 +507,25 @@
         document.body.removeChild(link);
     }
 
-    async function downloadSubjectWiseResultsCSV() {
+    async function downloadFilteredResultsCSV() {
         if (!dbClientInstance) return alert("Database Connection Error!");
+        const selectedClassFilter = document.getElementById("admin-class-select").value;
         const selectedSubjectFilter = document.getElementById("admin-subject-select").value;
 
         try {
             const { data } = await dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
             if (!data || data.length === 0) return alert("No submission data available to export.");
 
-            const filteredData = selectedSubjectFilter === "All" 
-                ? data 
-                : data.filter(item => item.class_label && item.class_label.includes(selectedSubjectFilter));
+            let filteredData = data;
 
-            if (filteredData.length === 0) return alert(`No records found for subject: ${selectedSubjectFilter}`);
+            if (selectedClassFilter !== "All") {
+                filteredData = filteredData.filter(item => item.class_label && item.class_label.includes(selectedClassFilter));
+            }
+            if (selectedSubjectFilter !== "All") {
+                filteredData = filteredData.filter(item => item.class_label && item.class_label.includes(selectedSubjectFilter));
+            }
+
+            if (filteredData.length === 0) return alert(`No records found matching filters.`);
 
             let csvRows = ["Student Name,Class & Subject,Roll Number,Score Summary,Submitted At,Detailed Log"];
             filteredData.forEach(item => {
@@ -498,7 +538,7 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.setAttribute("href", url);
-            link.setAttribute("download", `CPS_Submissions_${selectedSubjectFilter.replace(/\s+/g, '_')}.csv`);
+            link.setAttribute("download", `CPS_Submissions_${selectedClassFilter.replace(/\s+/g, '_')}_${selectedSubjectFilter.replace(/\s+/g, '_')}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -664,34 +704,36 @@
         const cleanedName = rawNameInput.toLowerCase().replace(/\s+/g, '');
         const enteredPass = document.getElementById("student-pass").value.trim();
 
-        // 1. ISOLATED ADMIN PORTAL ACCESS
-        if (enteredPass === MASTER_TEACHER_PASSWORD) {
+        // DIRECT ADMIN PORTAL ACCESS
+        if (rawNameInput === MASTER_TEACHER_PASSWORD || enteredPass === MASTER_TEACHER_PASSWORD) {
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("admin-box").style.display = "block";
             renderAdminDashboardData();
             return;
         }
 
-        // 2. TEACHER LOGIN FOR EXAM TAKING ONLY (Teacher1 to Teacher25)
+        // TEACHER LOGIN
         const isTeacherLogin = VALID_TEACHER_LOGINS.includes(cleanedName) || cleanedName === "teacher";
         if (isTeacherLogin) {
             loggedInTeacherName = rawNameInput || "Teacher";
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("teacher-subject-box").style.display = "block";
-            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, please choose a subject to begin your exam session:`;
-            return; // Bypasses roll, section, and student password requirements!
+            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
+            return;
         }
 
-        // 3. STANDARD STUDENT LOGIN
+        // STANDARD STUDENT LOGIN
         authenticateStudentAndStart(rawNameInput);
     }
 
     function startTeacherExam() {
+        selectedClassKey = document.getElementById("teacher-chosen-class").value;
+        const teacherClassLabel = classConfig[selectedClassKey] ? classConfig[selectedClassKey].label : "Teacher Class";
         selectedSubject = document.getElementById("teacher-chosen-subject").value;
+        
         studentName = `${loggedInTeacherName} (Teacher Evaluation)`;
         studentRoll = 999;
-        selectedClassKey = "class10A";
-        selectedClassLabel = `Teacher Evaluation (${selectedSubject})`;
+        selectedClassLabel = `${teacherClassLabel} - Teacher Evaluation (${selectedSubject})`;
 
         document.getElementById("teacher-subject-box").style.display = "none";
         document.getElementById("quiz-box").style.display = "block";
@@ -880,23 +922,50 @@
         clearInterval(timerInterval);
         if (autoSubmitted) alert("⏰ Test submitted automatically due to timeout or security violation.");
 
-        let mcqCorrectCount = 0;
-        let totalMcqs = 0;
-        let summaryText = "";
+        let totalMarks = 0;
+        let maxMarks = quizData.length; // 1 mark per question
+        let detailedLog = "";
+        let resultHTML = "";
 
         quizData.forEach((q, idx) => {
             const answerVal = userAnswers[idx];
+            let userAnsText = "Not Attempted";
+            let correctAnsText = "";
+            let isCorrect = false;
+
             if (q.type === "mcq") {
-                totalMcqs++;
-                const isCorrect = (answerVal === q.correct);
-                if (isCorrect) mcqCorrectCount++;
-                summaryText += `Q${idx + 1} (MCQ): ${isCorrect ? 'Correct' : 'Incorrect'}\n`;
+                correctAnsText = q.options[q.correct];
+                if (answerVal !== null && answerVal !== undefined) {
+                    userAnsText = q.options[answerVal];
+                    if (answerVal === q.correct) {
+                        isCorrect = true;
+                        totalMarks += 1;
+                    }
+                }
             } else {
-                summaryText += `Q${idx + 1} (Descriptive): ${answerVal || 'Blank'}\n`;
+                userAnsText = answerVal || "Blank";
+                correctAnsText = "Manual Grading Required";
             }
+
+            const statusText = isCorrect ? "Correct (+1)" : "Incorrect (0)";
+            
+            // Detailed Log string for Database/CSV
+            detailedLog += `Q${idx + 1}: ${q.question} | Marked: ${userAnsText} | Correct: ${correctAnsText} | Result: ${statusText}\n`;
+
+            // HTML Display for Student UI
+            resultHTML += `
+                <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #cbd5e1;">
+                    <strong>Q${idx + 1}: ${q.question}</strong><br>
+                    <span style="color:${isCorrect ? 'var(--success-color)' : 'var(--danger-color)'}">
+                        Your Answer: ${userAnsText}
+                    </span><br>
+                    <span style="color:#475569;">Correct Answer: ${correctAnsText}</span><br>
+                    <small>Marks: <strong>${isCorrect ? '1 / 1' : '0 / 1'}</strong></small>
+                </div>
+            `;
         });
 
-        const scoreSummary = `${mcqCorrectCount} / ${totalMcqs} MCQs Correct`;
+        const scoreSummary = `${totalMarks} / ${maxMarks} Marks`;
 
         if (dbClientInstance) {
             try {
@@ -905,7 +974,7 @@
                     roll_number: studentRoll,
                     class_label: selectedClassLabel,
                     score_summary: scoreSummary,
-                    details: summaryText,
+                    details: detailedLog,
                     submitted_at: new Date().toISOString()
                 }]);
             } catch (e) { console.error("Database save error:", e); }
@@ -914,6 +983,9 @@
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "block";
         document.getElementById("submitted-student-name").innerText = `${studentName} (${selectedClassLabel})`;
+        document.getElementById("submitted-score").innerText = scoreSummary;
+        document.getElementById("detailed-score-summary").innerHTML = resultHTML;
+
         await clearLockFromSystem(studentRoll, selectedClassKey);
     }
 
@@ -922,29 +994,32 @@
         await renderLockoutManagerZone();
     }
 
-    function filterAdminBySubject() {
-        renderSubmissionsZone();
-    }
-
     async function renderSubmissionsZone() {
         const zone = document.getElementById("admin-submissions-zone");
         if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>Database Instance Not Ready</span>";
 
+        const filterClass = document.getElementById("admin-class-select").value;
         const filterSubject = document.getElementById("admin-subject-select").value;
 
         try {
             const { data } = await dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
             if (!data || data.length === 0) return zone.innerHTML = "<span>No submissions recorded yet.</span>";
 
-            const filteredData = filterSubject === "All" 
-                ? data 
-                : data.filter(item => item.class_label && item.class_label.includes(filterSubject));
+            let filteredData = data;
 
-            if (filteredData.length === 0) {
-                return zone.innerHTML = `<span>No submissions found for ${filterSubject}.</span>`;
+            if (filterClass !== "All") {
+                filteredData = filteredData.filter(item => item.class_label && item.class_label.includes(filterClass));
             }
 
-            let html = "<table class='admin-table'><thead><tr><th>Name</th><th>Class & Subject</th><th>Roll</th><th>Score</th><th>Submitted At</th></tr></thead><tbody>";
+            if (filterSubject !== "All") {
+                filteredData = filteredData.filter(item => item.class_label && item.class_label.includes(filterSubject));
+            }
+
+            if (filteredData.length === 0) {
+                return zone.innerHTML = `<span>No submissions found matching criteria.</span>`;
+            }
+
+            let html = "<table class='admin-table'><thead><tr><th>Name</th><th>Class & Subject</th><th>Roll</th><th>Marks</th><th>Submitted At</th></tr></thead><tbody>";
             filteredData.forEach(item => {
                 const dateStr = new Date(item.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 html += `<tr>

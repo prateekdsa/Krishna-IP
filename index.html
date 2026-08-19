@@ -1,3 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>City Public School, Najibabad</title>
+
+    <!-- Native Median App Flag to Block Android Hardware & Long-press Screenshots -->
+    <meta name="median-secure" content="true">
+    <meta name="gonative-secure" content="true">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-overlay: rgba(15, 23, 42, 0.40);
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-color: #cbd5e1;
+            --success-color: #16a34a;
+            --danger-color: #dc2626;
+            --warning-color: #d97706;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
+                        url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        .header-title {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
+            padding: 24px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background-color: var(--primary-hover); }
+
+        .restart-btn {
+            width: 100%;
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .restart-btn:hover { background-color: #b91c1c; }
+
+        .input-group { margin-bottom: 16px; }
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .option-container {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            background: white;
+        }
+        .option-container:hover { background-color: #f8fafc; }
+        .option-label { margin-left: 10px; cursor: pointer; font-size: 14px; width: 100%; }
+
+        .q-rich-media {
+            margin: 12px 0;
+            padding: 12px;
+            background: #f1f5f9;
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .q-rich-media img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            display: block;
+            margin: 0 auto;
+        }
+        .q-rich-media table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            font-size: 13px;
+        }
+        .q-rich-media table th, .q-rich-media table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 10px;
+            text-align: center;
+        }
+        .q-rich-media table th { background: #e2e8f0; }
+
+        table.admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        table.admin-table th, table.admin-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 10px;
+            text-align: left;
+        }
+        table.admin-table th { background-color: #e2e8f0; }
+
+        .security-banner {
+            background-color: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-footer {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: auto;
+            padding: 10px 0;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
+
+<div class="header-title">
+    <h1>CITY PUBLIC SCHOOL, NAJIBABAD</h1>
+</div>
+
+<div class="container">
+    <!-- LOGIN PANEL -->
+    <div id="setup-box">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal Login</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Select Class, Section, Subject & enter your Roll No & 6-Digit Password.</p>
+        
+        <div class="input-group">
+            <label for="student-name">Full Name</label>
+            <input type="text" id="student-name" placeholder="Enter full name (or 'Teacher' for Admin)">
+        </div>
+
+        <div class="input-group" id="class-group">
+            <label for="class-select">Select Class & Section</label>
+            <select id="class-select" onchange="updateRollLimits()">
+                <option value="class9A">Class 9th - Section A (Max 50 Students)</option>
+                <option value="class9B">Class 9th - Section B (Max 50 Students)</option>
+                <option value="class10A">Class 10th - Section A (Max 50 Students)</option>
+                <option value="class10B">Class 10th - Section B (Max 50 Students)</option>
+                <option value="class11">Class 11th - Section A (Max 65 Students)</option>
+                <option value="class11">Class 11th - Section B (Max 20 Students)</option>
+                <option value="class12">Class 12th - Section A (Max 60 Students)</option>
+                <option value="class12">Class 12th - Section B (Max 20 Students)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="subject-select">Select Subject</label>
+            <select id="subject-select">
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science (Combined)</option>
+                <option value="Information Technology">Information Technology (402)</option>
+                <option value="Informatics Practices">Informatics Practices (065)</option>
+            </select>
+        </div>
+
+        <div class="input-group" id="roll-group">
+            <label for="student-roll" id="roll-label">Enter Roll Number (1 to 50)</label>
+            <input type="number" id="student-roll" min="1" max="50" placeholder="e.g. 12">
+        </div>
+
+        <div class="input-group" id="pass-group">
+            <label for="student-pass">Unique Roll Password / Teacher Key</label>
+            <input type="password" id="student-pass" placeholder="Enter 6-digit password or Admin Key">
+        </div>
+
+        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Start Examination</button>
+    </div>
+
+    <!-- ADMIN CONTROL PANEL VIEW -->
+    <div id="admin-box" style="display: none;">
+        <h2 style="text-align: center; color: #059669; margin-bottom: 10px;">🔒 Teacher Admin Panel</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Manage student passwords, device locks & live test submissions</p>
+
+        <button class="btn" style="font-size: 14px; background: #059669; width: 100%; margin-bottom: 15px;" onclick="downloadAllPasswordsCSV()">📊 Download Full Password List (330 Students - .CSV / Excel)</button>
+
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+            <h4 style="margin: 0 0 10px 0; color: var(--text-main);">📋 Live Student Test Submissions</h4>
+            <div id="admin-submissions-zone" style="max-height: 250px; overflow-y: auto;">Loading submissions...</div>
+        </div>
+
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+            <h4 style="margin: 0 0 10px 0; color: var(--text-main);">Active Device Locks</h4>
+            <div id="admin-unblock-zone">Loading locks...</div>
+        </div>
+
+        <button class="restart-btn" onclick="location.reload()">Back to Login</button>
+    </div>
+
+    <!-- QUIZ INTERFACE -->
+    <div id="quiz-box" style="display: none;">
+        <div class="security-banner">
+            <span>🔒 HIGH SECURITY EXAM ENVIRONMENT ACTIVE</span>
+            <span id="cheat-warning-count">Warnings: 0/2</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+            <span id="question-tracker" style="font-weight: bold; font-size: 14px;">Question 1 / 10</span>
+            <span id="timer-display" style="font-weight: bold; font-size: 14px; color: var(--danger-color);">⏱️ 15:00</span>
+        </div>
+
+        <h3 id="secure-question-host" style="font-size: 16px; margin-bottom: 8px;"></h3>
+        
+        <div id="question-media-host"></div>
+
+        <div id="response-container"></div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button id="prev-btn" class="btn" onclick="goPrevious()">Previous</button>
+            <button id="next-btn" class="btn btn-next" onclick="goNext()">Next</button>
+        </div>
+    </div>
+
+    <!-- RESULT & LOGOUT PANEL -->
+    <div id="result-box" style="display: none;">
+        <div id="student-completion-view" style="text-align: center; padding: 25px 10px;">
+            <div style="font-size: 54px; margin-bottom: 10px;">🎉</div>
+            <h2 style="color: #1e293b; margin-bottom: 8px;">Examination Submitted Successfully!</h2>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">
+                Thank you, <strong id="submitted-student-name"></strong>.<br>
+                Your response, subject sheet, and score summary have been saved securely.
+            </p>
+            <button class="restart-btn" onclick="restartQuiz()">🔒 Log Out & Finish Session</button>
+        </div>
+    </div>
+</div>
+
+<div class="app-footer">Designed By Krishna Kumar</div>
+
 <script>
     const SUPABASE_URL = (typeof window.ENV !== "undefined" && window.ENV.SUPABASE_URL) 
         ? window.ENV.SUPABASE_URL 
@@ -268,12 +580,11 @@
         }
     }
 
-    // UPDATED LOGIN SUBMIT HANDLER
     function handleLoginSubmit() {
         const nameVal = document.getElementById("student-name").value.trim().toLowerCase();
         const enteredPass = document.getElementById("student-pass").value.trim();
 
-        // Admin match: Password is Admin@7055 OR Name is "teacher" / "teachers" / "admin@7055" with Password Admin@7055
+        // Check for Teacher / Admin Credentials
         if (enteredPass === MASTER_TEACHER_PASSWORD || nameVal === "teachers" || nameVal === "teacher" || nameVal === "admin@7055") {
             if (enteredPass !== MASTER_TEACHER_PASSWORD && enteredPass !== "") {
                 alert("❌ Invalid Teacher Admin Password!");
@@ -287,7 +598,7 @@
             }
         }
 
-        // Standard Student Login Flow
+        // Standard Student Login
         authenticateStudentAndStart(document.getElementById("student-name").value.trim());
     }
 
@@ -366,6 +677,7 @@
 
         userAnswers = new Array(quizData.length).fill(null);
 
+        // Dynamic timer load per subject
         timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
         const initialMins = Math.floor(timeRemainingSeconds / 60);
         const initialSecs = timeRemainingSeconds % 60;
@@ -555,3 +867,5 @@
         location.reload();
     }
 </script>
+</body>
+</html>

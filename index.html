@@ -211,12 +211,12 @@
     <div id="setup-box">
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal Login</h2>
         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
-            <strong>Students:</strong> Fill out all details.<br>            
+            Enter your details below to begin or log in.
         </p>
         
         <div class="input-group">
-            <label for="student-name">Full Name </label>
-            <input type="text" id="student-name" placeholder="Enter Full Name / Teacher ID">
+            <label for="student-name">Full Name / Login ID</label>
+            <input type="text" id="student-name" placeholder="Enter Full Name, Teacher ID, or Admin Key">
         </div>
 
         <div class="input-group" id="class-group">
@@ -252,7 +252,7 @@
 
         <div class="input-group" id="pass-group">
             <label for="student-pass">Password</label>
-            <input type="password" id="student-pass" placeholder="Enter 6-digit password or Admin Key">
+            <input type="password" id="student-pass" placeholder="Enter password or Admin Key">
         </div>
 
         <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Proceed</button>
@@ -493,6 +493,33 @@
         setupHighSecurityLocks();
     });
 
+    function handleLoginSubmit() {
+        const rawNameInput = document.getElementById("student-name").value.trim();
+        const cleanedName = rawNameInput.toLowerCase().replace(/\s+/g, '');
+        const enteredPass = document.getElementById("student-pass").value.trim();
+
+        // 1. ADMIN CHECK
+        if (rawNameInput === MASTER_TEACHER_PASSWORD || enteredPass === MASTER_TEACHER_PASSWORD) {
+            document.getElementById("setup-box").style.display = "none";
+            document.getElementById("admin-box").style.display = "block";
+            renderAdminDashboardData();
+            return;
+        }
+
+        // 2. TEACHER CHECK
+        const isTeacherLogin = VALID_TEACHER_LOGINS.includes(cleanedName) || cleanedName.startsWith("teacher");
+        if (isTeacherLogin) {
+            loggedInTeacherName = rawNameInput || "Teacher";
+            document.getElementById("setup-box").style.display = "none";
+            document.getElementById("teacher-subject-box").style.display = "block";
+            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
+            return;
+        }
+
+        // 3. STUDENT CHECK
+        authenticateStudentAndStart(rawNameInput);
+    }
+
     function downloadAllPasswordsCSV() {
         let csvRows = ["Class & Section,Roll Number,6-Digit Password"];
 
@@ -598,42 +625,6 @@
         imgs.forEach(img => {
             const altText = img.alt ? ` (${img.alt})` : '';
             parsedText += `   [Image Asset]: ${img.src}${altText}\n`;
-        });
-
-        const svgs = tempDiv.querySelectorAll('svg');
-        svgs.forEach((svgElement) => {
-            let labels = [];
-            const textNodes = svgElement.querySelectorAll('text, tspan');
-            textNodes.forEach(t => {
-                let content = t.textContent.trim();
-                if (content) labels.push(content);
-            });
-
-            parsedText += `   +---------------------------------------+\n`;
-            parsedText += `   | FIGURE / DIAGRAM ATTACHED             |\n`;
-
-            if (svgElement.querySelector('polygon, triangle') || svgElement.innerHTML.includes('polygon')) {
-                parsedText += `   |  |\\                                   |\n`;
-                parsedText += `   |  | \\  (Hypotenuse)                    |\n`;
-                parsedText += `   |  |___\\                                |\n`;
-            } 
-            else if (svgElement.querySelector('path') || svgElement.innerHTML.includes('path')) {
-                parsedText += `   |    _  - -  _                          |\n`;
-                parsedText += `   |  /           \\                        |\n`;
-                parsedText += `   | - - - - - - - -\\ - - - - - - - - - -  |\n`;
-                parsedText += `   |                 \\ _  - -  _           |\n`;
-            } 
-            else {
-                parsedText += `   |  [=== Vector Graphics Asset ===]      |\n`;
-            }
-
-            if (labels.length > 0) {
-                parsedText += `   | Diagram Labels / Values:              |\n`;
-                labels.forEach(lbl => {
-                    parsedText += `   |   - ${lbl.padEnd(31, ' ')} |\n`;
-                });
-            }
-            parsedText += `   +---------------------------------------+\n`;
         });
 
         return parsedText;
@@ -829,30 +820,6 @@
         } else {
             alert(`⚠️ SECURITY WARNING (${securityViolationCount}/2):\n${reason}\nSwitching tabs or minimizing will auto-submit your exam!`);
         }
-    }
-
-    function handleLoginSubmit() {
-        const rawNameInput = document.getElementById("student-name").value.trim();
-        const cleanedName = rawNameInput.toLowerCase().replace(/\s+/g, '');
-        const enteredPass = document.getElementById("student-pass").value.trim();
-
-        if (rawNameInput === MASTER_TEACHER_PASSWORD || enteredPass === MASTER_TEACHER_PASSWORD) {
-            document.getElementById("setup-box").style.display = "none";
-            document.getElementById("admin-box").style.display = "block";
-            renderAdminDashboardData();
-            return;
-        }
-
-        const isTeacherLogin = VALID_TEACHER_LOGINS.includes(cleanedName) || cleanedName === "teacher";
-        if (isTeacherLogin) {
-            loggedInTeacherName = rawNameInput || "Teacher";
-            document.getElementById("setup-box").style.display = "none";
-            document.getElementById("teacher-subject-box").style.display = "block";
-            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
-            return;
-        }
-
-        authenticateStudentAndStart(rawNameInput);
     }
 
     function startTeacherExam() {

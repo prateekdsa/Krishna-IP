@@ -548,7 +548,7 @@
         }
     }
 
-    // Helper function to extract media, dynamically align ASCII table columns, and parse SVGs into plain text
+    // Dynamic, universal parsing for tables, images, and embedded vector SVG diagrams
     function extractMediaTextForExport(mediaHTML) {
         if (!mediaHTML) return "";
         let parsedText = "\n   [ATTACHED DIAGRAM / TABLE / MEDIA]:\n";
@@ -556,7 +556,7 @@
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = mediaHTML;
 
-        // 1. Convert HTML Tables to Perfectly Aligned ASCII Tables
+        // 1. Process and format HTML Tables with dynamic cell padding
         const tables = tempDiv.querySelectorAll('table');
         tables.forEach(tbl => {
             const rows = tbl.querySelectorAll('tr');
@@ -570,7 +570,6 @@
             });
 
             if (tableGrid.length > 0) {
-                // Determine maximum character length for each column across all rows
                 let colWidths = [];
                 tableGrid.forEach(row => {
                     row.forEach((cellText, colIdx) => {
@@ -578,7 +577,6 @@
                     });
                 });
 
-                // Format each row with exact padding spaces
                 tableGrid.forEach(row => {
                     let formattedRow = "   | ";
                     row.forEach((cellText, colIdx) => {
@@ -598,34 +596,45 @@
             parsedText += `   [Image Asset]: ${img.src}${altText}\n`;
         });
 
-        // 3. Render Vector SVGs (Circuits, Waves, Geometry) into explicit ASCII Visual Diagrams
+        // 3. Universal Dynamic SVG-to-ASCII Parser
         const svgs = tempDiv.querySelectorAll('svg');
-        if (svgs.length > 0 && tables.length === 0 && imgs.length === 0) {
-            const svgContent = tempDiv.innerHTML.toLowerCase();
+        svgs.forEach((svgElement) => {
+            let labels = [];
+            const textNodes = svgElement.querySelectorAll('text, tspan');
+            textNodes.forEach(t => {
+                let content = t.textContent.trim();
+                if (content) labels.push(content);
+            });
 
-            if (svgContent.includes('transverse') || svgContent.includes('wave') || svgContent.includes('path')) {
-                parsedText += `   +---------------------------------------+\n`;
-                parsedText += `   | Signal: Wave Displacement Diagram     |\n`;
+            parsedText += `   +---------------------------------------+\n`;
+            parsedText += `   | FIGURE / DIAGRAM ATTACHED             |\n`;
+
+            // Detect geometric polygons/triangles
+            if (svgElement.querySelector('polygon, triangle') || svgElement.innerHTML.includes('polygon')) {
+                parsedText += `   |  |\\                                   |\n`;
+                parsedText += `   |  | \\  (Hypotenuse)                    |\n`;
+                parsedText += `   |  |___\\                                |\n`;
+            } 
+            // Detect wave/curved paths
+            else if (svgElement.querySelector('path') || svgElement.innerHTML.includes('path')) {
                 parsedText += `   |    _  - -  _                          |\n`;
                 parsedText += `   |  /           \\                        |\n`;
                 parsedText += `   | - - - - - - - -\\ - - - - - - - - - -  |\n`;
                 parsedText += `   |                 \\ _  - -  _           |\n`;
-                parsedText += `   +---------------------------------------+\n`;
-            } else if (svgContent.includes('polygon') || svgContent.includes('triangle') || svgContent.includes('right-triangle')) {
-                parsedText += `   +---------------------------------------+\n`;
-                parsedText += `   | Figure: Geometric Right Triangle      |\n`;
-                parsedText += `   |  |\\                                   |\n`;
-                parsedText += `   |  | \\  x=? (Hypotenuse)                |\n`;
-                parsedText += `   |5 |  \\                                 |\n`;
-                parsedText += `   |  |___\\                                |\n`;
-                parsedText += `   |    12                                 |\n`;
-                parsedText += `   +---------------------------------------+\n`;
-            } else {
-                parsedText += `   +---------------------------------------+\n`;
-                parsedText += `   | Schematic Diagram Attached            |\n`;
-                parsedText += `   +---------------------------------------+\n`;
+            } 
+            // Generic shapes/circuits
+            else {
+                parsedText += `   |  [=== Vector Graphics Asset ===]      |\n`;
             }
-        }
+
+            if (labels.length > 0) {
+                parsedText += `   | Diagram Labels / Values:              |\n`;
+                labels.forEach(lbl => {
+                    parsedText += `   |   - ${lbl.padEnd(31, ' ')} |\n`;
+                });
+            }
+            parsedText += `   +---------------------------------------+\n`;
+        });
 
         return parsedText;
     }

@@ -56,7 +56,7 @@
         .header-title {
             color: #ffffff;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-shadow: 0 2px 6px rgba(0,0,0,0.8);
         }
 
@@ -64,6 +64,19 @@
             margin: 0;
             font-size: 26px;
             letter-spacing: 1px;
+        }
+
+        .live-clock-bar {
+            background: rgba(15, 23, 42, 0.65);
+            color: #f8fafc;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 6px;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
         }
 
         .container {
@@ -76,6 +89,18 @@
             box-sizing: border-box;
             margin-bottom: 20px;
             backdrop-filter: blur(4px);
+        }
+
+        .welcome-banner {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 15px;
         }
 
         .btn {
@@ -220,6 +245,7 @@
 
 <div class="header-title">
     <h1>CITY PUBLIC SCHOOL, NAJIBABAD</h1>
+    <div class="live-clock-bar" id="live-datetime">Loading Date & Time...</div>
 </div>
 
 <div class="container">
@@ -227,7 +253,7 @@
     <div id="setup-box">
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal Login</h2>
         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
-            Select your role and authenticate using your registered email and password.
+            Select your role and authenticate using your registered details.
         </p>
 
         <div class="input-group">
@@ -239,8 +265,8 @@
         </div>
 
         <div class="input-group">
-            <label for="auth-email">Email Address / User ID</label>
-            <input type="email" id="auth-email" placeholder="e.g. user@school.com or full name">
+            <label for="auth-email">User ID / Registered Email</label>
+            <input type="text" id="auth-email" placeholder="e.g. ADMIN or user@school.com or Full Name">
         </div>
 
         <div class="input-group">
@@ -248,7 +274,7 @@
             <input type="password" id="auth-pass" placeholder="Enter account password">
         </div>
 
-        <!-- Student-Specific Selection Options -->
+        <!-- Student-Specific Selection Options (Subject Removed as requested) -->
         <div id="student-only-fields">
             <div class="input-group" id="class-group">
                 <label for="class-select">Select Class & Section</label>
@@ -261,18 +287,6 @@
                     <option value="class11B">Class 11th - Section B (Max 20 Students)</option>
                     <option value="class12A">Class 12th - Section A (Max 60 Students)</option>
                     <option value="class12B">Class 12th - Section B (Max 20 Students)</option>
-                </select>
-            </div>
-
-            <div class="input-group" id="student-subject-group">
-                <label for="subject-select">Select Subject</label>
-                <select id="subject-select">
-                    <option value="Physics">Physics</option>
-                    <option value="Chemistry">Chemistry</option>
-                    <option value="Mathematics">Mathematics</option>
-                    <option value="Science">Science (Combined)</option>
-                    <option value="Information Technology">Information Technology (402)</option>
-                    <option value="Informatics Practices">Informatics Practices (065)</option>
                 </select>
             </div>
 
@@ -293,13 +307,13 @@
     <!-- DUAL-ROLE REGISTRATION PANEL -->
     <div id="register-box" style="display: none;">
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Create Account</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Register as a Teacher or Student</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Register as a Student or Teacher</p>
 
         <div class="input-group">
             <label for="reg-role">Account Type</label>
             <select id="reg-role">
                 <option value="Student">Student</option>
-                <option value="Teacher">Teacher</option>
+                <option value="Teacher">Teacher (Requires Admin Authorization)</option>
             </select>
         </div>
 
@@ -309,7 +323,7 @@
         </div>
 
         <div class="input-group">
-            <label for="reg-email">Email Address</label>
+            <label for="reg-email">Email Address / Username</label>
             <input type="email" id="reg-email" placeholder="name@example.com">
         </div>
 
@@ -341,9 +355,40 @@
         <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="showAuthView('setup-box')">Back to Login</button>
     </div>
 
+    <!-- POST-LOGIN STUDENT SUBJECT SELECTION PANEL -->
+    <div id="student-subject-box" style="display: none;">
+        <div class="welcome-banner" id="student-welcome-msg">
+            👋 Welcome to the Portal!
+        </div>
+
+        <h3 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Select Examination Subject</h3>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
+            Choose your exam subject to initialize your test session:
+        </p>
+
+        <div class="input-group">
+            <label for="post-login-subject">Subject</label>
+            <select id="post-login-subject">
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science (Combined)</option>
+                <option value="Information Technology">Information Technology (402)</option>
+                <option value="Informatics Practices">Informatics Practices (065)</option>
+            </select>
+        </div>
+
+        <button class="btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="confirmStudentSubjectAndStart()">Start Exam Session</button>
+        <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="location.reload()">Log Out</button>
+    </div>
+
     <!-- TEACHER SETUP SCREEN -->
     <div id="teacher-subject-box" style="display: none;">
-        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Welcome Teacher!</h2>
+        <div class="welcome-banner" id="teacher-welcome-msg">
+            👋 Welcome, Teacher!
+        </div>
+
+        <h3 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Teacher Evaluation Portal</h3>
         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;" id="teacher-greeting-text">Select class and subject to begin your exam session:</p>
 
         <div class="input-group">
@@ -379,12 +424,12 @@
     <!-- ADMIN CONTROL PANEL VIEW -->
     <div id="admin-box" style="display: none;">
         <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 System Admin Portal</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage registered accounts, student results, question papers, and system logs</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage registered accounts, teacher authorizations, student results, and system logs</p>
 
         <!-- USER MANAGEMENT SECTION -->
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h4 style="margin: 0; color: var(--text-main);">👥 Registered Users Directory</h4>
+                <h4 style="margin: 0; color: var(--text-main);">👥 Registered Users & Authorization</h4>
                 <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="clearAllUsers()">Clear All Users</button>
             </div>
             <div id="admin-users-zone" style="max-height: 200px; overflow-y: auto;">Loading registered users...</div>
@@ -473,6 +518,9 @@
         <div id="student-completion-view" style="text-align: center; padding: 25px 10px;">
             <div style="font-size: 54px; margin-bottom: 10px;">🎉</div>
             <h2 style="color: #1e293b; margin-bottom: 8px;">Examination Submitted Successfully!</h2>
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px;">
+                ✨ <strong>Congratulations!</strong> Your exam responses have been securely recorded and transmitted to the school portal database.
+            </div>
             <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">
                 Thank you, <strong id="submitted-student-name"></strong>.<br>
                 Total Score Secured: <strong id="submitted-score" style="color: var(--primary-color);"></strong>
@@ -494,7 +542,10 @@
         ? window.ENV.SUPABASE_ANON_KEY 
         : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE";
 
+    // ADMIN CREDENTIALS SPECIFIED
+    const ADMIN_USER_ID = "ADMIN";
     const MASTER_TEACHER_PASSWORD = "Admin@7055";
+    
     const VALID_TEACHER_LOGINS = Array.from({ length: 25 }, (_, i) => `teacher${i + 1}`);
     const EXPIRATION_MS = 72 * 60 * 60 * 1000;
 
@@ -537,6 +588,20 @@
     let isExamActive = false;
     let loggedInTeacherName = "";
     let currentFetchedSubmissions = [];
+
+    // Live Clock & Date Update
+    function startLiveClock() {
+        const datetimeElem = document.getElementById("live-datetime");
+        const updateClock = () => {
+            const now = new Date();
+            const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('en-US', dateOptions);
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            datetimeElem.innerText = `📅 ${dateStr} | ⏰ ${timeStr}`;
+        };
+        updateClock();
+        setInterval(updateClock, 1000);
+    }
 
     // Local Storage helpers for User Database
     function getRegisteredUsers() {
@@ -619,24 +684,19 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+        startLiveClock();
         updateRollLimits();
         setupHighSecurityLocks();
         setupHiddenAdminTrigger();
         setStageBackground("login");
     });
 
-    // Hidden Admin Trigger: CTRL + SHIFT + TAB + 1
+    // Hidden Admin Trigger: CTRL + ALT + SHIFT + 2
     function setupHiddenAdminTrigger() {
         window.addEventListener("keydown", (e) => {
-            if (e.ctrlKey && e.shiftKey && (e.key === "Tab" || e.code === "Tab")) {
-                const triggerHandler = (nextEvt) => {
-                    if (nextEvt.key === "1") {
-                        nextEvt.preventDefault();
-                        openAdminPortalDirect();
-                    }
-                    window.removeEventListener("keydown", triggerHandler);
-                };
-                window.addEventListener("keydown", triggerHandler, { once: true });
+            if (e.ctrlKey && e.altKey && e.shiftKey && e.key === "2") {
+                e.preventDefault();
+                openAdminPortalDirect();
             }
         });
     }
@@ -646,6 +706,7 @@
         document.getElementById("setup-box").style.display = "none";
         document.getElementById("register-box").style.display = "none";
         document.getElementById("forgot-box").style.display = "none";
+        document.getElementById("student-subject-box").style.display = "none";
         document.getElementById("teacher-subject-box").style.display = "none";
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "none";
@@ -653,7 +714,7 @@
         renderAdminDashboardData();
     }
 
-    // AUTHENTICATION LOGIC
+    // AUTHENTICATION & REGISTRATION LOGIC
     function handleRegisterSubmit() {
         const role = document.getElementById("reg-role").value;
         const name = document.getElementById("reg-name").value.trim();
@@ -667,13 +728,21 @@
 
         const users = getRegisteredUsers();
         if (users.find(u => u.email === email)) {
-            alert("An account with this email already exists!");
+            alert("An account with this email/username already exists!");
             return;
         }
 
-        users.push({ role, name, email, pass });
+        // Teachers require authorization by admin
+        const isAuthorized = (role.toLowerCase() === "teacher") ? false : true;
+
+        users.push({ role, name, email, pass, isAuthorized });
         saveRegisteredUsers(users);
-        alert("Account registered successfully! You can now log in.");
+
+        if (role.toLowerCase() === "teacher") {
+            alert("Teacher account submitted for authorization! An Admin must authorize your account in the Admin Portal before you can log in.");
+        } else {
+            alert("Account registered successfully! You can now log in.");
+        }
         showAuthView("setup-box");
     }
 
@@ -706,13 +775,13 @@
         const cleanedEmail = rawEmailInput.toLowerCase().replace(/\s+/g, '');
         const enteredPass = document.getElementById("auth-pass").value.trim();
 
-        // Admin Override
-        if (rawEmailInput === MASTER_TEACHER_PASSWORD || enteredPass === MASTER_TEACHER_PASSWORD) {
+        // Admin Specific Login Check: USER ID: ADMIN, Password: Admin@7055
+        if ((rawEmailInput.toUpperCase() === ADMIN_USER_ID || rawEmailInput === MASTER_TEACHER_PASSWORD) && enteredPass === MASTER_TEACHER_PASSWORD) {
             openAdminPortalDirect();
             return;
         }
 
-        // Search in local user database first
+        // Search in local user database
         const users = getRegisteredUsers();
         const matchedUser = users.find(u => u.email === cleanedEmail || u.name.toLowerCase() === cleanedEmail);
 
@@ -723,18 +792,24 @@
             }
 
             if (matchedUser.role.toLowerCase() === "teacher" || selectedRole === "teacher") {
+                if (matchedUser.isAuthorized === false) {
+                    alert("⏳ Account Pending Authorization! Your teacher account has not been authorized by the Admin yet.");
+                    return;
+                }
                 loggedInTeacherName = matchedUser.name;
                 document.getElementById("setup-box").style.display = "none";
                 document.getElementById("teacher-subject-box").style.display = "block";
-                document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
+                document.getElementById("teacher-welcome-msg").innerText = `👋 Welcome, ${loggedInTeacherName}! Login Authorized.`;
+                document.getElementById("teacher-greeting-text").innerText = `Select class and subject to start:`;
                 return;
             } else {
-                authenticateStudentAndStart(matchedUser.name);
+                // Student authenticated -> Proceed to subject selection screen
+                promptStudentSubjectSelection(matchedUser.name);
                 return;
             }
         }
 
-        // Fallback for direct teacher logins
+        // Fallback for default Teacher accounts
         const isTeacherLogin = (selectedRole === "teacher") || VALID_TEACHER_LOGINS.includes(cleanedEmail) || cleanedEmail.startsWith("teacher");
         if (isTeacherLogin) {
             if (enteredPass !== MASTER_TEACHER_PASSWORD && enteredPass !== "teacher123") {
@@ -744,12 +819,81 @@
             loggedInTeacherName = rawEmailInput || "Teacher";
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("teacher-subject-box").style.display = "block";
-            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
+            document.getElementById("teacher-welcome-msg").innerText = `👋 Welcome, ${loggedInTeacherName}! Login Authorized.`;
+            document.getElementById("teacher-greeting-text").innerText = `Select class and subject to start:`;
             return;
         }
 
-        // Fallback for Student login
-        authenticateStudentAndStart(rawEmailInput);
+        // Fallback for Student Login via roll password
+        promptStudentSubjectSelection(rawEmailInput);
+    }
+
+    function promptStudentSubjectSelection(nameVal) {
+        studentName = nameVal;
+        const rollInputVal = document.getElementById("student-roll").value;
+        studentRoll = parseInt(rollInputVal, 10);
+        selectedClassKey = document.getElementById("class-select").value;
+        const enteredPass = document.getElementById("auth-pass").value.trim();
+
+        const config = classConfig[selectedClassKey];
+
+        if (!studentName) {
+            alert("Please enter User ID / Full Name.");
+            return;
+        }
+
+        if (!studentRoll || isNaN(studentRoll) || studentRoll < 1 || studentRoll > config.maxRoll) {
+            alert(`Please enter a valid Roll Number between 1 and ${config.maxRoll}.`);
+            return;
+        }
+
+        // Password validation (same for all subjects)
+        const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
+        if (enteredPass !== expectedPass) {
+            const users = getRegisteredUsers();
+            const matched = users.find(u => u.name.toLowerCase() === nameVal.toLowerCase() && u.pass === enteredPass);
+            if (!matched) {
+                alert("❌ Invalid Password! Please check your section roll password or registered credentials.");
+                return;
+            }
+        }
+
+        // Show Welcome Message and Subject Choice screen AFTER Login
+        document.getElementById("setup-box").style.display = "none";
+        document.getElementById("student-subject-box").style.display = "block";
+        document.getElementById("student-welcome-msg").innerText = `👋 Welcome, ${studentName}! Logged in to ${config.label} (Roll No: ${studentRoll}).`;
+    }
+
+    async function confirmStudentSubjectAndStart() {
+        selectedSubject = document.getElementById("post-login-subject").value;
+        const config = classConfig[selectedClassKey];
+        selectedClassLabel = `${config.label} (${selectedSubject})`;
+
+        const lockGranted = await checkOrSetDeviceLock(studentRoll, selectedClassKey, studentName);
+        if (!lockGranted) {
+            alert(`🔒 Roll Number ${studentRoll} in ${config.label} is already active on another browser!`);
+            return;
+        }
+
+        const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
+        quizData = shuffleArrayForRoll(rawQuestions, studentRoll);
+
+        userAnswers = new Array(quizData.length).fill(null);
+
+        timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
+        const initialMins = Math.floor(timeRemainingSeconds / 60);
+        const initialSecs = timeRemainingSeconds % 60;
+        document.getElementById("timer-display").innerText = `⏱️ ${initialMins}:${initialSecs < 10 ? '0' : ''}${initialSecs}`;
+
+        setStageBackground("student");
+        document.getElementById("student-subject-box").style.display = "none";
+        document.getElementById("quiz-box").style.display = "block";
+
+        isExamActive = true;
+        securityViolationCount = 0;
+        currentQuestionIdx = 0;
+        startTimer();
+        loadQuestion();
     }
 
     function downloadAllPasswordsCSV() {
@@ -1121,64 +1265,6 @@
         } catch (e) {}
     }
 
-    async function authenticateStudentAndStart(nameVal) {
-        studentName = nameVal;
-        const rollInputVal = document.getElementById("student-roll").value;
-        studentRoll = parseInt(rollInputVal, 10);
-        selectedClassKey = document.getElementById("class-select").value;
-        selectedSubject = document.getElementById("subject-select").value;
-        const enteredPass = document.getElementById("auth-pass").value.trim();
-
-        const config = classConfig[selectedClassKey];
-        selectedClassLabel = `${config.label} (${selectedSubject})`;
-
-        if (!studentName) {
-            alert("Please enter Full Name.");
-            return;
-        }
-
-        if (!studentRoll || isNaN(studentRoll) || studentRoll < 1 || studentRoll > config.maxRoll) {
-            alert(`Please enter a valid Roll Number between 1 and ${config.maxRoll}.`);
-            return;
-        }
-
-        const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
-        if (enteredPass !== expectedPass) {
-            const users = getRegisteredUsers();
-            const matched = users.find(u => u.name.toLowerCase() === nameVal.toLowerCase() && u.pass === enteredPass);
-            if (!matched) {
-                alert("❌ Invalid Password! Please check your section roll password or account credentials.");
-                return;
-            }
-        }
-
-        const lockGranted = await checkOrSetDeviceLock(studentRoll, selectedClassKey, studentName);
-        if (!lockGranted) {
-            alert(`🔒 Roll Number ${studentRoll} in ${config.label} is already active on another browser!`);
-            return;
-        }
-
-        const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
-        quizData = shuffleArrayForRoll(rawQuestions, studentRoll);
-
-        userAnswers = new Array(quizData.length).fill(null);
-
-        timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
-        const initialMins = Math.floor(timeRemainingSeconds / 60);
-        const initialSecs = timeRemainingSeconds % 60;
-        document.getElementById("timer-display").innerText = `⏱️ ${initialMins}:${initialSecs < 10 ? '0' : ''}${initialSecs}`;
-
-        setStageBackground("student");
-        document.getElementById("setup-box").style.display = "none";
-        document.getElementById("quiz-box").style.display = "block";
-
-        isExamActive = true;
-        securityViolationCount = 0;
-        currentQuestionIdx = 0;
-        startTimer();
-        loadQuestion();
-    }
-
     function startTimer() {
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
@@ -1328,18 +1414,30 @@
                 <tr>
                     <th>Role</th>
                     <th>Name</th>
-                    <th>Email</th>
+                    <th>Email / Username</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>`;
 
         users.forEach((u, index) => {
+            const isTeacher = u.role.toLowerCase() === "teacher";
+            const statusLabel = isTeacher 
+                ? (u.isAuthorized ? "<span style='color:green; font-weight:bold;'>Authorized</span>" : "<span style='color:orange; font-weight:bold;'>Pending</span>")
+                : "<span style='color:blue;'>Active</span>";
+
+            const authBtn = (isTeacher && !u.isAuthorized) 
+                ? `<button class="btn" style="padding:2px 8px; font-size:11px; background-color:var(--success-color); margin-right:4px;" onclick="authorizeTeacher(${index})">Authorize</button>`
+                : "";
+
             html += `<tr>
                 <td><strong>${u.role}</strong></td>
                 <td>${u.name}</td>
                 <td>${u.email}</td>
+                <td>${statusLabel}</td>
                 <td>
+                    ${authBtn}
                     <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deleteSingleUser(${index})">Delete</button>
                 </td>
             </tr>`;
@@ -1347,6 +1445,14 @@
 
         html += "</tbody></table>";
         zone.innerHTML = html;
+    }
+
+    function authorizeTeacher(index) {
+        let users = getRegisteredUsers();
+        users[index].isAuthorized = true;
+        saveRegisteredUsers(users);
+        alert(`Teacher ${users[index].name} has been authorized successfully!`);
+        renderUserDirectoryZone();
     }
 
     function deleteSingleUser(index) {
@@ -1471,7 +1577,7 @@
             }
 
             if (count === 0) {
-                alert("⚠️ Row was not deleted on the server! Please run 'ALTER TABLE student_submissions DISABLE ROW LEVEL SECURITY;' in your Supabase SQL Editor.");
+                alert("⚠️ Row was not deleted on the server! Please verify your Supabase Row Level Security policy.");
             } else {
                 alert("Submission deleted permanently from all filters.");
             }

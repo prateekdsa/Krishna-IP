@@ -8,13 +8,7 @@
     <meta name="median-secure" content="true">
     <meta name="gonative-secure" content="true">
 
-    <!-- Supabase Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- PDF.js for rendering uploaded PDF question papers -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <!-- html2pdf.js for exporting papers directly to PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
     <style>
         :root {
             --primary-color: #2563eb;
@@ -27,10 +21,13 @@
             --danger-color: #dc2626;
             --warning-color: #d97706;
 
+            /* Dedicated Stage Background Images */
             --bg-login: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.55)), 
                         url('https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+
             --bg-student: linear-gradient(rgba(15, 23, 42, 0.70), rgba(15, 23, 42, 0.70)), 
                           url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+
             --bg-admin: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.85)), 
                         url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
         }
@@ -69,19 +66,6 @@
             letter-spacing: 1px;
         }
 
-        .clock-widget {
-            background: rgba(15, 23, 42, 0.75);
-            color: #f8fafc;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            letter-spacing: 0.5px;
-        }
-
         .container {
             width: 100%;
             max-width: 820px;
@@ -107,8 +91,13 @@
         }
 
         .btn:hover { background-color: var(--primary-hover); }
-        .btn-danger { background-color: var(--danger-color); }
-        .btn-danger:hover { background-color: #b91c1c; }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
 
         .restart-btn {
             width: 100%;
@@ -154,26 +143,33 @@
         .option-container:hover { background-color: #f8fafc; }
         .option-label { margin-left: 10px; cursor: pointer; font-size: 14px; width: 100%; }
 
-        /* PDF Render Display Style */
-        .pdf-viewer-box {
-            width: 100%;
-            max-height: 480px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
+        .q-rich-media {
+            margin: 12px 0;
+            padding: 12px;
+            background: #f1f5f9;
+            border: 1px dashed var(--border-color);
             border-radius: 8px;
-            background: #525659;
-            text-align: center;
-            padding: 10px;
-            box-sizing: border-box;
-            margin-bottom: 15px;
+            overflow-x: auto;
         }
-        .pdf-canvas-item {
+        .q-rich-media img {
             max-width: 100%;
             height: auto;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            background: white;
+            border-radius: 6px;
+            display: block;
+            margin: 0 auto;
         }
+        .q-rich-media table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            font-size: 13px;
+        }
+        .q-rich-media table th, .q-rich-media table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 10px;
+            text-align: center;
+        }
+        .q-rich-media table th { background: #e2e8f0; }
 
         table.admin-table {
             width: 100%;
@@ -187,14 +183,6 @@
             text-align: left;
         }
         table.admin-table th { background-color: #e2e8f0; }
-
-        .admin-section-card {
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 20px;
-        }
 
         .security-banner {
             background-color: #fef2f2;
@@ -210,57 +198,6 @@
             justify-content: space-between;
         }
 
-        .perm-checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .perm-checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            font-weight: normal;
-        }
-
-        /* Nav Tabs Style for Teacher Dashboard */
-        .tab-nav-bar {
-            display: flex;
-            gap: 6px;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 15px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-        }
-
-        .tab-button {
-            background: #e2e8f0;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px 6px 0 0;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            color: var(--text-muted);
-        }
-
-        .tab-button.active-tab {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .tab-content-panel {
-            display: none;
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 0 0 8px 8px;
-            margin-bottom: 15px;
-        }
-
         .app-footer {
             color: #ffffff;
             font-size: 14px;
@@ -271,13 +208,11 @@
             text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
 
-        /* Printable PDF Template container */
-        #pdf-export-template {
-            display: none;
-            padding: 20px;
-            background: white;
-            color: black;
-            font-family: Arial, sans-serif;
+        .auth-link {
+            color: var(--primary-color);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 13px;
         }
     </style>
 </head>
@@ -285,139 +220,176 @@
 
 <div class="header-title">
     <h1>CITY PUBLIC SCHOOL, NAJIBABAD</h1>
-    <div id="live-clock-widget" class="clock-widget">📅 Loading Date & Time...</div>
 </div>
 
 <div class="container">
-    <!-- LOGIN PANEL -->
+    <!-- ROLE-BASED LOGIN PANEL -->
     <div id="setup-box">
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal Login</h2>
         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
-            Enter your credentials below to begin.
+            Select your role and authenticate using your registered email and password.
         </p>
-        
-        <div class="input-group">
-            <label for="student-name">Full Name / Login ID</label>
-            <input type="text" id="student-name" placeholder="Enter Full Name, Teacher ID, or Admin Key">
-        </div>
-
-        <div class="input-group" id="class-group">
-            <label for="class-select">Select Class & Section</label>
-            <select id="class-select" onchange="updateRollLimits()">
-                <option value="class9A">Class 9th - Section A (Max 50 Students)</option>
-                <option value="class9B">Class 9th - Section B (Max 50 Students)</option>
-                <option value="class10A">Class 10th - Section A (Max 50 Students)</option>
-                <option value="class10B">Class 10th - Section B (Max 50 Students)</option>
-                <option value="class11A">Class 11th - Section A (Max 65 Students)</option>
-                <option value="class11B">Class 11th - Section B (Max 20 Students)</option>
-                <option value="class12A">Class 12th - Section A (Max 60 Students)</option>
-                <option value="class12B">Class 12th - Section B (Max 20 Students)</option>
-            </select>
-        </div>
-
-        <div class="input-group" id="student-subject-group">
-            <label for="subject-select">Select Subject</label>
-            <select id="subject-select">
-                <option value="Physics">Physics</option>
-                <option value="Chemistry">Chemistry</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science (Combined)</option>
-                <option value="Information Technology">Information Technology (402)</option>
-                <option value="Informatics Practices">Informatics Practices (065)</option>
-            </select>
-        </div>
-
-        <div class="input-group" id="roll-group">
-            <label for="student-roll" id="roll-label">Enter Roll Number (1 to 50)</label>
-            <input type="number" id="student-roll" min="1" max="50" placeholder="e.g. 12">
-        </div>
-
-        <div class="input-group" id="pass-group">
-            <label for="student-pass">Password</label>
-            <input type="password" id="student-pass" placeholder="Enter password or Admin Key">
-        </div>
-
-        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Proceed</button>
-    </div>
-
-    <!-- TEACHER PORTAL WITH FULL NAVIGATION TAB BAR -->
-    <div id="teacher-subject-box" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-            <h2 style="margin: 0; color: var(--primary-color);">Welcome Teacher!</h2>
-            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="location.reload()">🔒 Logout</button>
-        </div>
-        
-        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;" id="teacher-greeting-text">Select subject and use option tabs below to manage exams without submitting student responses:</p>
 
         <div class="input-group">
-            <label for="teacher-chosen-subject">Select Active Subject</label>
-            <select id="teacher-chosen-subject" onchange="handleTeacherSubjectChange()">
-                <option value="Physics">Physics</option>
-                <option value="Chemistry">Chemistry</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science (Combined)</option>
-                <option value="Information Technology">Information Technology (402)</option>
-                <option value="Informatics Practices">Informatics Practices (065)</option>
+            <label for="login-role">I am a:</label>
+            <select id="login-role" onchange="toggleLoginRoleFields()">
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
             </select>
         </div>
 
-        <!-- 5 OPTIONS NAV TABS -->
-        <div class="tab-nav-bar">
-            <button id="btn-tab-upload" class="tab-button active-tab" onclick="switchTeacherTab('tab-upload')">📤 1. Upload Paper</button>
-            <button id="btn-tab-schedule" class="tab-button" onclick="switchTeacherTab('tab-schedule')">⏱️ 2. Live / Delist Schedule</button>
-            <button id="btn-tab-results" class="tab-button" onclick="switchTeacherTab('tab-results')">📥 3. Student Results</button>
-            <button id="btn-tab-preview" class="tab-button" onclick="switchTeacherTab('tab-preview')">👁️ 4. Layout Preview</button>
+        <div class="input-group">
+            <label for="auth-email">Email Address / User ID</label>
+            <input type="email" id="auth-email" placeholder="e.g. user@school.com or full name">
         </div>
 
-        <!-- TAB 1: UPLOAD QUESTION PAPER (PDF / TEXT / JSON) -->
-        <div id="tab-upload" class="tab-content-panel" style="display: block;">
-            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">📤 Upload Question Paper (.PDF, .TXT, or .JSON)</h4>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Select paper file to make it live for students in the active subject.</p>
-            <input type="file" id="teacher-upload-file-input" accept=".pdf,.txt,.json" style="font-size:12px; width:100%; margin-bottom:10px;">
-            <button class="btn" style="width:100%; font-size:13px;" onclick="handleQuestionUpload('teacher-upload-file-input', 'teacher-chosen-subject')">Upload File Now</button>
+        <div class="input-group">
+            <label for="auth-pass">Password</label>
+            <input type="password" id="auth-pass" placeholder="Enter account password">
         </div>
 
-        <!-- TAB 2: LIVE AND AUTO DELIST SCHEDULER -->
-        <div id="tab-schedule" class="tab-content-panel">
-            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">⏱️ Exam Live & Auto-Delist Scheduler</h4>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div>
-                    <label style="font-size:12px; font-weight:600; display:block;">Go-Live Time (Start):</label>
-                    <input type="datetime-local" id="teacher-start-time" style="width:100%; padding:6px; box-sizing:border-box;">
-                </div>
-                <div>
-                    <label style="font-size:12px; font-weight:600; display:block;">Auto-Delist Time (End):</label>
-                    <input type="datetime-local" id="teacher-end-time" style="width:100%; padding:6px; box-sizing:border-box;">
-                </div>
-                <button class="btn" style="width:100%; font-size:13px;" onclick="saveExamSchedule('teacher-chosen-subject', 'teacher-start-time', 'teacher-end-time')">Save Schedule</button>
-                <div id="teacher-schedule-status" style="font-size: 11px; font-weight: bold; color: var(--warning-color); margin-top: 5px;"></div>
+        <!-- Student-Specific Selection Options -->
+        <div id="student-only-fields">
+            <div class="input-group" id="class-group">
+                <label for="class-select">Select Class & Section</label>
+                <select id="class-select" onchange="updateRollLimits()">
+                    <option value="class9A">Class 9th - Section A (Max 50 Students)</option>
+                    <option value="class9B">Class 9th - Section B (Max 50 Students)</option>
+                    <option value="class10A">Class 10th - Section A (Max 50 Students)</option>
+                    <option value="class10B">Class 10th - Section B (Max 50 Students)</option>
+                    <option value="class11A">Class 11th - Section A (Max 65 Students)</option>
+                    <option value="class11B">Class 11th - Section B (Max 20 Students)</option>
+                    <option value="class12A">Class 12th - Section A (Max 60 Students)</option>
+                    <option value="class12B">Class 12th - Section B (Max 20 Students)</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="student-subject-group">
+                <label for="subject-select">Select Subject</label>
+                <select id="subject-select">
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science (Combined)</option>
+                    <option value="Information Technology">Information Technology (402)</option>
+                    <option value="Informatics Practices">Informatics Practices (065)</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="roll-group">
+                <label for="student-roll" id="roll-label">Enter Roll Number (1 to 50)</label>
+                <input type="number" id="student-roll" min="1" max="50" placeholder="e.g. 12">
             </div>
         </div>
 
-        <!-- TAB 3: STUDENT RESULTS -->
-        <div id="tab-results" class="tab-content-panel">
-            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">📥 Student Test Results</h4>
-            <button class="btn" style="font-size: 13px; background: #2563eb; width: 100%; margin-bottom: 12px;" onclick="downloadFilteredResultsCSV()">Download Results (.CSV)</button>
-            <div id="teacher-submissions-list" style="max-height: 250px; overflow-y: auto;">Loading results...</div>
+        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Proceed</button>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+            <span class="auth-link" onclick="showAuthView('register-box')">New User? Register Here</span>
+            <span class="auth-link" onclick="showAuthView('forgot-box')">Forgot Password?</span>
+        </div>
+    </div>
+
+    <!-- DUAL-ROLE REGISTRATION PANEL -->
+    <div id="register-box" style="display: none;">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Create Account</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Register as a Teacher or Student</p>
+
+        <div class="input-group">
+            <label for="reg-role">Account Type</label>
+            <select id="reg-role">
+                <option value="Student">Student</option>
+                <option value="Teacher">Teacher</option>
+            </select>
         </div>
 
-        <!-- TAB 4: QUESTIONS LAYOUT PREVIEW -->
-        <div id="tab-preview" class="tab-content-panel">
-            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">👁️ Student Live Question Layout</h4>
-            <div id="teacher-pdf-preview-container" class="pdf-viewer-box" style="max-height: 350px;"></div>
-            <div id="teacher-mcq-preview-container"></div>
+        <div class="input-group">
+            <label for="reg-name">Full Name</label>
+            <input type="text" id="reg-name" placeholder="Enter Full Name">
         </div>
+
+        <div class="input-group">
+            <label for="reg-email">Email Address</label>
+            <input type="email" id="reg-email" placeholder="name@example.com">
+        </div>
+
+        <div class="input-group">
+            <label for="reg-pass">Create Password</label>
+            <input type="password" id="reg-pass" placeholder="Create new password">
+        </div>
+
+        <button class="btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="handleRegisterSubmit()">Register Account</button>
+        <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="showAuthView('setup-box')">Back to Login</button>
+    </div>
+
+    <!-- FORGOT / RESET PASSWORD PANEL -->
+    <div id="forgot-box" style="display: none;">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Reset Password</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Enter your registered email to update your password</p>
+
+        <div class="input-group">
+            <label for="reset-email">Registered Email</label>
+            <input type="email" id="reset-email" placeholder="Enter email">
+        </div>
+
+        <div class="input-group">
+            <label for="reset-new-pass">New Password</label>
+            <input type="password" id="reset-new-pass" placeholder="Enter new password">
+        </div>
+
+        <button class="btn" style="width: 100%; background-color: var(--warning-color); margin-top: 10px;" onclick="handlePasswordReset()">Update Password</button>
+        <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="showAuthView('setup-box')">Back to Login</button>
+    </div>
+
+    <!-- TEACHER SETUP SCREEN -->
+    <div id="teacher-subject-box" style="display: none;">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Welcome Teacher!</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;" id="teacher-greeting-text">Select class and subject to begin your exam session:</p>
+
+        <div class="input-group">
+            <label for="teacher-chosen-class">Select Class & Section</label>
+            <select id="teacher-chosen-class">
+                <option value="class9A">Class 9th - Section A</option>
+                <option value="class9B">Class 9th - Section B</option>
+                <option value="class10A">Class 10th - Section A</option>
+                <option value="class10B">Class 10th - Section B</option>
+                <option value="class11A">Class 11th - Section A</option>
+                <option value="class11B">Class 11th - Section B</option>
+                <option value="class12A">Class 12th - Section A</option>
+                <option value="class12B">Class 12th - Section B</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="teacher-chosen-subject">Select Examination Subject</label>
+            <select id="teacher-chosen-subject">
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science (Combined)</option>
+                <option value="Information Technology">Information Technology (402)</option>
+                <option value="Informatics Practices">Informatics Practices (065)</option>
+            </select>
+        </div>
+
+        <button class="btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="startTeacherExam()">Start Teacher Exam Session</button>
+        <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="location.reload()">Back to Login</button>
     </div>
 
     <!-- ADMIN CONTROL PANEL VIEW -->
     <div id="admin-box" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-            <h2 style="margin: 0; color: #059669;">🔒 System Admin Portal</h2>
-            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="location.reload()">🔒 Logout</button>
-        </div>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, PDF/JSON/TXT papers, schedules, and permissions</p>
+        <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 System Admin Portal</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage registered accounts, student results, question papers, and system logs</p>
 
-        <!-- Admin Filters -->
+        <!-- USER MANAGEMENT SECTION -->
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="margin: 0; color: var(--text-main);">👥 Registered Users Directory</h4>
+                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="clearAllUsers()">Clear All Users</button>
+            </div>
+            <div id="admin-users-zone" style="max-height: 200px; overflow-y: auto;">Loading registered users...</div>
+        </div>
+
         <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px; display: flex; gap: 10px;">
             <div style="flex: 1;">
                 <label for="admin-class-select" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 6px; color: var(--text-main);">Filter Class:</label>
@@ -431,6 +403,7 @@
                     <option value="Class 11th - Section B">Class 11th - Section B</option>
                     <option value="Class 12th - Section A">Class 12th - Section A</option>
                     <option value="Class 12th - Section B">Class 12th - Section B</option>
+                    <option value="Teacher Evaluation">Teacher Evaluation</option>
                 </select>
             </div>
             <div style="flex: 1;">
@@ -447,55 +420,15 @@
             </div>
         </div>
 
-        <!-- 1. Question Upload Section (PDF, TXT, JSON) -->
-        <div class="admin-section-card">
-            <h4 style="margin: 0 0 8px 0; color: var(--text-main);">📤 Upload Question Paper (.PDF, .TXT, or .JSON File)</h4>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <input type="file" id="admin-upload-file-input" accept=".pdf,.txt,.json" style="font-size: 12px; flex: 1;">
-                <button class="btn" style="font-size: 12px; background: #059669;" onclick="handleQuestionUpload('admin-upload-file-input', 'admin-subject-select')">Upload Paper</button>
-            </div>
-            <p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 0 0;">Supports PDF graphics, plain text files, or structured JSON arrays.</p>
-        </div>
-
-        <!-- 2. Exam Scheduler Section -->
-        <div class="admin-section-card">
-            <h4 style="margin: 0 0 8px 0; color: var(--text-main);">⏱️ Exam Go-Live & Auto-Delist Scheduler</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end;">
-                <div>
-                    <label style="font-size: 11px; font-weight: 600;">Go-Live Time (Start):</label>
-                    <input type="datetime-local" id="admin-start-time">
-                </div>
-                <div>
-                    <label style="font-size: 11px; font-weight: 600;">Auto-Delist Time (End):</label>
-                    <input type="datetime-local" id="admin-end-time">
-                </div>
-                <button class="btn" style="font-size: 12px; background: #2563eb;" onclick="saveExamSchedule('admin-subject-select', 'admin-start-time', 'admin-end-time')">Apply Schedule</button>
-            </div>
-            <div id="schedule-status-display" style="font-size: 11px; font-weight: bold; margin-top: 8px; color: var(--warning-color);"></div>
-        </div>
-
-        <!-- 3. Teacher Delegation Manager -->
-        <div class="admin-section-card">
-            <h4 style="margin: 0 0 8px 0; color: var(--text-main);">🔑 Assign Powers / Permissions to Teachers</h4>
-            <div class="perm-checkbox-group">
-                <label><input type="checkbox" id="perm-upload" checked> Upload Question Papers</label>
-                <label><input type="checkbox" id="perm-scheduler" checked> Set Exam Schedules</label>
-                <label><input type="checkbox" id="perm-csv" checked> Access & Export Results</label>
-            </div>
-            <button class="btn" style="font-size: 12px; background: #7c3aed; margin-top: 10px;" onclick="saveTeacherPermissions()">Save Teacher Powers</button>
-        </div>
-
-        <!-- Quick Action Buttons -->
         <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
             <div style="display: flex; gap: 10px;">
                 <button class="btn" style="font-size: 13px; background: #059669; flex: 1;" onclick="downloadAllPasswordsCSV()">📊 Passwords (.CSV)</button>
                 <button class="btn" style="font-size: 13px; background: #2563eb; flex: 1;" onclick="downloadFilteredResultsCSV()">📥 Filtered Results (.CSV)</button>
             </div>
-            <button class="btn" style="font-size: 13px; background: #d97706; width: 100%;" onclick="downloadQuestionPaperPDF()">📄 Download Selected Question Paper (.PDF ONLY)</button>
+            <button class="btn" style="font-size: 13px; background: #d97706; width: 100%;" onclick="downloadQuestionPaper()">📄 Download Selected Question Paper (.TXT)</button>
         </div>
 
-        <!-- Live Submissions -->
-        <div class="admin-section-card">
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <h4 style="margin: 0; color: var(--text-main);">📋 Live Student Test Submissions (Auto-purges after 72 hrs)</h4>
                 <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteSelectedCheckedSubmissions()">Delete Selected Checked</button>
@@ -503,8 +436,7 @@
             <div id="admin-submissions-zone" style="max-height: 280px; overflow-y: auto;">Loading submissions...</div>
         </div>
 
-        <!-- Active Locks -->
-        <div class="admin-section-card">
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
             <h4 style="margin: 0 0 10px 0; color: var(--text-main);">Active Device Locks</h4>
             <div id="admin-unblock-zone">Loading locks...</div>
         </div>
@@ -512,23 +444,17 @@
         <button class="restart-btn" onclick="location.reload()">Exit Admin Portal</button>
     </div>
 
-    <!-- QUIZ INTERFACE (STUDENT ONLY) -->
+    <!-- QUIZ INTERFACE -->
     <div id="quiz-box" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <div class="security-banner" style="margin: 0; flex: 1; margin-right: 10px;">
-                <span>🔒 HIGH SECURITY EXAM ENVIRONMENT ACTIVE</span>
-                <span id="cheat-warning-count" style="margin-left: 10px;">Warnings: 0/2</span>
-            </div>
-            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="location.reload()">🔒 Logout</button>
+        <div class="security-banner">
+            <span>🔒 HIGH SECURITY EXAM ENVIRONMENT ACTIVE</span>
+            <span id="cheat-warning-count">Warnings: 0/2</span>
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
             <span id="question-tracker" style="font-weight: bold; font-size: 14px;">Question 1 / 10</span>
             <span id="timer-display" style="font-weight: bold; font-size: 14px; color: var(--danger-color);">⏱️ 15:00</span>
         </div>
-
-        <!-- PDF Embedded Viewer for clear rendering of tables/figures -->
-        <div id="student-pdf-viewer" class="pdf-viewer-box" style="display:none;"></div>
 
         <h3 id="secure-question-host" style="font-size: 16px; margin-bottom: 8px;"></h3>
         
@@ -557,16 +483,9 @@
     </div>
 </div>
 
-<!-- Invisible Container for PDF Export Generation -->
-<div id="pdf-export-template"></div>
-
 <div class="app-footer">Designed By Krishna Kumar</div>
 
 <script>
-    if (typeof pdfjsLib !== 'undefined') {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    }
-
     const SUPABASE_URL = (typeof window.ENV !== "undefined" && window.ENV.SUPABASE_URL) 
         ? window.ENV.SUPABASE_URL 
         : "https://pqkjdtajklalzjmqkgln.supabase.co";
@@ -619,366 +538,32 @@
     let loggedInTeacherName = "";
     let currentFetchedSubmissions = [];
 
-    // Global Stores
-    let pdfPapersStore = {};
-    let examSchedules = {}; 
-    
-    // Persistent Teacher Permissions (Default enabled for all tabs)
-    let teacherPermissions = JSON.parse(localStorage.getItem("cps_teacher_perms")) || {
-        upload: true,
-        scheduler: true,
-        csv: true
-    };
-
-    // --- TAB SWITCHER FOR TEACHER DASHBOARD ---
-    function switchTeacherTab(tabId) {
-        document.querySelectorAll('.tab-content-panel').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active-tab'));
-
-        const targetPanel = document.getElementById(tabId);
-        if (targetPanel) targetPanel.style.display = 'block';
-
-        const targetBtn = document.getElementById('btn-' + tabId);
-        if (targetBtn) targetBtn.classList.add('active-tab');
-
-        if (tabId === 'tab-preview') {
-            renderTeacherLivePreview();
-        } else if (tabId === 'tab-results') {
-            loadTeacherResultsTable();
-        } else if (tabId === 'tab-schedule') {
-            updateScheduleDisplayStatus(document.getElementById('teacher-chosen-subject').value);
-        }
+    // Local Storage helpers for User Database
+    function getRegisteredUsers() {
+        return JSON.parse(localStorage.getItem("cps_registered_users") || "[]");
     }
 
-    function handleTeacherSubjectChange() {
-        const activeTab = document.querySelector('.tab-button.active-tab');
-        if (activeTab) {
-            const tabId = activeTab.id.replace('btn-', '');
-            switchTeacherTab(tabId);
-        }
+    function saveRegisteredUsers(users) {
+        localStorage.setItem("cps_registered_users", JSON.stringify(users));
     }
 
-    // --- 1. LIVE CLOCK & DATE MODULE ---
-    function startLiveClock() {
-        const clockElem = document.getElementById("live-clock-widget");
-        function updateClock() {
-            const now = new Date();
-            const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            const formattedDate = now.toLocaleDateString('en-US', dateOptions);
-            const formattedTime = now.toLocaleTimeString('en-US', timeOptions);
-            clockElem.innerHTML = `📅 ${formattedDate} | 🕒 ${formattedTime}`;
-        }
-        updateClock();
-        setInterval(updateClock, 1000);
+    function showAuthView(viewId) {
+        document.getElementById("setup-box").style.display = "none";
+        document.getElementById("register-box").style.display = "none";
+        document.getElementById("forgot-box").style.display = "none";
+        document.getElementById(viewId).style.display = "block";
     }
 
-    // --- 2. QUESTION UPLOAD MODULE (SUPPORTS .PDF, .TXT, .JSON) ---
-    function handleQuestionUpload(fileInputId, subjectSelectId) {
-        const fileInput = document.getElementById(fileInputId);
-        const selectedSub = document.getElementById(subjectSelectId).value;
-        const targetSubject = selectedSub === "All" ? "Physics" : selectedSub;
-
-        if (!fileInput.files || fileInput.files.length === 0) {
-            return alert("Please select a PDF, TXT, or JSON file to upload!");
-        }
-
-        const file = fileInput.files[0];
-        const fileName = file.name.toLowerCase();
-
-        if (fileName.endsWith('.pdf')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                pdfPapersStore[targetSubject] = e.target.result;
-                alert(`✅ PDF Question Paper uploaded for ${targetSubject}! All figures/tables preserved.`);
-                fileInput.value = "";
-                if (document.getElementById("teacher-subject-box").style.display !== "none") {
-                    switchTeacherTab('tab-preview');
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        } else if (fileName.endsWith('.json')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsedData = JSON.parse(e.target.result);
-                    if (!Array.isArray(parsedData)) throw new Error("JSON file must contain an array of question objects.");
-                    quizDataset[targetSubject] = parsedData;
-                    delete pdfPapersStore[targetSubject];
-                    alert(`✅ JSON Question Paper uploaded for ${targetSubject}! (${parsedData.length} questions)`);
-                    fileInput.value = "";
-                    if (document.getElementById("teacher-subject-box").style.display !== "none") {
-                        switchTeacherTab('tab-preview');
-                    }
-                } catch (err) { alert("❌ JSON Parse Error: " + err.message); }
-            };
-            reader.readAsText(file);
-        } else if (fileName.endsWith('.txt')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const textContent = e.target.result;
-                const lines = textContent.split('\n').filter(l => l.trim().length > 0);
-                const generatedQuestions = [];
-
-                lines.forEach((line, i) => {
-                    generatedQuestions.push({
-                        type: "mcq",
-                        question: line,
-                        options: ["Option A", "Option B", "Option C", "Option D"],
-                        correct: 0
-                    });
-                });
-
-                quizDataset[targetSubject] = generatedQuestions;
-                delete pdfPapersStore[targetSubject];
-                alert(`✅ Text Paper parsed and loaded for ${targetSubject}! (${generatedQuestions.length} questions)`);
-                fileInput.value = "";
-                if (document.getElementById("teacher-subject-box").style.display !== "none") {
-                    switchTeacherTab('tab-preview');
-                }
-            };
-            reader.readAsText(file);
+    function toggleLoginRoleFields() {
+        const role = document.getElementById("login-role").value;
+        const studentFields = document.getElementById("student-only-fields");
+        if (role === "teacher") {
+            studentFields.style.display = "none";
         } else {
-            alert("❌ Unsupported file format! Please upload a .PDF, .TXT, or .JSON file.");
+            studentFields.style.display = "block";
         }
     }
 
-    // --- RENDER PDF PAGES INTO CONTAINER ---
-    async function renderPDFToContainer(arrayBuffer, containerElement) {
-        containerElement.innerHTML = "";
-        try {
-            const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
-                const page = await pdfDoc.getPage(pageNum);
-                const viewport = page.getViewport({ scale: 1.2 });
-                const canvas = document.createElement("canvas");
-                canvas.className = "pdf-canvas-item";
-                const context = canvas.getContext("2d");
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                await page.render({ canvasContext: context, viewport: viewport }).promise;
-                containerElement.appendChild(canvas);
-            }
-        } catch (err) {
-            containerElement.innerHTML = `<p style="color:white;">Error rendering PDF: ${err.message}</p>`;
-        }
-    }
-
-    // --- 3. TEACHER LIVE PREVIEW MODE ---
-    function renderTeacherLivePreview() {
-        const sub = document.getElementById("teacher-chosen-subject").value;
-        const pdfContainer = document.getElementById("teacher-pdf-preview-container");
-        const mcqContainer = document.getElementById("teacher-mcq-preview-container");
-
-        pdfContainer.innerHTML = "";
-        mcqContainer.innerHTML = "";
-
-        if (pdfPapersStore[sub]) {
-            pdfContainer.style.display = "block";
-            renderPDFToContainer(pdfPapersStore[sub], pdfContainer);
-            mcqContainer.innerHTML = "<p style='font-size:12px; color:#64748b;'>📄 PDF Question Paper is active for students in this subject.</p>";
-        } else {
-            pdfContainer.style.display = "none";
-            const questions = quizDataset[sub] || [];
-            if (questions.length === 0) {
-                mcqContainer.innerHTML = "<em>No questions uploaded for this subject yet.</em>";
-                return;
-            }
-
-            let previewHtml = "<div style='font-size:13px;'>";
-            questions.forEach((q, i) => {
-                previewHtml += `<p><strong>Q${i+1}. ${q.question}</strong></p>`;
-                if (q.mediaHTML) previewHtml += q.mediaHTML;
-                if (q.options) {
-                    previewHtml += "<ul style='margin-top:4px;'>";
-                    q.options.forEach((opt, oIdx) => {
-                        const isCorrect = oIdx === q.correct ? " <strong style='color:green;'>(Correct)</strong>" : "";
-                        previewHtml += `<li>(${String.fromCharCode(65+oIdx)}) ${opt}${isCorrect}</li>`;
-                    });
-                    previewHtml += "</ul>";
-                }
-            });
-            previewHtml += "</div>";
-            mcqContainer.innerHTML = previewHtml;
-        }
-    }
-
-    // --- TEACHER RESULTS TABLE LOADER ---
-    async function loadTeacherResultsTable() {
-        const container = document.getElementById("teacher-submissions-list");
-        const sub = document.getElementById("teacher-chosen-subject").value;
-
-        if (!dbClientInstance) {
-            container.innerHTML = "<span>Database Connection Error</span>";
-            return;
-        }
-
-        try {
-            const { data, error } = await dbClientInstance
-                .from('student_submissions')
-                .select('*')
-                .ilike('class_label', `%${sub}%`)
-                .order('submitted_at', { ascending: false });
-
-            if (error) throw error;
-
-            if (!data || data.length === 0) {
-                container.innerHTML = `<span style="font-size:12px; color:#64748b;">No submissions found for ${sub}.</span>`;
-                return;
-            }
-
-            let html = `<table class='admin-table'><thead><tr><th>Name</th><th>Class & Subject</th><th>Roll</th><th>Score</th></tr></thead><tbody>`;
-            data.forEach(item => {
-                let scoreOnly = item.score_summary || "0";
-                if (scoreOnly.includes("/")) scoreOnly = scoreOnly.split("/")[0].trim();
-                html += `<tr><td>${item.student_name}</td><td>${item.class_label}</td><td>${item.roll_number}</td><td><strong>${scoreOnly}</strong></td></tr>`;
-            });
-            html += "</tbody></table>";
-            container.innerHTML = html;
-        } catch (e) {
-            container.innerHTML = "Error loading results: " + e.message;
-        }
-    }
-
-    // --- 4. EXAM SCHEDULER ---
-    function saveExamSchedule(subjectSelectId, startInputId, endInputId) {
-        const selectedSub = document.getElementById(subjectSelectId).value;
-        const targetSubject = selectedSub === "All" ? "Physics" : selectedSub;
-        const startTime = document.getElementById(startInputId).value;
-        const endTime = document.getElementById(endInputId).value;
-
-        if (!startTime || !endTime) {
-            return alert("Please select both Go-Live start time and Auto-Delist end time.");
-        }
-
-        if (new Date(startTime) >= new Date(endTime)) {
-            return alert("Go-Live start time must be earlier than Auto-Delist end time!");
-        }
-
-        examSchedules[targetSubject] = {
-            start: new Date(startTime).getTime(),
-            end: new Date(endTime).getTime()
-        };
-
-        alert(`🗓️ Schedule saved for ${targetSubject}!\nGo-Live: ${startTime}\nAuto-Delist: ${endTime}`);
-        updateScheduleDisplayStatus(targetSubject);
-    }
-
-    function updateScheduleDisplayStatus(subject) {
-        const displayAdmin = document.getElementById("schedule-status-display");
-        const displayTeacher = document.getElementById("teacher-schedule-status");
-        const sched = examSchedules[subject];
-
-        let msg = "";
-        if (sched) {
-            msg = `Active Schedule (${subject}): Live from ${new Date(sched.start).toLocaleString()} to ${new Date(sched.end).toLocaleString()}`;
-        } else {
-            msg = `No schedule set for ${subject} (Exam available immediately).`;
-        }
-
-        if (displayAdmin) displayAdmin.innerText = msg;
-        if (displayTeacher) displayTeacher.innerText = msg;
-    }
-
-    function isExamLive(subject) {
-        const sched = examSchedules[subject];
-        if (!sched) return { live: true };
-
-        const now = Date.now();
-        if (now < sched.start) {
-            return { live: false, reason: `Exam is not live yet! Scheduled to start on ${new Date(sched.start).toLocaleString()}` };
-        }
-        if (now > sched.end) {
-            return { live: false, reason: `Exam has ended and auto-delisted on ${new Date(sched.end).toLocaleString()}` };
-        }
-
-        return { live: true };
-    }
-
-    // --- 5. PERMISSIONS MODULE ---
-    function saveTeacherPermissions() {
-        teacherPermissions.upload = document.getElementById("perm-upload").checked;
-        teacherPermissions.scheduler = document.getElementById("perm-scheduler").checked;
-        teacherPermissions.csv = document.getElementById("perm-csv").checked;
-
-        localStorage.setItem("cps_teacher_perms", JSON.stringify(teacherPermissions));
-        alert("✅ Teacher permissions successfully saved!");
-        applyTeacherPermissionsUI();
-    }
-
-    function applyTeacherPermissionsUI() {
-        const uploadBtn = document.getElementById("btn-tab-upload");
-        const scheduleBtn = document.getElementById("btn-tab-schedule");
-        const resultsBtn = document.getElementById("btn-tab-results");
-
-        if (uploadBtn) uploadBtn.style.display = teacherPermissions.upload ? "block" : "none";
-        if (scheduleBtn) scheduleBtn.style.display = teacherPermissions.scheduler ? "block" : "none";
-        if (resultsBtn) resultsBtn.style.display = teacherPermissions.csv ? "block" : "none";
-    }
-
-    // --- 6. EXPORT QUESTION PAPER STRICTLY AS PDF ---
-    async function downloadQuestionPaperPDF() {
-        const filterSubject = document.getElementById("admin-subject-select").value;
-        const targetSubject = filterSubject === "All" ? "Physics" : filterSubject;
-        const pdfContainer = document.getElementById("pdf-export-template");
-
-        pdfContainer.style.display = "block";
-        pdfContainer.innerHTML = "";
-
-        if (pdfPapersStore[targetSubject]) {
-            const wrapper = document.createElement("div");
-            wrapper.innerHTML = `<h2 style="text-align:center;">CITY PUBLIC SCHOOL, NAJIBABAD</h2><h3 style="text-align:center;">QUESTION PAPER: ${targetSubject.toUpperCase()}</h3><hr><br>`;
-            pdfContainer.appendChild(wrapper);
-
-            const canvasHolder = document.createElement("div");
-            pdfContainer.appendChild(canvasHolder);
-            await renderPDFToContainer(pdfPapersStore[targetSubject], canvasHolder);
-        } else {
-            const questions = quizDataset[targetSubject];
-            if (!questions || questions.length === 0) {
-                pdfContainer.style.display = "none";
-                return alert(`No question paper found for ${targetSubject}`);
-            }
-
-            let paperContent = `<div style="font-family:Arial, sans-serif; padding:10px;">`;
-            paperContent += `<h2 style="text-align:center; margin-bottom:2px;">CITY PUBLIC SCHOOL, NAJIBABAD</h2>`;
-            paperContent += `<h4 style="text-align:center; margin-top:0;">QUESTION PAPER: ${targetSubject.toUpperCase()}</h4><hr><br>`;
-
-            questions.forEach((q, idx) => {
-                paperContent += `<div style="margin-bottom:15px;">`;
-                paperContent += `<p><strong>Q${idx + 1}. ${q.question}</strong></p>`;
-                if (q.mediaHTML) paperContent += q.mediaHTML;
-                if (q.options) {
-                    paperContent += `<ol type="A" style="margin-top:5px;">`;
-                    q.options.forEach(opt => {
-                        paperContent += `<li>${opt}</li>`;
-                    });
-                    paperContent += `</ol>`;
-                    paperContent += `<p style="font-size:11px; color:#16a34a;"><em>[Correct Option: (${String.fromCharCode(65 + q.correct)}) ${q.options[q.correct]}]</em></p>`;
-                }
-                paperContent += `</div><hr style="border-top:1px dashed #ccc;">`;
-            });
-
-            paperContent += `</div>`;
-            pdfContainer.innerHTML = paperContent;
-        }
-
-        const opt = {
-            margin:       0.5,
-            filename:     `Question_Paper_${targetSubject.replace(/\s+/g, '_')}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(pdfContainer).save().then(() => {
-            pdfContainer.style.display = "none";
-            pdfContainer.innerHTML = "";
-        });
-    }
-
-    // --- CORE SYSTEM FUNCTIONS ---
     function setStageBackground(stage) {
         if (stage === "admin") {
             document.body.style.background = "var(--bg-admin)";
@@ -1034,41 +619,137 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-        startLiveClock();
         updateRollLimits();
         setupHighSecurityLocks();
+        setupHiddenAdminTrigger();
         setStageBackground("login");
-
-        document.getElementById("perm-upload").checked = teacherPermissions.upload;
-        document.getElementById("perm-scheduler").checked = teacherPermissions.scheduler;
-        document.getElementById("perm-csv").checked = teacherPermissions.csv;
     });
 
-    function handleLoginSubmit() {
-        const rawNameInput = document.getElementById("student-name").value.trim();
-        const cleanedName = rawNameInput.toLowerCase().replace(/\s+/g, '');
-        const enteredPass = document.getElementById("student-pass").value.trim();
+    // Hidden Admin Trigger: CTRL + SHIFT + TAB + 1
+    function setupHiddenAdminTrigger() {
+        window.addEventListener("keydown", (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === "Tab" || e.code === "Tab")) {
+                const triggerHandler = (nextEvt) => {
+                    if (nextEvt.key === "1") {
+                        nextEvt.preventDefault();
+                        openAdminPortalDirect();
+                    }
+                    window.removeEventListener("keydown", triggerHandler);
+                };
+                window.addEventListener("keydown", triggerHandler, { once: true });
+            }
+        });
+    }
 
-        if (rawNameInput === MASTER_TEACHER_PASSWORD || enteredPass === MASTER_TEACHER_PASSWORD) {
-            setStageBackground("admin");
-            document.getElementById("setup-box").style.display = "none";
-            document.getElementById("admin-box").style.display = "block";
-            renderAdminDashboardData();
+    function openAdminPortalDirect() {
+        setStageBackground("admin");
+        document.getElementById("setup-box").style.display = "none";
+        document.getElementById("register-box").style.display = "none";
+        document.getElementById("forgot-box").style.display = "none";
+        document.getElementById("teacher-subject-box").style.display = "none";
+        document.getElementById("quiz-box").style.display = "none";
+        document.getElementById("result-box").style.display = "none";
+        document.getElementById("admin-box").style.display = "block";
+        renderAdminDashboardData();
+    }
+
+    // AUTHENTICATION LOGIC
+    function handleRegisterSubmit() {
+        const role = document.getElementById("reg-role").value;
+        const name = document.getElementById("reg-name").value.trim();
+        const email = document.getElementById("reg-email").value.trim().toLowerCase();
+        const pass = document.getElementById("reg-pass").value.trim();
+
+        if (!name || !email || !pass) {
+            alert("Please fill in all registration fields.");
             return;
         }
 
-        const isTeacherLogin = VALID_TEACHER_LOGINS.includes(cleanedName) || cleanedName.startsWith("teacher");
+        const users = getRegisteredUsers();
+        if (users.find(u => u.email === email)) {
+            alert("An account with this email already exists!");
+            return;
+        }
+
+        users.push({ role, name, email, pass });
+        saveRegisteredUsers(users);
+        alert("Account registered successfully! You can now log in.");
+        showAuthView("setup-box");
+    }
+
+    function handlePasswordReset() {
+        const email = document.getElementById("reset-email").value.trim().toLowerCase();
+        const newPass = document.getElementById("reset-new-pass").value.trim();
+
+        if (!email || !newPass) {
+            alert("Please enter both email and new password.");
+            return;
+        }
+
+        let users = getRegisteredUsers();
+        const userIndex = users.findIndex(u => u.email === email);
+
+        if (userIndex === -1) {
+            alert("No registered account found with this email address.");
+            return;
+        }
+
+        users[userIndex].pass = newPass;
+        saveRegisteredUsers(users);
+        alert("Password updated successfully! Please log in with your new password.");
+        showAuthView("setup-box");
+    }
+
+    function handleLoginSubmit() {
+        const selectedRole = document.getElementById("login-role").value;
+        const rawEmailInput = document.getElementById("auth-email").value.trim();
+        const cleanedEmail = rawEmailInput.toLowerCase().replace(/\s+/g, '');
+        const enteredPass = document.getElementById("auth-pass").value.trim();
+
+        // Admin Override
+        if (rawEmailInput === MASTER_TEACHER_PASSWORD || enteredPass === MASTER_TEACHER_PASSWORD) {
+            openAdminPortalDirect();
+            return;
+        }
+
+        // Search in local user database first
+        const users = getRegisteredUsers();
+        const matchedUser = users.find(u => u.email === cleanedEmail || u.name.toLowerCase() === cleanedEmail);
+
+        if (matchedUser) {
+            if (matchedUser.pass !== enteredPass) {
+                alert("❌ Incorrect Password!");
+                return;
+            }
+
+            if (matchedUser.role.toLowerCase() === "teacher" || selectedRole === "teacher") {
+                loggedInTeacherName = matchedUser.name;
+                document.getElementById("setup-box").style.display = "none";
+                document.getElementById("teacher-subject-box").style.display = "block";
+                document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
+                return;
+            } else {
+                authenticateStudentAndStart(matchedUser.name);
+                return;
+            }
+        }
+
+        // Fallback for direct teacher logins
+        const isTeacherLogin = (selectedRole === "teacher") || VALID_TEACHER_LOGINS.includes(cleanedEmail) || cleanedEmail.startsWith("teacher");
         if (isTeacherLogin) {
-            loggedInTeacherName = rawNameInput || "Teacher";
+            if (enteredPass !== MASTER_TEACHER_PASSWORD && enteredPass !== "teacher123") {
+                alert("Invalid Teacher credentials.");
+                return;
+            }
+            loggedInTeacherName = rawEmailInput || "Teacher";
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("teacher-subject-box").style.display = "block";
-            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select active subject to manage exams:`;
-            applyTeacherPermissionsUI();
-            switchTeacherTab('tab-upload');
+            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
             return;
         }
 
-        authenticateStudentAndStart(rawNameInput);
+        // Fallback for Student login
+        authenticateStudentAndStart(rawEmailInput);
     }
 
     function downloadAllPasswordsCSV() {
@@ -1095,8 +776,8 @@
 
     async function downloadFilteredResultsCSV() {
         if (!dbClientInstance) return alert("Database Connection Error!");
-        const selectedClassFilter = document.getElementById("admin-class-select")?.value || "All";
-        const selectedSubjectFilter = document.getElementById("admin-subject-select")?.value || document.getElementById("teacher-chosen-subject")?.value || "All";
+        const selectedClassFilter = document.getElementById("admin-class-select").value;
+        const selectedSubjectFilter = document.getElementById("admin-subject-select").value;
 
         try {
             let query = dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
@@ -1140,6 +821,94 @@
         }
     }
 
+    function extractMediaTextForExport(mediaHTML) {
+        if (!mediaHTML) return "";
+        let parsedText = "\n   [ATTACHED DIAGRAM / TABLE / MEDIA]:\n";
+        
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = mediaHTML;
+
+        const tables = tempDiv.querySelectorAll('table');
+        tables.forEach(tbl => {
+            const rows = tbl.querySelectorAll('tr');
+            let tableGrid = [];
+
+            rows.forEach(r => {
+                const cols = Array.from(r.querySelectorAll('th, td')).map(c => c.textContent.trim());
+                if (cols.length > 0) {
+                    tableGrid.push(cols);
+                }
+            });
+
+            if (tableGrid.length > 0) {
+                let colWidths = [];
+                tableGrid.forEach(row => {
+                    row.forEach((cellText, colIdx) => {
+                        colWidths[colIdx] = Math.max(colWidths[colIdx] || 0, cellText.length);
+                    });
+                });
+
+                tableGrid.forEach(row => {
+                    let formattedRow = "   | ";
+                    row.forEach((cellText, colIdx) => {
+                        let targetWidth = colWidths[colIdx];
+                        let paddedCell = cellText.padEnd(targetWidth, ' ');
+                        formattedRow += paddedCell + " | ";
+                    });
+                    parsedText += formattedRow.trimEnd() + "\n";
+                });
+            }
+        });
+
+        const imgs = tempDiv.querySelectorAll('img');
+        imgs.forEach(img => {
+            const altText = img.alt ? ` (${img.alt})` : '';
+            parsedText += `   [Image Asset]: ${img.src}${altText}\n`;
+        });
+
+        return parsedText;
+    }
+
+    function downloadQuestionPaper() {
+        const filterSubject = document.getElementById("admin-subject-select").value;
+        const targetSubject = filterSubject === "All" ? "Physics" : filterSubject;
+        const questions = quizDataset[targetSubject];
+
+        if (!questions || questions.length === 0) {
+            return alert(`No question paper found for ${targetSubject}`);
+        }
+
+        let paperContent = `=========================================\n`;
+        paperContent += `      CITY PUBLIC SCHOOL, NAJIBABAD      \n`;
+        paperContent += `      QUESTION PAPER: ${targetSubject.toUpperCase()}     \n`;
+        paperContent += `=========================================\n\n`;
+
+        questions.forEach((q, idx) => {
+            paperContent += `Q${idx + 1}. ${q.question}\n`;
+            
+            if (q.mediaHTML) {
+                paperContent += extractMediaTextForExport(q.mediaHTML);
+            }
+
+            if (q.options) {
+                q.options.forEach((opt, oIdx) => {
+                    paperContent += `   (${String.fromCharCode(65 + oIdx)}) ${opt}\n`;
+                });
+                paperContent += `   [Correct Option: (${String.fromCharCode(65 + q.correct)}) ${q.options[q.correct]}]\n`;
+            }
+            paperContent += `\n-----------------------------------------\n\n`;
+        });
+
+        const blob = new Blob([paperContent], { type: "text/plain;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Question_Paper_${targetSubject.replace(/\s+/g, '_')}.txt`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     const quizDataset = {
         Physics: [
             {
@@ -1147,8 +916,8 @@
                 question: "Examine the circuit diagram table below. Calculate the total current (I) flowing through the circuit:",
                 mediaHTML: `
                     <div class="q-rich-media">
-                        <table style="width:100%; border-collapse:collapse; background:white;">
-                            <tr style="background:#e2e8f0;"><th>Resistor</th><th>Resistance (Ω)</th><th>Voltage (V)</th></tr>
+                        <table>
+                            <tr><th>Resistor</th><th>Resistance (Ω)</th><th>Voltage (V)</th></tr>
                             <tr><td>R1</td><td>10 Ω</td><td>20 V</td></tr>
                             <tr><td>R2</td><td>20 Ω</td><td>20 V</td></tr>
                         </table>
@@ -1156,14 +925,86 @@
                 `,
                 options: ["1.0 A", "3.0 A", "1.5 A", "2.5 A"],
                 correct: 1
+            },
+            {
+                type: "mcq",
+                question: "Which wave property determines the loudness of a sound wave shown in the diagram?",
+                mediaHTML: `
+                    <div class="q-rich-media" style="text-align:center;">
+                        <svg width="220" height="80" viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 0 40 Q 25 10, 50 40 T 100 40 T 150 40 T 200 40" fill="none" stroke="#2563eb" stroke-width="3"/>
+                            <line x1="0" y1="40" x2="220" y2="40" stroke="#cbd5e1" stroke-dasharray="4"/>
+                        </svg>
+                        <p style="font-size:11px; color:#64748b; margin:4px 0 0 0;">Transverse Wave Displacement</p>
+                    </div>
+                `,
+                options: ["Frequency", "Amplitude", "Wavelength", "Velocity"],
+                correct: 1
             }
         ],
         Chemistry: [
             {
                 type: "mcq",
                 question: "Based on the pH test data table below, identify the substance that is strongly basic:",
-                options: ["Sample A (pH 2.4)", "Sample B (pH 7.0)", "Sample C (pH 13.1)", "None of these"],
+                mediaHTML: `
+                    <div class="q-rich-media">
+                        <table>
+                            <tr><th>Solution</th><th>pH Value</th><th>Litmus Effect</th></tr>
+                            <tr><td>Sample A</td><td>2.4</td><td>Red</td></tr>
+                            <tr><td>Sample B</td><td>7.0</td><td>No Change</td></tr>
+                            <tr><td>Sample C</td><td>13.1</td><td>Blue</td></tr>
+                        </table>
+                    </div>
+                `,
+                options: ["Sample A", "Sample B", "Sample C", "None of these"],
                 correct: 2
+            }
+        ],
+        Mathematics: [
+            {
+                type: "mcq",
+                question: "Find the value of x from the geometric right-triangle figure specification:",
+                mediaHTML: `
+                    <div class="q-rich-media" style="text-align:center;">
+                        <svg width="180" height="100" viewBox="0 0 180 100" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="20,80 140,80 140,20" fill="none" stroke="#059669" stroke-width="3"/>
+                            <text x="75" y="95" font-size="12" fill="#0f172a">Base = 12</text>
+                            <text x="148" y="55" font-size="12" fill="#0f172a">Height = 5</text>
+                            <text x="65" y="45" font-size="12" fill="#dc2626">x = ?</text>
+                        </svg>
+                    </div>
+                `,
+                options: ["13", "15", "17", "14"],
+                correct: 0
+            }
+        ],
+        Science: [
+            {
+                type: "mcq",
+                question: "Which organelle in the plant cell diagram below produces ATP energy via cellular respiration?",
+                mediaHTML: `
+                    <div class="q-rich-media" style="text-align:center;">
+                        <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=400&q=80" alt="Cell Organelle" style="max-height:140px;" crossorigin="anonymous">
+                    </div>
+                `,
+                options: ["Mitochondria", "Chloroplast", "Nucleus", "Ribosome"],
+                correct: 0
+            }
+        ],
+        "Information Technology": [
+            {
+                type: "mcq",
+                question: "Which web service should the school use to post daily notices and journals?",
+                options: ["Blog", "Web Browser", "FTP", "Email Client"],
+                correct: 0
+            }
+        ],
+        "Informatics Practices": [
+            {
+                type: "mcq",
+                question: "Which Pandas function creates a DataFrame from a CSV file?",
+                options: ["pd.read_csv()", "pd.import_csv()", "pd.open_csv()"],
+                correct: 0
             }
         ]
     };
@@ -1220,6 +1061,35 @@
         }
     }
 
+    function startTeacherExam() {
+        selectedClassKey = document.getElementById("teacher-chosen-class").value;
+        const teacherClassLabel = classConfig[selectedClassKey] ? classConfig[selectedClassKey].label : "Teacher Class";
+        selectedSubject = document.getElementById("teacher-chosen-subject").value;
+        
+        studentName = `${loggedInTeacherName} (Teacher Evaluation)`;
+        studentRoll = 999;
+        selectedClassLabel = `${teacherClassLabel} (${selectedSubject})`;
+
+        setStageBackground("student");
+        document.getElementById("teacher-subject-box").style.display = "none";
+        document.getElementById("quiz-box").style.display = "block";
+
+        const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
+        quizData = JSON.parse(JSON.stringify(rawQuestions));
+        userAnswers = new Array(quizData.length).fill(null);
+
+        timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
+        const initialMins = Math.floor(timeRemainingSeconds / 60);
+        const initialSecs = timeRemainingSeconds % 60;
+        document.getElementById("timer-display").innerText = `⏱️ ${initialMins}:${initialSecs < 10 ? '0' : ''}${initialSecs}`;
+
+        isExamActive = true;
+        securityViolationCount = 0;
+        currentQuestionIdx = 0;
+        startTimer();
+        loadQuestion();
+    }
+
     async function checkOrSetDeviceLock(roll, classKey, name) {
         if (!dbClientInstance) return true;
         try {
@@ -1257,12 +1127,7 @@
         studentRoll = parseInt(rollInputVal, 10);
         selectedClassKey = document.getElementById("class-select").value;
         selectedSubject = document.getElementById("subject-select").value;
-        const enteredPass = document.getElementById("student-pass").value.trim();
-
-        const liveCheck = isExamLive(selectedSubject);
-        if (!liveCheck.live) {
-            return alert(`🚫 Access Blocked!\n${liveCheck.reason}`);
-        }
+        const enteredPass = document.getElementById("auth-pass").value.trim();
 
         const config = classConfig[selectedClassKey];
         selectedClassLabel = `${config.label} (${selectedSubject})`;
@@ -1279,8 +1144,12 @@
 
         const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
         if (enteredPass !== expectedPass) {
-            alert("❌ Invalid Password! Please check your section roll password provided by your teacher.");
-            return;
+            const users = getRegisteredUsers();
+            const matched = users.find(u => u.name.toLowerCase() === nameVal.toLowerCase() && u.pass === enteredPass);
+            if (!matched) {
+                alert("❌ Invalid Password! Please check your section roll password or account credentials.");
+                return;
+            }
         }
 
         const lockGranted = await checkOrSetDeviceLock(studentRoll, selectedClassKey, studentName);
@@ -1289,26 +1158,19 @@
             return;
         }
 
-        setStageBackground("student");
-        document.getElementById("setup-box").style.display = "none";
-        document.getElementById("quiz-box").style.display = "block";
-
-        const pdfViewer = document.getElementById("student-pdf-viewer");
-        if (pdfPapersStore[selectedSubject]) {
-            pdfViewer.style.display = "block";
-            renderPDFToContainer(pdfPapersStore[selectedSubject], pdfViewer);
-        } else {
-            pdfViewer.style.display = "none";
-        }
-
         const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
         quizData = shuffleArrayForRoll(rawQuestions, studentRoll);
+
         userAnswers = new Array(quizData.length).fill(null);
 
         timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
         const initialMins = Math.floor(timeRemainingSeconds / 60);
         const initialSecs = timeRemainingSeconds % 60;
         document.getElementById("timer-display").innerText = `⏱️ ${initialMins}:${initialSecs < 10 ? '0' : ''}${initialSecs}`;
+
+        setStageBackground("student");
+        document.getElementById("setup-box").style.display = "none";
+        document.getElementById("quiz-box").style.display = "block";
 
         isExamActive = true;
         securityViolationCount = 0;
@@ -1420,6 +1282,7 @@
                 if (error) throw error;
             } catch (e) {
                 alert("Submission Save Error: " + e.message);
+                console.error("Database save error:", e);
             }
         }
 
@@ -1439,14 +1302,68 @@
                 .from('student_submissions')
                 .delete()
                 .lt('submitted_at', cutoffTime);
-        } catch (e) {}
+        } catch (e) {
+            console.error("Auto-purge error:", e);
+        }
     }
 
     async function renderAdminDashboardData() {
         await purgeExpiredSubmissions();
+        renderUserDirectoryZone();
         await renderSubmissionsZone();
         await renderLockoutManagerZone();
-        updateScheduleDisplayStatus(document.getElementById("admin-subject-select").value);
+    }
+
+    function renderUserDirectoryZone() {
+        const zone = document.getElementById("admin-users-zone");
+        const users = getRegisteredUsers();
+
+        if (users.length === 0) {
+            zone.innerHTML = "<span style='color: var(--text-muted); font-size: 13px;'>No registered users found.</span>";
+            return;
+        }
+
+        let html = `<table class='admin-table'>
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        users.forEach((u, index) => {
+            html += `<tr>
+                <td><strong>${u.role}</strong></td>
+                <td>${u.name}</td>
+                <td>${u.email}</td>
+                <td>
+                    <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deleteSingleUser(${index})">Delete</button>
+                </td>
+            </tr>`;
+        });
+
+        html += "</tbody></table>";
+        zone.innerHTML = html;
+    }
+
+    function deleteSingleUser(index) {
+        let users = getRegisteredUsers();
+        if (confirm(`Are you sure you want to delete user "${users[index].name}"?`)) {
+            users.splice(index, 1);
+            saveRegisteredUsers(users);
+            renderUserDirectoryZone();
+        }
+    }
+
+    function clearAllUsers() {
+        if (confirm("⚠️ WARNING: Are you sure you want to purge all registered users from the database?")) {
+            localStorage.removeItem("cps_registered_users");
+            renderUserDirectoryZone();
+            alert("User database cleared successfully.");
+        }
     }
 
     function toggleSelectAllSubmissions(masterCheckbox) {
@@ -1460,8 +1377,6 @@
 
         const filterClass = document.getElementById("admin-class-select").value;
         const filterSubject = document.getElementById("admin-subject-select").value;
-
-        updateScheduleDisplayStatus(filterSubject === "All" ? "Physics" : filterSubject);
 
         try {
             let query = dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
@@ -1549,9 +1464,18 @@
             }
 
             const { count, error } = await query;
-            if (error) throw error;
+            
+            if (error) {
+                alert("Supabase Delete Error: " + error.message);
+                return;
+            }
 
-            alert("Submission deleted permanently.");
+            if (count === 0) {
+                alert("⚠️ Row was not deleted on the server! Please run 'ALTER TABLE student_submissions DISABLE ROW LEVEL SECURITY;' in your Supabase SQL Editor.");
+            } else {
+                alert("Submission deleted permanently from all filters.");
+            }
+
             await renderSubmissionsZone();
         } catch (e) {
             alert("Failed to delete submission: " + e.message);
@@ -1575,6 +1499,7 @@
                 const item = currentFetchedSubmissions[idx];
                 if (item) {
                     let query = dbClientInstance.from('student_submissions').delete();
+                    
                     if (item.id !== undefined && item.id !== null) {
                         query = query.eq('id', item.id);
                     } else {
@@ -1584,6 +1509,7 @@
                             .eq('class_label', item.class_label)
                             .eq('submitted_at', item.submitted_at);
                     }
+
                     await query;
                 }
             }

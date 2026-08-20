@@ -2,1284 +2,387 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>City Public School, Najibabad</title>
-
-    <meta name="median-secure" content="true">
-    <meta name="gonative-secure" content="true">
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Public School - Online Examination Portal</title>
     <style>
         :root {
-            --primary-color: #2563eb;
+            --bg-gradient: linear-gradient(135deg, #0f172a, #1e293b);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(255, 255, 255, 0.3);
+            --text-color: #0f172a;
+            --input-bg: #ffffff;
+            --input-border: #cbd5e1;
+            --primary-blue: #2563eb;
             --primary-hover: #1d4ed8;
-            --card-bg: rgba(255, 255, 255, 0.96);
-            --text-main: #0f172a;
-            --text-muted: #475569;
-            --border-color: #cbd5e1;
-            --success-color: #16a34a;
-            --danger-color: #dc2626;
-            --warning-color: #d97706;
-
-            --bg-login: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.55)), 
-                        url('https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
-
-            --bg-student: linear-gradient(rgba(15, 23, 42, 0.70), rgba(15, 23, 42, 0.70)), 
-                          url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
-
-            --bg-admin: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.85)), 
-                        url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
+        [data-theme="dark"] {
+            --bg-gradient: linear-gradient(135deg, #020617, #0f172a);
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-color: #f8fafc;
+            --input-bg: #1e293b;
+            --input-border: #334155;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+        }
+
+        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg-login);
-            transition: background 0.5s ease-in-out;
-            color: var(--text-main);
             margin: 0;
-            padding: 20px 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            color: var(--text-color);
+        }
+
+        /* Top Header & Widget Bar */
+        .top-bar {
+            width: 100%;
+            padding: 15px 30px;
+            display: flex;
             justify-content: space-between;
             align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
-        }
-
-        .header-title {
             color: #ffffff;
-            text-align: center;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
         }
 
-        .header-title h1 {
-            margin: 0;
-            font-size: 26px;
-            letter-spacing: 1px;
+        .theme-toggle {
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
         }
 
-        .container {
-            width: 100%;
-            max-width: 820px;
+        /* Glassmorphism Card Container */
+        .portal-card {
             background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
-            padding: 24px;
-            box-sizing: border-box;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 30px 40px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: var(--shadow);
+            margin: auto;
+        }
+
+        .school-header {
+            text-align: center;
             margin-bottom: 20px;
-            backdrop-filter: blur(4px);
         }
 
-        .btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn:hover { background-color: var(--primary-hover); }
-
-        .btn-danger {
-            background-color: var(--danger-color);
-        }
-        .btn-danger:hover {
-            background-color: #b91c1c;
-        }
-
-        .restart-btn {
-            width: 100%;
-            background-color: var(--danger-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .restart-btn:hover { background-color: #b91c1c; }
-
-        .input-group { margin-bottom: 16px; }
-        .input-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text-main);
-        }
-
-        .input-group input, .input-group select, .input-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        .option-container {
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 12px;
+        .school-badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+            letter-spacing: 1px;
             margin-bottom: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            background: white;
         }
-        .option-container:hover { background-color: #f8fafc; }
-        .option-label { margin-left: 10px; cursor: pointer; font-size: 14px; width: 100%; }
 
-        .q-rich-media {
-            margin: 12px 0;
-            padding: 12px;
-            background: #f1f5f9;
-            border: 1px dashed var(--border-color);
+        .role-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-color);
             border-radius: 8px;
-            overflow-x: auto;
+            cursor: pointer;
+            font-weight: 600;
         }
-        .q-rich-media img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 6px;
-            display: block;
-            margin: 0 auto;
-        }
-        .q-rich-media table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #ffffff;
-            font-size: 13px;
-        }
-        .q-rich-media table th, .q-rich-media table td {
-            border: 1px solid #cbd5e1;
-            padding: 6px 10px;
-            text-align: center;
-        }
-        .q-rich-media table th { background: #e2e8f0; }
 
-        table.admin-table {
+        .role-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+        
+        input, select {
             width: 100%;
-            border-collapse: collapse;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-color);
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
             margin-top: 10px;
-            font-size: 13px;
-        }
-        table.admin-table th, table.admin-table td {
-            border: 1px solid var(--border-color);
-            padding: 8px 10px;
-            text-align: left;
-        }
-        table.admin-table th { background-color: #e2e8f0; }
-
-        .security-banner {
-            background-color: #fef2f2;
-            border: 1px solid #fca5a5;
-            color: #991b1b;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
 
-        .app-footer {
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            margin-top: auto;
-            padding: 10px 0;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-        }
+        .btn-submit:hover { background: var(--primary-hover); }
+
+        /* Dashboard Styles */
+        .dashboard { display: none; width: 100%; max-width: 900px; margin: 20px auto; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .paper-item { background: var(--card-bg); backdrop-filter: blur(8px); padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .status-live { background: #dcfce7; color: #15803d; }
+        .status-scheduled { background: #fef3c7; color: #b45309; }
+        .status-delisted { background: #fee2e2; color: #b91c1c; }
     </style>
 </head>
-<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
+<body data-theme="light">
 
-<div class="header-title">
-    <h1>CITY PUBLIC SCHOOL, NAJIBABAD</h1>
-</div>
-
-<div class="container">
-    <!-- LOGIN PANEL -->
-    <div id="setup-box">
-        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal Login</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
-            Enter your details below to begin or log in.
-        </p>
-        
-        <div class="input-group">
-            <label for="student-name">Full Name / Login ID</label>
-            <input type="text" id="student-name" placeholder="Enter Full Name, Teacher ID, or Admin Key">
+    <!-- Top Header -->
+    <div class="top-bar">
+        <div>
+            <strong id="school-title">CITY PUBLIC SCHOOL, NAJIBABAD</strong>
+            <div id="live-clock" style="font-size: 13px; opacity: 0.8;"></div>
         </div>
-
-        <div class="input-group" id="class-group">
-            <label for="class-select">Select Class & Section</label>
-            <select id="class-select" onchange="updateRollLimits()">
-                <option value="class9A">Class 9th - Section A (Max 50 Students)</option>
-                <option value="class9B">Class 9th - Section B (Max 50 Students)</option>
-                <option value="class10A">Class 10th - Section A (Max 50 Students)</option>
-                <option value="class10B">Class 10th - Section B (Max 50 Students)</option>
-                <option value="class11A">Class 11th - Section A (Max 65 Students)</option>
-                <option value="class11B">Class 11th - Section B (Max 20 Students)</option>
-                <option value="class12A">Class 12th - Section A (Max 60 Students)</option>
-                <option value="class12B">Class 12th - Section B (Max 20 Students)</option>
-            </select>
-        </div>
-
-        <div class="input-group" id="student-subject-group">
-            <label for="subject-select">Select Subject</label>
-            <select id="subject-select">
-                <option value="Physics">Physics</option>
-                <option value="Chemistry">Chemistry</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science (Combined)</option>
-                <option value="Information Technology">Information Technology (402)</option>
-                <option value="Informatics Practices">Informatics Practices (065)</option>
-            </select>
-        </div>
-
-        <div class="input-group" id="roll-group">
-            <label for="student-roll" id="roll-label">Enter Roll Number (1 to 50)</label>
-            <input type="number" id="student-roll" min="1" max="50" placeholder="e.g. 12">
-        </div>
-
-        <div class="input-group" id="pass-group">
-            <label for="student-pass">Password</label>
-            <input type="password" id="student-pass" placeholder="Enter password or Admin Key">
-        </div>
-
-        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Proceed</button>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
     </div>
 
-    <!-- TEACHER SETUP SCREEN -->
-    <div id="teacher-subject-box" style="display: none;">
-        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Welcome Teacher!</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;" id="teacher-greeting-text">Select class and subject to begin your exam session:</p>
-
-        <div class="input-group">
-            <label for="teacher-chosen-class">Select Class & Section</label>
-            <select id="teacher-chosen-class">
-                <option value="class9A">Class 9th - Section A</option>
-                <option value="class9B">Class 9th - Section B</option>
-                <option value="class10A">Class 10th - Section A</option>
-                <option value="class10B">Class 10th - Section B</option>
-                <option value="class11A">Class 11th - Section A</option>
-                <option value="class11B">Class 11th - Section B</option>
-                <option value="class12A">Class 12th - Section A</option>
-                <option value="class12B">Class 12th - Section B</option>
-            </select>
+    <!-- Login View -->
+    <div class="portal-card" id="login-view">
+        <div class="school-header">
+            <span class="school-badge">VERIFIED PORTAL</span>
+            <h2 style="margin: 5px 0;" id="greeting">Online Examination Portal</h2>
+            <p style="font-size: 13px; opacity: 0.7;">Select your role to access your account</p>
         </div>
 
-        <div class="input-group">
-            <label for="teacher-chosen-subject">Select Examination Subject</label>
-            <select id="teacher-chosen-subject">
-                <option value="Physics">Physics</option>
-                <option value="Chemistry">Chemistry</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science (Combined)</option>
-                <option value="Information Technology">Information Technology (402)</option>
-                <option value="Informatics Practices">Informatics Practices (065)</option>
-            </select>
+        <div class="role-selector">
+            <button class="role-btn active" onclick="setRole('Student')">Student</button>
+            <button class="role-btn" onclick="setRole('Teacher')">Teacher</button>
+            <button class="role-btn" onclick="setRole('Admin')">Admin</button>
         </div>
 
-        <button class="btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="startTeacherExam()">Start Teacher Exam Session</button>
-        <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="location.reload()">Back to Login</button>
-    </div>
+        <div class="form-group">
+            <label id="user-label">Full Name / Login ID</label>
+            <input type="text" placeholder="Enter Full Name, ID, or Key">
+        </div>
 
-    <!-- ADMIN CONTROL PANEL VIEW -->
-    <div id="admin-box" style="display: none;">
-        <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 System Admin Portal</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, question papers, and system logs</p>
-
-        <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px; display: flex; gap: 10px;">
-            <div style="flex: 1;">
-                <label for="admin-class-select" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 6px; color: var(--text-main);">Filter Class:</label>
-                <select id="admin-class-select" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);" onchange="renderSubmissionsZone()">
-                    <option value="All">All Classes</option>
-                    <option value="Class 9th - Section A">Class 9th - Section A</option>
-                    <option value="Class 9th - Section B">Class 9th - Section B</option>
-                    <option value="Class 10th - Section A">Class 10th - Section A</option>
-                    <option value="Class 10th - Section B">Class 10th - Section B</option>
-                    <option value="Class 11th - Section A">Class 11th - Section A</option>
-                    <option value="Class 11th - Section B">Class 11th - Section B</option>
-                    <option value="Class 12th - Section A">Class 12th - Section A</option>
-                    <option value="Class 12th - Section B">Class 12th - Section B</option>
-                    <option value="Teacher Evaluation">Teacher Evaluation</option>
+        <div id="student-fields">
+            <div class="form-group">
+                <label>Select Class & Section</label>
+                <select>
+                    <option>Class 9th - Section A</option>
+                    <option>Class 10th - Section A</option>
                 </select>
             </div>
-            <div style="flex: 1;">
-                <label for="admin-subject-select" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 6px; color: var(--text-main);">Filter Subject:</label>
-                <select id="admin-subject-select" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);" onchange="renderSubmissionsZone()">
-                    <option value="All">All Subjects</option>
-                    <option value="Physics">Physics</option>
-                    <option value="Chemistry">Chemistry</option>
-                    <option value="Mathematics">Mathematics</option>
-                    <option value="Science">Science (Combined)</option>
-                    <option value="Information Technology">Information Technology (402)</option>
-                    <option value="Informatics Practices">Informatics Practices (065)</option>
+            <div class="form-group">
+                <label>Select Subject</label>
+                <select>
+                    <option>Physics</option>
+                    <option>Mathematics</option>
                 </select>
             </div>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-            <div style="display: flex; gap: 10px;">
-                <button class="btn" style="font-size: 13px; background: #059669; flex: 1;" onclick="downloadAllPasswordsCSV()">📊 Passwords (.CSV)</button>
-                <button class="btn" style="font-size: 13px; background: #2563eb; flex: 1;" onclick="downloadFilteredResultsCSV()">📥 Filtered Results (.CSV)</button>
-            </div>
-            <button class="btn" style="font-size: 13px; background: #d97706; width: 100%;" onclick="downloadQuestionPaper()">📄 Download Selected Question Paper (.TXT)</button>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" placeholder="Enter password">
         </div>
 
-        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h4 style="margin: 0; color: var(--text-main);">📋 Live Student Test Submissions (Auto-purges after 72 hrs)</h4>
-                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteSelectedCheckedSubmissions()">Delete Selected Checked</button>
-            </div>
-            <div id="admin-submissions-zone" style="max-height: 280px; overflow-y: auto;">Loading submissions...</div>
-        </div>
-
-        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-            <h4 style="margin: 0 0 10px 0; color: var(--text-main);">Active Device Locks</h4>
-            <div id="admin-unblock-zone">Loading locks...</div>
-        </div>
-
-        <button class="restart-btn" onclick="location.reload()">Exit Admin Portal</button>
+        <button class="btn-submit" onclick="login()">Login & Proceed</button>
     </div>
 
-    <!-- QUIZ INTERFACE -->
-    <div id="quiz-box" style="display: none;">
-        <div class="security-banner">
-            <span>🔒 HIGH SECURITY EXAM ENVIRONMENT ACTIVE</span>
-            <span id="cheat-warning-count">Warnings: 0/2</span>
+    <!-- Teacher Panel (Upload & Schedule Management) -->
+    <div class="dashboard" id="teacher-view">
+        <div class="dashboard-header">
+            <h2>Teacher Assessment Panel</h2>
+            <button class="btn-submit" style="width: auto; padding: 8px 16px;" onclick="logout()">Logout</button>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-            <span id="question-tracker" style="font-weight: bold; font-size: 14px;">Question 1 / 10</span>
-            <span id="timer-display" style="font-weight: bold; font-size: 14px; color: var(--danger-color);">⏱️ 15:00</span>
-        </div>
-
-        <h3 id="secure-question-host" style="font-size: 16px; margin-bottom: 8px;"></h3>
-        
-        <div id="question-media-host"></div>
-
-        <div id="response-container"></div>
-
-        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <button id="prev-btn" class="btn" onclick="goPrevious()">Previous</button>
-            <button id="next-btn" class="btn" onclick="goNext()">Next</button>
-        </div>
-    </div>
-
-    <!-- RESULT & LOGOUT PANEL -->
-    <div id="result-box" style="display: none;">
-        <div id="student-completion-view" style="text-align: center; padding: 25px 10px;">
-            <div style="font-size: 54px; margin-bottom: 10px;">🎉</div>
-            <h2 style="color: #1e293b; margin-bottom: 8px;">Examination Submitted Successfully!</h2>
-            <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">
-                Thank you, <strong id="submitted-student-name"></strong>.<br>
-                Total Score Secured: <strong id="submitted-score" style="color: var(--primary-color);"></strong>
-            </p>
-
-            <button class="restart-btn" onclick="restartQuiz()">🔒 Log Out & Finish Session</button>
-        </div>
-    </div>
-</div>
-
-<div class="app-footer">Designed By Krishna Kumar</div>
-
-<script>
-    const SUPABASE_URL = (typeof window.ENV !== "undefined" && window.ENV.SUPABASE_URL) 
-        ? window.ENV.SUPABASE_URL 
-        : "https://pqkjdtajklalzjmqkgln.supabase.co";
-
-    const SUPABASE_KEY = (typeof window.ENV !== "undefined" && window.ENV.SUPABASE_ANON_KEY) 
-        ? window.ENV.SUPABASE_ANON_KEY 
-        : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE";
-
-    const MASTER_TEACHER_PASSWORD = "Admin@7055";
-    const VALID_TEACHER_LOGINS = Array.from({ length: 25 }, (_, i) => `teacher${i + 1}`);
-    const EXPIRATION_MS = 72 * 60 * 60 * 1000;
-
-    let dbClientInstance = null;
-    if (typeof supabase !== "undefined" && SUPABASE_KEY !== "") {
-        dbClientInstance = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    }
-
-    const classConfig = {
-        class9A:  { label: "Class 9th - Section A", maxRoll: 50 },
-        class9B:  { label: "Class 9th - Section B", maxRoll: 50 },
-        class10A: { label: "Class 10th - Section A", maxRoll: 50 },
-        class10B: { label: "Class 10th - Section B", maxRoll: 50 },
-        class11A: { label: "Class 11th - Section A", maxRoll: 65 },
-        class11B: { label: "Class 11th - Section B", maxRoll: 20 },
-        class12A: { label: "Class 12th - Section A", maxRoll: 60 },
-        class12B: { label: "Class 12th - Section B", maxRoll: 20 }
-    };
-
-    const subjectTimerConfig = {
-        "Physics": 1200,
-        "Chemistry": 1200,
-        "Mathematics": 1800,
-        "Science": 1500,
-        "Information Technology": 900,
-        "Informatics Practices": 900
-    };
-
-    let timeRemainingSeconds = 900;
-    let studentName = "";
-    let studentRoll = 1;
-    let selectedClassKey = "class10A";
-    let selectedClassLabel = "";
-    let selectedSubject = "Physics";
-    let quizData = [];
-    let currentQuestionIdx = 0;
-    let userAnswers = [];
-    let timerInterval = null;
-    let securityViolationCount = 0;
-    let isExamActive = false;
-    let loggedInTeacherName = "";
-    let currentFetchedSubmissions = [];
-
-    function setStageBackground(stage) {
-        if (stage === "admin") {
-            document.body.style.background = "var(--bg-admin)";
-        } else if (stage === "student") {
-            document.body.style.background = "var(--bg-student)";
-        } else {
-            document.body.style.background = "var(--bg-login)";
-        }
-    }
-
-    function getSeedFromString(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = (hash << 5) - hash + str.charCodeAt(i);
-            hash |= 0;
-        }
-        return Math.abs(hash);
-    }
-
-    function seededRandom(seed) {
-        let x = Math.sin(seed++) * 10000;
-        return x - Math.floor(x);
-    }
-
-    function generateUniquePassword(classKey, rollNum) {
-        let seed = getSeedFromString(`${classKey}-SECRET-SALT-${rollNum}`);
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        let pass = "";
-        for (let i = 0; i < 6; i++) {
-            const charIdx = Math.floor(seededRandom(seed + i * 37) * chars.length);
-            pass += chars[charIdx];
-        }
-        return pass;
-    }
-
-    function shuffleArrayForRoll(array, rollNum, seedOffset = 0) {
-        let shuffled = JSON.parse(JSON.stringify(array));
-        let seed = rollNum * 997 + seedOffset;
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(seededRandom(seed++) * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
-    }
-
-    function updateRollLimits() {
-        const classKey = document.getElementById("class-select").value;
-        const config = classConfig[classKey] || { maxRoll: 50 };
-        const rollInput = document.getElementById("student-roll");
-        
-        rollInput.max = config.maxRoll;
-        document.getElementById("roll-label").innerText = `Enter Roll Number (1 to ${config.maxRoll})`;
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-        updateRollLimits();
-        setupHighSecurityLocks();
-        setStageBackground("login");
-    });
-
-    function handleLoginSubmit() {
-        const rawNameInput = document.getElementById("student-name").value.trim();
-        const cleanedName = rawNameInput.toLowerCase().replace(/\s+/g, '');
-        const enteredPass = document.getElementById("student-pass").value.trim();
-
-        if (rawNameInput === MASTER_TEACHER_PASSWORD || enteredPass === MASTER_TEACHER_PASSWORD) {
-            setStageBackground("admin");
-            document.getElementById("setup-box").style.display = "none";
-            document.getElementById("admin-box").style.display = "block";
-            renderAdminDashboardData();
-            return;
-        }
-
-        const isTeacherLogin = VALID_TEACHER_LOGINS.includes(cleanedName) || cleanedName.startsWith("teacher");
-        if (isTeacherLogin) {
-            loggedInTeacherName = rawNameInput || "Teacher";
-            document.getElementById("setup-box").style.display = "none";
-            document.getElementById("teacher-subject-box").style.display = "block";
-            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
-            return;
-        }
-
-        authenticateStudentAndStart(rawNameInput);
-    }
-
-    function downloadAllPasswordsCSV() {
-        let csvRows = ["Class & Section,Roll Number,6-Digit Password"];
-
-        Object.keys(classConfig).forEach(key => {
-            const conf = classConfig[key];
-            for (let r = 1; r <= conf.maxRoll; r++) {
-                const pass = generateUniquePassword(key, r);
-                csvRows.push(`"${conf.label}",${r},"${pass}"`);
-            }
-        });
-
-        const csvString = csvRows.join("\n");
-        const blob = new Blob(["\uFEFF" + csvString], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", "CPS_Student_Passwords_Master_List.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    async function downloadFilteredResultsCSV() {
-        if (!dbClientInstance) return alert("Database Connection Error!");
-        const selectedClassFilter = document.getElementById("admin-class-select").value;
-        const selectedSubjectFilter = document.getElementById("admin-subject-select").value;
-
-        try {
-            let query = dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
-
-            if (selectedClassFilter !== "All") {
-                query = query.ilike('class_label', `%${selectedClassFilter}%`);
-            }
-            if (selectedSubjectFilter !== "All") {
-                query = query.ilike('class_label', `%${selectedSubjectFilter}%`);
-            }
-
-            const { data, error } = await query;
-            if (error) throw error;
-            
-            const now = Date.now();
-            const validData = (data || []).filter(item => {
-                const submittedTime = new Date(item.submitted_at).getTime();
-                return (now - submittedTime) < EXPIRATION_MS;
-            });
-
-            if (validData.length === 0) return alert("No submission data available to export.");
-
-            let csvRows = ["Student Name,Class & Subject,Roll Number,Score Summary,Submitted At"];
-            validData.forEach(item => {
-                let scoreOnly = item.score_summary || "0";
-                if (scoreOnly.includes("/")) scoreOnly = scoreOnly.split("/")[0].trim();
-                csvRows.push(`"${item.student_name}","${item.class_label}",${item.roll_number},"${scoreOnly}","${item.submitted_at}"`);
-            });
-
-            const csvString = csvRows.join("\n");
-            const blob = new Blob(["\uFEFF" + csvString], { type: "text/csv;charset=utf-8;" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `CPS_Submissions_${selectedClassFilter.replace(/\s+/g, '_')}_${selectedSubjectFilter.replace(/\s+/g, '_')}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (e) {
-            alert("Failed to export results: " + e.message);
-        }
-    }
-
-    function extractMediaTextForExport(mediaHTML) {
-        if (!mediaHTML) return "";
-        let parsedText = "\n   [ATTACHED DIAGRAM / TABLE / MEDIA]:\n";
-        
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = mediaHTML;
-
-        const tables = tempDiv.querySelectorAll('table');
-        tables.forEach(tbl => {
-            const rows = tbl.querySelectorAll('tr');
-            let tableGrid = [];
-
-            rows.forEach(r => {
-                const cols = Array.from(r.querySelectorAll('th, td')).map(c => c.textContent.trim());
-                if (cols.length > 0) {
-                    tableGrid.push(cols);
-                }
-            });
-
-            if (tableGrid.length > 0) {
-                let colWidths = [];
-                tableGrid.forEach(row => {
-                    row.forEach((cellText, colIdx) => {
-                        colWidths[colIdx] = Math.max(colWidths[colIdx] || 0, cellText.length);
-                    });
-                });
-
-                tableGrid.forEach(row => {
-                    let formattedRow = "   | ";
-                    row.forEach((cellText, colIdx) => {
-                        let targetWidth = colWidths[colIdx];
-                        let paddedCell = cellText.padEnd(targetWidth, ' ');
-                        formattedRow += paddedCell + " | ";
-                    });
-                    parsedText += formattedRow.trimEnd() + "\n";
-                });
-            }
-        });
-
-        const imgs = tempDiv.querySelectorAll('img');
-        imgs.forEach(img => {
-            const altText = img.alt ? ` (${img.alt})` : '';
-            parsedText += `   [Image Asset]: ${img.src}${altText}\n`;
-        });
-
-        return parsedText;
-    }
-
-    function downloadQuestionPaper() {
-        const filterSubject = document.getElementById("admin-subject-select").value;
-        const targetSubject = filterSubject === "All" ? "Physics" : filterSubject;
-        const questions = quizDataset[targetSubject];
-
-        if (!questions || questions.length === 0) {
-            return alert(`No question paper found for ${targetSubject}`);
-        }
-
-        let paperContent = `=========================================\n`;
-        paperContent += `      CITY PUBLIC SCHOOL, NAJIBABAD      \n`;
-        paperContent += `      QUESTION PAPER: ${targetSubject.toUpperCase()}     \n`;
-        paperContent += `=========================================\n\n`;
-
-        questions.forEach((q, idx) => {
-            paperContent += `Q${idx + 1}. ${q.question}\n`;
-            
-            if (q.mediaHTML) {
-                paperContent += extractMediaTextForExport(q.mediaHTML);
-            }
-
-            if (q.options) {
-                q.options.forEach((opt, oIdx) => {
-                    paperContent += `   (${String.fromCharCode(65 + oIdx)}) ${opt}\n`;
-                });
-                paperContent += `   [Correct Option: (${String.fromCharCode(65 + q.correct)}) ${q.options[q.correct]}]\n`;
-            }
-            paperContent += `\n-----------------------------------------\n\n`;
-        });
-
-        const blob = new Blob([paperContent], { type: "text/plain;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `Question_Paper_${targetSubject.replace(/\s+/g, '_')}.txt`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    const quizDataset = {
-        Physics: [
-            {
-                type: "mcq",
-                question: "Examine the circuit diagram table below. Calculate the total current (I) flowing through the circuit:",
-                mediaHTML: `
-                    <div class="q-rich-media">
-                        <table>
-                            <tr><th>Resistor</th><th>Resistance (Ω)</th><th>Voltage (V)</th></tr>
-                            <tr><td>R1</td><td>10 Ω</td><td>20 V</td></tr>
-                            <tr><td>R2</td><td>20 Ω</td><td>20 V</td></tr>
-                        </table>
-                    </div>
-                `,
-                options: ["1.0 A", "3.0 A", "1.5 A", "2.5 A"],
-                correct: 1
-            },
-            {
-                type: "mcq",
-                question: "Which wave property determines the loudness of a sound wave shown in the diagram?",
-                mediaHTML: `
-                    <div class="q-rich-media" style="text-align:center;">
-                        <svg width="220" height="80" viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M 0 40 Q 25 10, 50 40 T 100 40 T 150 40 T 200 40" fill="none" stroke="#2563eb" stroke-width="3"/>
-                            <line x1="0" y1="40" x2="220" y2="40" stroke="#cbd5e1" stroke-dasharray="4"/>
-                        </svg>
-                        <p style="font-size:11px; color:#64748b; margin:4px 0 0 0;">Transverse Wave Displacement</p>
-                    </div>
-                `,
-                options: ["Frequency", "Amplitude", "Wavelength", "Velocity"],
-                correct: 1
-            }
-        ],
-        Chemistry: [
-            {
-                type: "mcq",
-                question: "Based on the pH test data table below, identify the substance that is strongly basic:",
-                mediaHTML: `
-                    <div class="q-rich-media">
-                        <table>
-                            <tr><th>Solution</th><th>pH Value</th><th>Litmus Effect</th></tr>
-                            <tr><td>Sample A</td><td>2.4</td><td>Red</td></tr>
-                            <tr><td>Sample B</td><td>7.0</td><td>No Change</td></tr>
-                            <tr><td>Sample C</td><td>13.1</td><td>Blue</td></tr>
-                        </table>
-                    </div>
-                `,
-                options: ["Sample A", "Sample B", "Sample C", "None of these"],
-                correct: 2
-            }
-        ],
-        Mathematics: [
-            {
-                type: "mcq",
-                question: "Find the value of x from the geometric right-triangle figure specification:",
-                mediaHTML: `
-                    <div class="q-rich-media" style="text-align:center;">
-                        <svg width="180" height="100" viewBox="0 0 180 100" xmlns="http://www.w3.org/2000/svg">
-                            <polygon points="20,80 140,80 140,20" fill="none" stroke="#059669" stroke-width="3"/>
-                            <text x="75" y="95" font-size="12" fill="#0f172a">Base = 12</text>
-                            <text x="148" y="55" font-size="12" fill="#0f172a">Height = 5</text>
-                            <text x="65" y="45" font-size="12" fill="#dc2626">x = ?</text>
-                        </svg>
-                    </div>
-                `,
-                options: ["13", "15", "17", "14"],
-                correct: 0
-            }
-        ],
-        Science: [
-            {
-                type: "mcq",
-                question: "Which organelle in the plant cell diagram below produces ATP energy via cellular respiration?",
-                mediaHTML: `
-                    <div class="q-rich-media" style="text-align:center;">
-                        <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=400&q=80" alt="Cell Organelle" style="max-height:140px;" crossorigin="anonymous">
-                    </div>
-                `,
-                options: ["Mitochondria", "Chloroplast", "Nucleus", "Ribosome"],
-                correct: 0
-            }
-        ],
-        "Information Technology": [
-            {
-                type: "mcq",
-                question: "Which web service should the school use to post daily notices and journals?",
-                options: ["Blog", "Web Browser", "FTP", "Email Client"],
-                correct: 0
-            }
-        ],
-        "Informatics Practices": [
-            {
-                type: "mcq",
-                question: "Which Pandas function creates a DataFrame from a CSV file?",
-                options: ["pd.read_csv()", "pd.import_csv()", "pd.open_csv()"],
-                correct: 0
-            }
-        ]
-    };
-
-    function setupHighSecurityLocks() {
-        window.addEventListener("keydown", (e) => {
-            if (!isExamActive) return;
-
-            if (
-                e.key === "F12" ||
-                e.key === "PrintScreen" ||
-                (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) ||
-                (e.ctrlKey && e.key.toUpperCase() === "U") ||
-                (e.metaKey && e.shiftKey) || 
-                (e.key === "Meta")
-            ) {
-                e.preventDefault();
-                e.stopPropagation();
-                registerSecurityViolation("Screenshot / Inspector shortcut blocked!");
-                return false;
-            }
-        });
-
-        window.addEventListener("blur", () => {
-            if (isExamActive) {
-                registerSecurityViolation("Tab switch or minimization detected!");
-            }
-        });
-
-        document.addEventListener("visibilitychange", () => {
-            if (isExamActive && document.hidden) {
-                registerSecurityViolation("Leaving examination screen is restricted!");
-            }
-        });
-
-        if (window.Median || window.gonative) {
-            try {
-                if (window.Median?.screen?.setSecure) window.Median.screen.setSecure(true);
-                if (window.gonative?.screen?.setSecure) window.gonative.screen.setSecure(true);
-            } catch (err) {}
-        }
-    }
-
-    function registerSecurityViolation(reason) {
-        if (!isExamActive) return;
-        securityViolationCount++;
-        document.getElementById("cheat-warning-count").innerText = `Warnings: ${securityViolationCount}/2`;
-
-        if (securityViolationCount >= 2) {
-            alert(`⚠️ EXAM TERMINATED!\nReason: ${reason}\nMultiple cheating/minimization attempts detected.`);
-            calculateAndShowResults(true);
-        } else {
-            alert(`⚠️ SECURITY WARNING (${securityViolationCount}/2):\n${reason}\nSwitching tabs or minimizing will auto-submit your exam!`);
-        }
-    }
-
-    function startTeacherExam() {
-        selectedClassKey = document.getElementById("teacher-chosen-class").value;
-        const teacherClassLabel = classConfig[selectedClassKey] ? classConfig[selectedClassKey].label : "Teacher Class";
-        selectedSubject = document.getElementById("teacher-chosen-subject").value;
-        
-        studentName = `${loggedInTeacherName} (Teacher Evaluation)`;
-        studentRoll = 999;
-        selectedClassLabel = `${teacherClassLabel} (${selectedSubject})`;
-
-        setStageBackground("student");
-        document.getElementById("teacher-subject-box").style.display = "none";
-        document.getElementById("quiz-box").style.display = "block";
-
-        const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
-        quizData = JSON.parse(JSON.stringify(rawQuestions));
-        userAnswers = new Array(quizData.length).fill(null);
-
-        timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
-        const initialMins = Math.floor(timeRemainingSeconds / 60);
-        const initialSecs = timeRemainingSeconds % 60;
-        document.getElementById("timer-display").innerText = `⏱️ ${initialMins}:${initialSecs < 10 ? '0' : ''}${initialSecs}`;
-
-        isExamActive = true;
-        securityViolationCount = 0;
-        currentQuestionIdx = 0;
-        startTimer();
-        loadQuestion();
-    }
-
-    async function checkOrSetDeviceLock(roll, classKey, name) {
-        if (!dbClientInstance) return true;
-        try {
-            const { data } = await dbClientInstance
-                .from('device_locks')
-                .select('*')
-                .eq('roll_number', roll)
-                .eq('class_key', classKey)
-                .maybeSingle();
-
-            if (data && data.is_locked) return false;
-
-            await dbClientInstance
-                .from('device_locks')
-                .upsert({ roll_number: roll, class_key: classKey, student_name: name, is_locked: true });
-
-            return true;
-        } catch (e) { return true; }
-    }
-
-    async function clearLockFromSystem(roll, classKey) {
-        if (!dbClientInstance) return;
-        try {
-            await dbClientInstance
-                .from('device_locks')
-                .update({ is_locked: false })
-                .eq('roll_number', roll)
-                .eq('class_key', classKey);
-        } catch (e) {}
-    }
-
-    async function authenticateStudentAndStart(nameVal) {
-        studentName = nameVal;
-        const rollInputVal = document.getElementById("student-roll").value;
-        studentRoll = parseInt(rollInputVal, 10);
-        selectedClassKey = document.getElementById("class-select").value;
-        selectedSubject = document.getElementById("subject-select").value;
-        const enteredPass = document.getElementById("student-pass").value.trim();
-
-        const config = classConfig[selectedClassKey];
-        selectedClassLabel = `${config.label} (${selectedSubject})`;
-
-        if (!studentName) {
-            alert("Please enter Full Name.");
-            return;
-        }
-
-        if (!studentRoll || isNaN(studentRoll) || studentRoll < 1 || studentRoll > config.maxRoll) {
-            alert(`Please enter a valid Roll Number between 1 and ${config.maxRoll}.`);
-            return;
-        }
-
-        const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
-        if (enteredPass !== expectedPass) {
-            alert("❌ Invalid Password! Please check your section roll password provided by your teacher.");
-            return;
-        }
-
-        const lockGranted = await checkOrSetDeviceLock(studentRoll, selectedClassKey, studentName);
-        if (!lockGranted) {
-            alert(`🔒 Roll Number ${studentRoll} in ${config.label} is already active on another browser!`);
-            return;
-        }
-
-        const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
-        quizData = shuffleArrayForRoll(rawQuestions, studentRoll);
-
-        userAnswers = new Array(quizData.length).fill(null);
-
-        timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
-        const initialMins = Math.floor(timeRemainingSeconds / 60);
-        const initialSecs = timeRemainingSeconds % 60;
-        document.getElementById("timer-display").innerText = `⏱️ ${initialMins}:${initialSecs < 10 ? '0' : ''}${initialSecs}`;
-
-        setStageBackground("student");
-        document.getElementById("setup-box").style.display = "none";
-        document.getElementById("quiz-box").style.display = "block";
-
-        isExamActive = true;
-        securityViolationCount = 0;
-        currentQuestionIdx = 0;
-        startTimer();
-        loadQuestion();
-    }
-
-    function startTimer() {
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            timeRemainingSeconds--;
-            const mins = Math.floor(timeRemainingSeconds / 60);
-            const secs = timeRemainingSeconds % 60;
-            document.getElementById("timer-display").innerText = `⏱️ ${mins}:${secs < 10 ? '0' : ''}${secs}`;
-
-            if (timeRemainingSeconds <= 0) {
-                clearInterval(timerInterval);
-                calculateAndShowResults(true);
-            }
-        }, 1000);
-    }
-
-    function loadQuestion() {
-        const currentQuiz = quizData[currentQuestionIdx];
-        document.getElementById("question-tracker").innerText = `Question ${currentQuestionIdx + 1} / ${quizData.length}`;
-        document.getElementById("secure-question-host").innerText = currentQuiz.question;
-
-        const mediaHost = document.getElementById("question-media-host");
-        mediaHost.innerHTML = currentQuiz.mediaHTML || "";
-
-        const responseBox = document.getElementById("response-container");
-        responseBox.innerHTML = "";
-
-        if (currentQuiz.type === "descriptive") {
-            const savedText = userAnswers[currentQuestionIdx] || "";
-            responseBox.innerHTML = `
-                <div class="input-group">
-                    <label>Write your answer (~50 words):</label>
-                    <textarea id="descriptive-input" rows="5" placeholder="Type answer here..." oninput="saveDescriptiveAnswer(this.value)">${savedText}</textarea>
+        <div class="portal-card" style="max-width: 100%; margin-bottom: 25px;">
+            <h3>Upload Question Paper</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Paper Title</label>
+                    <input type="text" id="paper-title" placeholder="e.g. Class 9th Physics Mid-Term">
                 </div>
-            `;
-        } else {
-            currentQuiz.options.forEach((optionText, idx) => {
-                const isChecked = userAnswers[currentQuestionIdx] === idx ? "checked" : "";
-                const optionElem = document.createElement("div");
-                optionElem.className = "option-container";
-                optionElem.onclick = () => selectOption(idx);
-                optionElem.innerHTML = `
-                    <input type="radio" name="quiz-option" id="opt-${idx}" value="${idx}" ${isChecked}>
-                    <label for="opt-${idx}" class="option-label">${optionText}</label>
-                `;
-                responseBox.appendChild(optionElem);
-            });
+                <div class="form-group">
+                    <label>Select PDF File</label>
+                    <input type="file" id="paper-file" accept=".pdf">
+                </div>
+                <div class="form-group">
+                    <label>Go-Live Time (Start)</label>
+                    <input type="datetime-local" id="start-time">
+                </div>
+                <div class="form-group">
+                    <label>Auto-Delist Time (End)</label>
+                    <input type="datetime-local" id="end-time">
+                </div>
+            </div>
+            <button class="btn-submit" onclick="uploadPaper()">Upload and Schedule Test</button>
+        </div>
+
+        <h3>Uploaded Tests Dashboard</h3>
+        <div id="paper-list"></div>
+    </div>
+
+    <!-- Student Exam Panel -->
+    <div class="dashboard" id="student-view">
+        <div class="dashboard-header">
+            <h2>Class 9th - Student Dashboard</h2>
+            <button class="btn-submit" style="width: auto; padding: 8px 16px;" onclick="logout()">Logout</button>
+        </div>
+
+        <h3>Available Physics Exams</h3>
+        <div id="student-paper-list"></div>
+    </div>
+
+    <script>
+        let currentRole = 'Student';
+        let questionPapers = [];
+
+        // Real-Time Clock
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toLocaleString();
+            renderPapers(); // Dynamic check for schedule updates
+        }, 1000);
+
+        function toggleTheme() {
+            const body = document.body;
+            const newTheme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
         }
 
-        document.getElementById("prev-btn").disabled = currentQuestionIdx === 0;
-        const nextBtn = document.getElementById("next-btn");
-        if (currentQuestionIdx === quizData.length - 1) {
-            nextBtn.innerText = "Submit Test";
-            nextBtn.className = "btn";
-            nextBtn.style.backgroundColor = "var(--success-color)";
-            nextBtn.onclick = () => calculateAndShowResults(false);
-        } else {
-            nextBtn.innerText = "Next";
-            nextBtn.className = "btn";
-            nextBtn.style.backgroundColor = "var(--primary-color)";
-            nextBtn.onclick = () => goNext();
-        }
-    }
-
-    function selectOption(index) {
-        userAnswers[currentQuestionIdx] = index;
-        const radios = document.getElementsByName("quiz-option");
-        radios.forEach((radio, idx) => { radio.checked = idx === index; });
-    }
-
-    function saveDescriptiveAnswer(val) { userAnswers[currentQuestionIdx] = val; }
-    function goNext() { if (currentQuestionIdx < quizData.length - 1) { currentQuestionIdx++; loadQuestion(); } }
-    function goPrevious() { if (currentQuestionIdx > 0) { currentQuestionIdx--; loadQuestion(); } }
-
-    async function calculateAndShowResults(autoSubmitted = false) {
-        isExamActive = false;
-        clearInterval(timerInterval);
-        if (autoSubmitted) alert("⏰ Test submitted automatically due to timeout or security violation.");
-
-        let totalMarks = 0;
-
-        quizData.forEach((q, idx) => {
-            const answerVal = userAnswers[idx];
-            if (q.type === "mcq" && answerVal !== null && answerVal !== undefined) {
-                if (answerVal === q.correct) {
-                    totalMarks += 1;
-                }
-            }
-        });
-
-        const scoreSummary = `${totalMarks}`;
-
-        if (dbClientInstance) {
-            try {
-                const { error } = await dbClientInstance.from('student_submissions').insert([{
-                    student_name: studentName,
-                    roll_number: studentRoll,
-                    class_label: selectedClassLabel,
-                    score_summary: scoreSummary,
-                    submitted_at: new Date().toISOString()
-                }]);
-                if (error) throw error;
-            } catch (e) {
-                alert("Submission Save Error: " + e.message);
-                console.error("Database save error:", e);
-            }
+        function setRole(role) {
+            currentRole = role;
+            document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('student-fields').style.display = role === 'Student' ? 'block' : 'none';
         }
 
-        document.getElementById("quiz-box").style.display = "none";
-        document.getElementById("result-box").style.display = "block";
-        document.getElementById("submitted-student-name").innerText = `${studentName} (${selectedClassLabel})`;
-        document.getElementById("submitted-score").innerText = `${totalMarks} Marks`;
-
-        await clearLockFromSystem(studentRoll, selectedClassKey);
-    }
-
-    async function purgeExpiredSubmissions() {
-        if (!dbClientInstance) return;
-        const cutoffTime = new Date(Date.now() - EXPIRATION_MS).toISOString();
-        try {
-            await dbClientInstance
-                .from('student_submissions')
-                .delete()
-                .lt('submitted_at', cutoffTime);
-        } catch (e) {
-            console.error("Auto-purge error:", e);
-        }
-    }
-
-    async function renderAdminDashboardData() {
-        await purgeExpiredSubmissions();
-        await renderSubmissionsZone();
-        await renderLockoutManagerZone();
-    }
-
-    function toggleSelectAllSubmissions(masterCheckbox) {
-        const rowBoxes = document.querySelectorAll('.sub-select-box');
-        rowBoxes.forEach(cb => cb.checked = masterCheckbox.checked);
-    }
-
-    async function renderSubmissionsZone() {
-        const zone = document.getElementById("admin-submissions-zone");
-        if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>Database Instance Not Ready</span>";
-
-        const filterClass = document.getElementById("admin-class-select").value;
-        const filterSubject = document.getElementById("admin-subject-select").value;
-
-        try {
-            let query = dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
-
-            if (filterClass !== "All") {
-                query = query.ilike('class_label', `%${filterClass}%`);
-            }
-            if (filterSubject !== "All") {
-                query = query.ilike('class_label', `%${filterSubject}%`);
-            }
-
-            const { data, error } = await query;
-            if (error) throw error;
-
-            const now = Date.now();
-            currentFetchedSubmissions = (data || []).filter(item => {
-                const submittedTime = new Date(item.submitted_at).getTime();
-                return (now - submittedTime) < EXPIRATION_MS;
-            });
-
-            renderSubmissionsUI();
-        } catch (e) { zone.innerHTML = "Error fetching submissions: " + e.message; }
-    }
-
-    function renderSubmissionsUI() {
-        const zone = document.getElementById("admin-submissions-zone");
-        if (!currentFetchedSubmissions || currentFetchedSubmissions.length === 0) {
-            return zone.innerHTML = "<span>No submissions recorded matching filters.</span>";
-        }
-
-        let html = `<table class='admin-table'>
-            <thead>
-                <tr>
-                    <th style="width:30px; text-align:center;"><input type="checkbox" id="master-select-cb" onclick="toggleSelectAllSubmissions(this)"></th>
-                    <th>Name</th>
-                    <th>Class & Subject</th>
-                    <th>Roll</th>
-                    <th>Score</th>
-                    <th>Submitted At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>`;
-
-        currentFetchedSubmissions.forEach((item, index) => {
-            const dateStr = new Date(item.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            let scoreOnly = item.score_summary || "0";
-            if (scoreOnly.includes("/")) scoreOnly = scoreOnly.split("/")[0].trim();
-
-            html += `<tr>
-                <td style="text-align:center;"><input type="checkbox" class="sub-select-box" data-idx="${index}"></td>
-                <td>${item.student_name}</td>
-                <td>${item.class_label}</td>
-                <td>${item.roll_number}</td>
-                <td><strong>${scoreOnly}</strong></td>
-                <td>${dateStr}</td>
-                <td>
-                    <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deleteSingleSubmissionRow(${index})">Delete</button>
-                </td>
-            </tr>`;
-        });
-        html += "</tbody></table>";
-        zone.innerHTML = html;
-    }
-
-    async function deleteSingleSubmissionRow(idx) {
-        if (!dbClientInstance) return alert("Database Not Available");
-        const item = currentFetchedSubmissions[idx];
-        if (!item) return;
-
-        if (!confirm(`Are you sure you want to delete test for "${item.student_name}"?`)) return;
-
-        try {
-            let query = dbClientInstance.from('student_submissions').delete({ count: 'exact' });
-
-            if (item.id !== undefined && item.id !== null) {
-                query = query.eq('id', item.id);
+        function login() {
+            document.getElementById('login-view').style.display = 'none';
+            if (currentRole === 'Teacher' || currentRole === 'Admin') {
+                document.getElementById('teacher-view').style.display = 'block';
             } else {
-                query = query
-                    .eq('student_name', item.student_name)
-                    .eq('roll_number', item.roll_number)
-                    .eq('class_label', item.class_label)
-                    .eq('submitted_at', item.submitted_at);
+                document.getElementById('student-view').style.display = 'block';
             }
+            renderPapers();
+        }
 
-            const { count, error } = await query;
-            
-            if (error) {
-                alert("Supabase Delete Error: " + error.message);
+        function logout() {
+            document.getElementById('teacher-view').style.display = 'none';
+            document.getElementById('student-view').style.display = 'none';
+            document.getElementById('login-view').style.display = 'block';
+        }
+
+        function uploadPaper() {
+            const title = document.getElementById('paper-title').value;
+            const fileInput = document.getElementById('paper-file');
+            const startTime = document.getElementById('start-time').value;
+            const endTime = document.getElementById('end-time').value;
+
+            if (!title || !fileInput.files[0] || !startTime || !endTime) {
+                alert('Please fill out all upload & schedule details!');
                 return;
             }
 
-            if (count === 0) {
-                alert("⚠️ Row was not deleted on the server! Please run 'ALTER TABLE student_submissions DISABLE ROW LEVEL SECURITY;' in your Supabase SQL Editor.");
-            } else {
-                alert("Submission deleted permanently from all filters.");
+            const newPaper = {
+                id: Date.now(),
+                title: title,
+                fileName: fileInput.files[0].name,
+                startTime: new Date(startTime).getTime(),
+                endTime: new Date(endTime).getTime(),
+                manualDelist: false
+            };
+
+            questionPapers.push(newPaper);
+            alert('Question paper uploaded and scheduled successfully!');
+            renderPapers();
+        }
+
+        function toggleManualDelist(id) {
+            const paper = questionPapers.find(p => p.id === id);
+            if (paper) {
+                paper.manualDelist = !paper.manualDelist;
+                renderPapers();
             }
-
-            await renderSubmissionsZone();
-        } catch (e) {
-            alert("Failed to delete submission: " + e.message);
-        }
-    }
-
-    async function deleteSelectedCheckedSubmissions() {
-        if (!dbClientInstance) return alert("Database Not Available");
-
-        const checkboxes = document.querySelectorAll('.sub-select-box:checked');
-        if (checkboxes.length === 0) {
-            return alert("Please select at least one submission checkbox to delete.");
         }
 
-        if (!confirm(`Are you sure you want to delete the selected ${checkboxes.length} submission(s)?`)) return;
+        function renderPapers() {
+            const now = Date.now();
+            const teacherList = document.getElementById('paper-list');
+            const studentList = document.getElementById('student-paper-list');
 
-        const indicesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.getAttribute('data-idx'), 10));
+            if (teacherList) teacherList.innerHTML = '';
+            if (studentList) studentList.innerHTML = '';
 
-        try {
-            for (let idx of indicesToDelete) {
-                const item = currentFetchedSubmissions[idx];
-                if (item) {
-                    let query = dbClientInstance.from('student_submissions').delete();
-                    
-                    if (item.id !== undefined && item.id !== null) {
-                        query = query.eq('id', item.id);
-                    } else {
-                        query = query
-                            .eq('student_name', item.student_name)
-                            .eq('roll_number', item.roll_number)
-                            .eq('class_label', item.class_label)
-                            .eq('submitted_at', item.submitted_at);
-                    }
+            questionPapers.forEach(paper => {
+                const isLive = !paper.manualDelist && now >= paper.startTime && now <= paper.endTime;
+                const isExpired = now > paper.endTime;
 
-                    await query;
+                let statusLabel = isLive ? 'LIVE' : (isExpired ? 'EXPIRED' : 'SCHEDULED');
+                if (paper.manualDelist) statusLabel = 'DELISTED (MANUAL)';
+
+                let badgeClass = isLive ? 'status-live' : (isExpired || paper.manualDelist ? 'status-delisted' : 'status-scheduled');
+
+                // Render for Teacher Panel
+                if (teacherList) {
+                    teacherList.innerHTML += `
+                        <div class="paper-item">
+                            <div>
+                                <strong>${paper.title}</strong> (${paper.fileName})<br>
+                                <small>Starts: ${new Date(paper.startTime).toLocaleString()} | Ends: ${new Date(paper.endTime).toLocaleString()}</small>
+                            </div>
+                            <div>
+                                <span class="status-badge ${badgeClass}">${statusLabel}</span>
+                                <button onclick="toggleManualDelist(${paper.id})" style="margin-left: 10px; cursor: pointer;">
+                                    ${paper.manualDelist ? 'Relist Test' : 'Force Delist'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
                 }
-            }
 
-            alert("Selected submissions deleted successfully.");
-            await renderSubmissionsZone();
-        } catch (e) {
-            alert("Failed to delete selected submissions: " + e.message);
-        }
-    }
-
-    async function renderLockoutManagerZone() {
-        const zone = document.getElementById("admin-unblock-zone");
-        if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>Database Instance Not Ready</span>";
-
-        try {
-            const { data } = await dbClientInstance.from('device_locks').select('*').eq('is_locked', true);
-            if (!data || data.length === 0) return zone.innerHTML = "<span style='color:green;'>No Active Device Locks</span>";
-
-            let html = "";
-            data.forEach(item => {
-                html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #e2e8f0;">
-                    <span style="font-size:13px;">🔒 ${item.student_name} (Roll ${item.roll_number})</span>
-                    <button class="btn btn-danger" style="padding:4px 10px; font-size:12px;" onclick="executeAdminUnlock('${item.roll_number}', '${item.class_key}')">Unlock</button>
-                </div>`;
+                // Render for Student Panel
+                if (studentList) {
+                    if (isLive) {
+                        studentList.innerHTML += `
+                            <div class="paper-item">
+                                <div>
+                                    <strong>${paper.title}</strong><br>
+                                    <small>Ends at: ${new Date(paper.endTime).toLocaleTimeString()}</small>
+                                </div>
+                                <button class="btn-submit" style="width: auto; padding: 6px 12px;">Start Exam Now</button>
+                            </div>
+                        `;
+                    }
+                }
             });
-            zone.innerHTML = html;
-        } catch (e) { zone.innerHTML = e.message; }
-    }
 
-    async function executeAdminUnlock(roll, classKey) {
-        await clearLockFromSystem(roll, classKey);
-        alert(`Roll ${roll} unlocked successfully!`);
-        await renderAdminDashboardData();
-    }
-
-    async function restartQuiz() {
-        if (studentRoll) await clearLockFromSystem(studentRoll, selectedClassKey);
-        location.reload();
-    }
-</script>
+            if (studentList && studentList.innerHTML === '') {
+                studentList.innerHTML = '<p style="opacity: 0.7;">No active exams available at this moment.</p>';
+            }
+        }
+    </script>
 </body>
 </html>

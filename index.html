@@ -9,6 +9,11 @@
     <meta name="gonative-secure" content="true">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Include PDF.js for parsing PDF question papers directly in the Admin Portal -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -173,7 +178,6 @@
             font-size: 14px;
         }
 
-        /* Password input container with integrated inline eye icon and forgot link */
         .password-input-wrapper {
             position: relative;
             display: flex;
@@ -332,7 +336,6 @@
                 <option value="student">Student</option>
                 <option value="teacher">Teacher</option>
             </select>
-            <!-- REPOSITIONED REQUIREMENT #9: New user registration link placed immediately after I AM dropdown -->
             <div style="margin-top: 6px; text-align: right;">
                 <span class="auth-link" onclick="showAuthView('register-box')">New User? Register Here</span>
             </div>
@@ -344,21 +347,17 @@
         </div>
 
         <div class="input-group">
-            <!-- REPOSITIONED REQUIREMENT #8: Forgot password link inline with Password Label -->
             <div class="pass-label-row">
                 <label for="auth-pass">Password</label>
                 <span class="auth-link" onclick="showAuthView('forgot-box')">Forgot Password?</span>
             </div>
-            <!-- ADDED REQUIREMENT #5: Password View Eye Icon -->
             <div class="password-input-wrapper">
                 <input type="password" id="auth-pass" placeholder="Enter account password">
                 <span class="toggle-password-eye" onclick="togglePasswordVisibility('auth-pass', this)">👁️</span>
             </div>
         </div>
 
-        <!-- Student-Specific Selection Options -->
         <div id="student-only-fields">
-            <!-- RESTORED REQUIREMENT #1: Class Dropdown Menu -->
             <div class="input-group" id="class-group">
                 <label for="class-select">Select Class & Section</label>
                 <select id="class-select" onchange="updateRollLimits()">
@@ -395,7 +394,6 @@
             </select>
         </div>
 
-        <!-- RESTORED REQUIREMENT #1: Class Dropdown for Registration -->
         <div class="input-group" id="reg-class-group">
             <label for="reg-class">Assign Class & Section</label>
             <select id="reg-class">
@@ -522,8 +520,6 @@
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
                 <h4 style="margin: 0; color: var(--text-main);">👥 Registered Users & Authorization</h4>
-                
-                <!-- ADDED REQUIREMENT #6: Option for deleting users class wise to free up roll numbers -->
                 <div style="display: flex; gap: 6px; align-items: center;">
                     <select id="admin-delete-class-select" style="padding: 4px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color);">
                         <option value="all">Select Class to Purge</option>
@@ -543,10 +539,35 @@
             <div id="admin-users-zone" style="max-height: 250px; overflow-y: auto;">Loading registered users...</div>
         </div>
 
-        <!-- ADDED REQUIREMENT #2: EXAM LIVE LISTING AND DELISTING CONTROL -->
+        <!-- EXAM STATUS CONTROL -->
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
             <h4 style="margin: 0 0 10px 0; color: var(--text-main);">🟢 Exam Status Control (Live Listing / Delisting)</h4>
             <div id="exam-status-toggle-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;"></div>
+        </div>
+
+        <!-- NEW FEATURE: QUESTION PAPER UPLOADER (PDF, TXT, JSON) -->
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+            <h4 style="margin: 0 0 8px 0; color: var(--text-main);">📂 Upload Question Paper (PDF, TXT, JSON)</h4>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Upload a question bank file to populate or update a subject's question database instantly.</p>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px;">
+                <div style="flex: 1; min-width: 180px;">
+                    <label for="upload-target-subject" style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Target Subject:</label>
+                    <select id="upload-target-subject" style="width: 100%; padding: 6px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 13px;">
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science (Combined)</option>
+                        <option value="Information Technology">Information Technology (402)</option>
+                        <option value="Informatics Practices">Informatics Practices (065)</option>
+                    </select>
+                </div>
+                <div style="flex: 2; min-width: 220px;">
+                    <label for="question-file-input" style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Select File (.json, .txt, .pdf):</label>
+                    <input type="file" id="question-file-input" accept=".json,.txt,.pdf" style="width: 100%; font-size: 12px; padding: 4px;" onchange="handleQuestionFileSelect(event)">
+                </div>
+            </div>
+            <div id="upload-status-msg" style="font-size: 12px; font-weight: 600; margin-top: 6px;"></div>
         </div>
 
         <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px; display: flex; gap: 10px;">
@@ -579,7 +600,6 @@
             </div>
         </div>
 
-        <!-- REMOVED REQUIREMENT #4: Removed Password.csv button -->
         <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
             <button class="btn" style="font-size: 13px; background: #2563eb; width: 100%;" onclick="downloadFilteredResultsCSV()">📥 Filtered Results (.CSV)</button>
             <button class="btn" style="font-size: 13px; background: #d97706; width: 100%;" onclick="downloadQuestionPaper()">📄 Download Selected Question Paper (.TXT)</button>
@@ -652,7 +672,7 @@
 
     const SUPABASE_KEY = (typeof window.ENV !== "undefined" && window.ENV.SUPABASE_ANON_KEY) 
         ? window.ENV.SUPABASE_ANON_KEY 
-        : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE";
+        : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE";
 
     const ADMIN_USER_ID = "ADMIN";
     const MASTER_TEACHER_PASSWORD = "Admin@7055";
@@ -700,7 +720,215 @@
     let loggedInTeacherName = "";
     let currentFetchedSubmissions = [];
 
-    // Helper for Live Exam Statuses
+    // Local Storage Question Dataset Loader & Saver
+    function getStoredQuizDataset() {
+        const defaultDataset = {
+            Physics: [
+                {
+                    type: "mcq",
+                    question: "Examine the circuit diagram table below. Calculate the total current (I) flowing through the circuit:",
+                    mediaHTML: `
+                        <div class="q-rich-media">
+                            <table>
+                                <tr><th>Resistor</th><th>Resistance (Ω)</th><th>Voltage (V)</th></tr>
+                                <tr><td>R1</td><td>10 Ω</td><td>20 V</td></tr>
+                                <tr><td>R2</td><td>20 Ω</td><td>20 V</td></tr>
+                            </table>
+                        </div>
+                    `,
+                    options: ["1.0 A", "3.0 A", "1.5 A", "2.5 A"],
+                    correct: 1
+                },
+                {
+                    type: "mcq",
+                    question: "Which wave property determines the loudness of a sound wave shown in the diagram?",
+                    mediaHTML: `
+                        <div class="q-rich-media" style="text-align:center;">
+                            <svg width="220" height="80" viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M 0 40 Q 25 10, 50 40 T 100 40 T 150 40 T 200 40" fill="none" stroke="#2563eb" stroke-width="3"/>
+                                <line x1="0" y1="40" x2="220" y2="40" stroke="#cbd5e1" stroke-dasharray="4"/>
+                            </svg>
+                            <p style="font-size:11px; color:#64748b; margin:4px 0 0 0;">Transverse Wave Displacement</p>
+                        </div>
+                    `,
+                    options: ["Frequency", "Amplitude", "Wavelength", "Velocity"],
+                    correct: 1
+                }
+            ],
+            Chemistry: [
+                {
+                    type: "mcq",
+                    question: "Based on the pH test data table below, identify the substance that is strongly basic:",
+                    mediaHTML: `
+                        <div class="q-rich-media">
+                            <table>
+                                <tr><th>Solution</th><th>pH Value</th><th>Litmus Effect</th></tr>
+                                <tr><td>Sample A</td><td>2.4</td><td>Red</td></tr>
+                                <tr><td>Sample B</td><td>7.0</td><td>No Change</td></tr>
+                                <tr><td>Sample C</td><td>13.1</td><td>Blue</td></tr>
+                            </table>
+                        </div>
+                    `,
+                    options: ["Sample A", "Sample B", "Sample C", "None of these"],
+                    correct: 2
+                }
+            ],
+            Mathematics: [
+                {
+                    type: "mcq",
+                    question: "Find the value of x from the geometric right-triangle figure specification:",
+                    mediaHTML: `
+                        <div class="q-rich-media" style="text-align:center;">
+                            <svg width="180" height="100" viewBox="0 0 180 100" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="20,80 140,80 140,20" fill="none" stroke="#059669" stroke-width="3"/>
+                                <text x="75" y="95" font-size="12" fill="#0f172a">Base = 12</text>
+                                <text x="148" y="55" font-size="12" fill="#0f172a">Height = 5</text>
+                                <text x="65" y="45" font-size="12" fill="#dc2626">x = ?</text>
+                            </svg>
+                        </div>
+                    `,
+                    options: ["13", "15", "17", "14"],
+                    correct: 0
+                }
+            ],
+            Science: [
+                {
+                    type: "mcq",
+                    question: "Which organelle in the plant cell diagram below produces ATP energy via cellular respiration?",
+                    mediaHTML: `
+                        <div class="q-rich-media" style="text-align:center;">
+                            <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=400&q=80" alt="Cell Organelle" style="max-height:140px;" crossorigin="anonymous">
+                        </div>
+                    `,
+                    options: ["Mitochondria", "Chloroplast", "Nucleus", "Ribosome"],
+                    correct: 0
+                }
+            ],
+            "Information Technology": [
+                {
+                    type: "mcq",
+                    question: "Which web service should the school use to post daily notices and journals?",
+                    options: ["Blog", "Web Browser", "FTP", "Email Client"],
+                    correct: 0
+                }
+            ],
+            "Informatics Practices": [
+                {
+                    type: "mcq",
+                    question: "Which Pandas function creates a DataFrame from a CSV file?",
+                    options: ["pd.read_csv()", "pd.import_csv()", "pd.open_csv()"],
+                    correct: 0
+                }
+            ]
+        };
+        const stored = localStorage.getItem("cps_custom_quiz_dataset");
+        return stored ? JSON.parse(stored) : defaultDataset;
+    }
+
+    function saveQuizDataset(dataset) {
+        localStorage.setItem("cps_custom_quiz_dataset", JSON.stringify(dataset));
+    }
+
+    // PDF, TXT, JSON Parsers for Question Upload
+    async function handleQuestionFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const targetSubject = document.getElementById("upload-target-subject").value;
+        const statusMsg = document.getElementById("upload-status-msg");
+        statusMsg.style.color = "var(--primary-color)";
+        statusMsg.innerText = `Processing ${file.name}...`;
+
+        try {
+            const extension = file.name.split('.').pop().toLowerCase();
+            let newQuestions = [];
+
+            if (extension === 'json') {
+                const text = await file.text();
+                const data = JSON.parse(text);
+                newQuestions = Array.isArray(data) ? data : (data.questions || []);
+            } else if (extension === 'txt') {
+                const text = await file.text();
+                newQuestions = parseTextIntoQuestions(text);
+            } else if (extension === 'pdf') {
+                newQuestions = await parsePDFIntoQuestions(file);
+            } else {
+                throw new Error("Unsupported file format. Please upload JSON, TXT, or PDF.");
+            }
+
+            if (!Array.isArray(newQuestions) || newQuestions.length === 0) {
+                throw new Error("No valid questions could be parsed from the file.");
+            }
+
+            // Save into dataset storage
+            let dataset = getStoredQuizDataset();
+            dataset[targetSubject] = newQuestions;
+            saveQuizDataset(dataset);
+
+            statusMsg.style.color = "var(--success-color)";
+            statusMsg.innerText = `✅ Successfully uploaded & saved ${newQuestions.length} questions for ${targetSubject}!`;
+        } catch (err) {
+            statusMsg.style.color = "var(--danger-color)";
+            statusMsg.innerText = `❌ Error: ${err.message}`;
+        }
+    }
+
+    function parseTextIntoQuestions(text) {
+        const blocks = text.split(/\n\s*\n/).filter(b => b.trim().length > 0);
+        let questions = [];
+
+        blocks.forEach((block) => {
+            const lines = block.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            if (lines.length === 0) return;
+
+            let qText = lines[0].replace(/^(Q[\d\.\)]*)\s*/i, '');
+            let options = [];
+            let correctIndex = 0;
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (/^[A-Da-d][\.\)]/.test(line)) {
+                    options.push(line.replace(/^[A-Da-d][\.\)]\s*/, ''));
+                } else if (/^Ans(wer)?[\.\:]\s*/i.test(line)) {
+                    const ansLetter = line.replace(/^Ans(wer)?[\.\:]\s*/i, '').trim().toUpperCase();
+                    if (['A', 'B', 'C', 'D'].includes(ansLetter)) {
+                        correctIndex = ansLetter.charCodeAt(0) - 65;
+                    }
+                }
+            }
+
+            if (options.length > 0) {
+                questions.push({
+                    type: "mcq",
+                    question: qText,
+                    options: options,
+                    correct: correctIndex < options.length ? correctIndex : 0
+                });
+            }
+        });
+
+        if (questions.length === 0) {
+            throw new Error("Could not detect structured questions in TXT. Ensure each question has options and an answer indicator.");
+        }
+        return questions;
+    }
+
+    async function parsePDFIntoQuestions(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+        const pdf = await loadingTask.promise;
+        
+        let fullText = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join('\n');
+            fullText += pageText + '\n\n';
+        }
+
+        return parseTextIntoQuestions(fullText);
+    }
+
     function getExamStatuses() {
         const defaults = {
             "Physics": true,
@@ -718,7 +946,6 @@
         localStorage.setItem("cps_exam_statuses", JSON.stringify(statuses));
     }
 
-    // REQUIREMENT #5: Toggle password eye visibility
     function togglePasswordVisibility(inputId, eyeIcon) {
         const inputElem = document.getElementById(inputId);
         if (inputElem.type === "password") {
@@ -730,7 +957,6 @@
         }
     }
 
-    // Live Clock & Date Update
     function startLiveClock() {
         const datetimeElem = document.getElementById("live-datetime");
         const updateClock = () => {
@@ -744,7 +970,6 @@
         setInterval(updateClock, 1000);
     }
 
-    // Local Storage helpers for User Database
     function getRegisteredUsers() {
         return JSON.parse(localStorage.getItem("cps_registered_users") || "[]");
     }
@@ -842,7 +1067,6 @@
         setStageBackground("login");
     });
 
-    // Hidden Admin Trigger: CTRL + ALT + SHIFT + 2
     function setupHiddenAdminTrigger() {
         window.addEventListener("keydown", (e) => {
             if (e.ctrlKey && e.altKey && e.shiftKey && e.key === "2") {
@@ -866,7 +1090,6 @@
         renderAdminDashboardData();
     }
 
-    // AUTHENTICATION & REGISTRATION LOGIC
     function handleRegisterSubmit() {
         const role = document.getElementById("reg-role").value;
         const userClass = (role === "Student") ? document.getElementById("reg-class").value : "";
@@ -885,9 +1108,7 @@
             return;
         }
 
-        // Teachers require authorization by admin; students default active
         const isAuthorized = (role.toLowerCase() === "teacher") ? false : true;
-        // REQUIREMENT #3: Default Teacher Powers (Can view results, manage exam status)
         const permissions = (role.toLowerCase() === "teacher") ? { canViewResults: true, canToggleExams: false } : {};
 
         users.push({ role, userClass, name, email, pass, isAuthorized, permissions });
@@ -930,13 +1151,11 @@
         const cleanedEmail = rawEmailInput.toLowerCase().replace(/\s+/g, '');
         const enteredPass = document.getElementById("auth-pass").value.trim();
 
-        // Admin Specific Login Check: USER ID: ADMIN, Password: Admin@7055
         if ((rawEmailInput.toUpperCase() === ADMIN_USER_ID || rawEmailInput === MASTER_TEACHER_PASSWORD) && enteredPass === MASTER_TEACHER_PASSWORD) {
             openAdminPortalDirect();
             return;
         }
 
-        // Search in local user database
         const users = getRegisteredUsers();
         const matchedUser = users.find(u => u.email === cleanedEmail || u.name.toLowerCase() === cleanedEmail);
 
@@ -964,7 +1183,6 @@
             }
         }
 
-        // Fallback for default Teacher accounts
         const isTeacherLogin = (selectedRole === "teacher") || VALID_TEACHER_LOGINS.includes(cleanedEmail) || cleanedEmail.startsWith("teacher");
         if (isTeacherLogin) {
             if (enteredPass !== MASTER_TEACHER_PASSWORD && enteredPass !== "teacher123") {
@@ -980,7 +1198,6 @@
             return;
         }
 
-        // Fallback for Student Login via roll password
         promptStudentSubjectSelection(rawEmailInput);
     }
 
@@ -1013,7 +1230,6 @@
             }
         }
 
-        // Populating Available Live Exams in Post-login dropdown
         const postSubjectSelect = document.getElementById("post-login-subject");
         postSubjectSelect.innerHTML = "";
         const statuses = getExamStatuses();
@@ -1034,7 +1250,6 @@
             return;
         }
 
-        // Show Welcome Message and Subject Choice screen AFTER Login
         document.getElementById("setup-box").style.display = "none";
         document.getElementById("student-subject-box").style.display = "block";
         document.getElementById("global-logout-btn").style.display = "block";
@@ -1058,6 +1273,7 @@
             return;
         }
 
+        const quizDataset = getStoredQuizDataset();
         const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
         quizData = shuffleArrayForRoll(rawQuestions, studentRoll);
 
@@ -1177,6 +1393,7 @@
     function downloadQuestionPaper() {
         const filterSubject = document.getElementById("admin-subject-select").value;
         const targetSubject = filterSubject === "All" ? "Physics" : filterSubject;
+        const quizDataset = getStoredQuizDataset();
         const questions = quizDataset[targetSubject];
 
         if (!questions || questions.length === 0) {
@@ -1213,106 +1430,6 @@
         link.click();
         document.body.removeChild(link);
     }
-
-    const quizDataset = {
-        Physics: [
-            {
-                type: "mcq",
-                question: "Examine the circuit diagram table below. Calculate the total current (I) flowing through the circuit:",
-                mediaHTML: `
-                    <div class="q-rich-media">
-                        <table>
-                            <tr><th>Resistor</th><th>Resistance (Ω)</th><th>Voltage (V)</th></tr>
-                            <tr><td>R1</td><td>10 Ω</td><td>20 V</td></tr>
-                            <tr><td>R2</td><td>20 Ω</td><td>20 V</td></tr>
-                        </table>
-                    </div>
-                `,
-                options: ["1.0 A", "3.0 A", "1.5 A", "2.5 A"],
-                correct: 1
-            },
-            {
-                type: "mcq",
-                question: "Which wave property determines the loudness of a sound wave shown in the diagram?",
-                mediaHTML: `
-                    <div class="q-rich-media" style="text-align:center;">
-                        <svg width="220" height="80" viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M 0 40 Q 25 10, 50 40 T 100 40 T 150 40 T 200 40" fill="none" stroke="#2563eb" stroke-width="3"/>
-                            <line x1="0" y1="40" x2="220" y2="40" stroke="#cbd5e1" stroke-dasharray="4"/>
-                        </svg>
-                        <p style="font-size:11px; color:#64748b; margin:4px 0 0 0;">Transverse Wave Displacement</p>
-                    </div>
-                `,
-                options: ["Frequency", "Amplitude", "Wavelength", "Velocity"],
-                correct: 1
-            }
-        ],
-        Chemistry: [
-            {
-                type: "mcq",
-                question: "Based on the pH test data table below, identify the substance that is strongly basic:",
-                mediaHTML: `
-                    <div class="q-rich-media">
-                        <table>
-                            <tr><th>Solution</th><th>pH Value</th><th>Litmus Effect</th></tr>
-                            <tr><td>Sample A</td><td>2.4</td><td>Red</td></tr>
-                            <tr><td>Sample B</td><td>7.0</td><td>No Change</td></tr>
-                            <tr><td>Sample C</td><td>13.1</td><td>Blue</td></tr>
-                        </table>
-                    </div>
-                `,
-                options: ["Sample A", "Sample B", "Sample C", "None of these"],
-                correct: 2
-            }
-        ],
-        Mathematics: [
-            {
-                type: "mcq",
-                question: "Find the value of x from the geometric right-triangle figure specification:",
-                mediaHTML: `
-                    <div class="q-rich-media" style="text-align:center;">
-                        <svg width="180" height="100" viewBox="0 0 180 100" xmlns="http://www.w3.org/2000/svg">
-                            <polygon points="20,80 140,80 140,20" fill="none" stroke="#059669" stroke-width="3"/>
-                            <text x="75" y="95" font-size="12" fill="#0f172a">Base = 12</text>
-                            <text x="148" y="55" font-size="12" fill="#0f172a">Height = 5</text>
-                            <text x="65" y="45" font-size="12" fill="#dc2626">x = ?</text>
-                        </svg>
-                    </div>
-                `,
-                options: ["13", "15", "17", "14"],
-                correct: 0
-            }
-        ],
-        Science: [
-            {
-                type: "mcq",
-                question: "Which organelle in the plant cell diagram below produces ATP energy via cellular respiration?",
-                mediaHTML: `
-                    <div class="q-rich-media" style="text-align:center;">
-                        <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=400&q=80" alt="Cell Organelle" style="max-height:140px;" crossorigin="anonymous">
-                    </div>
-                `,
-                options: ["Mitochondria", "Chloroplast", "Nucleus", "Ribosome"],
-                correct: 0
-            }
-        ],
-        "Information Technology": [
-            {
-                type: "mcq",
-                question: "Which web service should the school use to post daily notices and journals?",
-                options: ["Blog", "Web Browser", "FTP", "Email Client"],
-                correct: 0
-            }
-        ],
-        "Informatics Practices": [
-            {
-                type: "mcq",
-                question: "Which Pandas function creates a DataFrame from a CSV file?",
-                options: ["pd.read_csv()", "pd.import_csv()", "pd.open_csv()"],
-                correct: 0
-            }
-        ]
-    };
 
     function setupHighSecurityLocks() {
         window.addEventListener("keydown", (e) => {
@@ -1379,6 +1496,7 @@
         document.getElementById("teacher-subject-box").style.display = "none";
         document.getElementById("quiz-box").style.display = "block";
 
+        const quizDataset = getStoredQuizDataset();
         const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
         quizData = JSON.parse(JSON.stringify(rawQuestions));
         userAnswers = new Array(quizData.length).fill(null);
@@ -1461,7 +1579,7 @@
                 </div>
             `;
         } else {
-            currentQuiz.options.forEach((optionText, idx) => {
+            (currentQuiz.options || []).forEach((optionText, idx) => {
                 const isChecked = userAnswers[currentQuestionIdx] === idx ? "checked" : "";
                 const optionElem = document.createElement("div");
                 optionElem.className = "option-container";
@@ -1562,7 +1680,6 @@
         await renderLockoutManagerZone();
     }
 
-    // REQUIREMENT #2: Render Exam Status Control Cards
     function renderExamStatusControlZone() {
         const container = document.getElementById("exam-status-toggle-container");
         const statuses = getExamStatuses();
@@ -1593,7 +1710,6 @@
         renderExamStatusControlZone();
     }
 
-    // REQUIREMENT #3 & #6: Render User Directory with Teacher Power Checkboxes & Class-wise Deletion
     function renderUserDirectoryZone() {
         const zone = document.getElementById("admin-users-zone");
         const users = getRegisteredUsers();
@@ -1678,7 +1794,6 @@
         }
     }
 
-    // REQUIREMENT #6: Delete users class-wise to free up roll numbers
     function deleteUsersByClass() {
         const selectedClass = document.getElementById("admin-delete-class-select").value;
         if (selectedClass === "all") {

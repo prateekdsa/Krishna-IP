@@ -225,6 +225,42 @@
             font-weight: normal;
         }
 
+        /* Nav Tabs Style for Teacher Dashboard */
+        .tab-nav-bar {
+            display: flex;
+            gap: 6px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .tab-button {
+            background: #e2e8f0;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px 6px 0 0;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--text-muted);
+        }
+
+        .tab-button.active-tab {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content-panel {
+            display: none;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 0 0 8px 8px;
+            margin-bottom: 15px;
+        }
+
         .app-footer {
             color: #ffffff;
             font-size: 14px;
@@ -304,14 +340,18 @@
         <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Proceed</button>
     </div>
 
-    <!-- TEACHER PORTAL (PREVIEW & CONTROL MODE ONLY) -->
+    <!-- TEACHER PORTAL WITH FULL NAVIGATION TAB BAR -->
     <div id="teacher-subject-box" style="display: none;">
-        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Welcome Teacher!</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;" id="teacher-greeting-text">Select subject to preview exact question layout without submitting a response:</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+            <h2 style="margin: 0; color: var(--primary-color);">Welcome Teacher!</h2>
+            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="location.reload()">🔒 Logout</button>
+        </div>
+        
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;" id="teacher-greeting-text">Select subject and use option tabs below to manage exams without submitting student responses:</p>
 
         <div class="input-group">
-            <label for="teacher-chosen-subject">Select Subject to Preview / Manage</label>
-            <select id="teacher-chosen-subject" onchange="renderTeacherLivePreview()">
+            <label for="teacher-chosen-subject">Select Active Subject</label>
+            <select id="teacher-chosen-subject" onchange="handleTeacherSubjectChange()">
                 <option value="Physics">Physics</option>
                 <option value="Chemistry">Chemistry</option>
                 <option value="Mathematics">Mathematics</option>
@@ -321,43 +361,61 @@
             </select>
         </div>
 
-        <!-- Live Layout Preview Window for Teachers -->
-        <div style="margin-top: 15px; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; background: white;">
-            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">👁️ Student Exam Layout Preview</h4>
+        <!-- 5 OPTIONS NAV TABS -->
+        <div class="tab-nav-bar">
+            <button id="btn-tab-upload" class="tab-button active-tab" onclick="switchTeacherTab('tab-upload')">📤 1. Upload Paper</button>
+            <button id="btn-tab-schedule" class="tab-button" onclick="switchTeacherTab('tab-schedule')">⏱️ 2. Live / Delist Schedule</button>
+            <button id="btn-tab-results" class="tab-button" onclick="switchTeacherTab('tab-results')">📥 3. Student Results</button>
+            <button id="btn-tab-preview" class="tab-button" onclick="switchTeacherTab('tab-preview')">👁️ 4. Layout Preview</button>
+        </div>
+
+        <!-- TAB 1: UPLOAD QUESTION PAPER (PDF / TEXT / JSON) -->
+        <div id="tab-upload" class="tab-content-panel" style="display: block;">
+            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">📤 Upload Question Paper (.PDF, .TXT, or .JSON)</h4>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Select paper file to make it live for students in the active subject.</p>
+            <input type="file" id="teacher-upload-file-input" accept=".pdf,.txt,.json" style="font-size:12px; width:100%; margin-bottom:10px;">
+            <button class="btn" style="width:100%; font-size:13px;" onclick="handleQuestionUpload('teacher-upload-file-input', 'teacher-chosen-subject')">Upload File Now</button>
+        </div>
+
+        <!-- TAB 2: LIVE AND AUTO DELIST SCHEDULER -->
+        <div id="tab-schedule" class="tab-content-panel">
+            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">⏱️ Exam Live & Auto-Delist Scheduler</h4>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div>
+                    <label style="font-size:12px; font-weight:600; display:block;">Go-Live Time (Start):</label>
+                    <input type="datetime-local" id="teacher-start-time" style="width:100%; padding:6px; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:600; display:block;">Auto-Delist Time (End):</label>
+                    <input type="datetime-local" id="teacher-end-time" style="width:100%; padding:6px; box-sizing:border-box;">
+                </div>
+                <button class="btn" style="width:100%; font-size:13px;" onclick="saveExamSchedule('teacher-chosen-subject', 'teacher-start-time', 'teacher-end-time')">Save Schedule</button>
+                <div id="teacher-schedule-status" style="font-size: 11px; font-weight: bold; color: var(--warning-color); margin-top: 5px;"></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: STUDENT RESULTS -->
+        <div id="tab-results" class="tab-content-panel">
+            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">📥 Student Test Results</h4>
+            <button class="btn" style="font-size: 13px; background: #2563eb; width: 100%; margin-bottom: 12px;" onclick="downloadFilteredResultsCSV()">Download Results (.CSV)</button>
+            <div id="teacher-submissions-list" style="max-height: 250px; overflow-y: auto;">Loading results...</div>
+        </div>
+
+        <!-- TAB 4: QUESTIONS LAYOUT PREVIEW -->
+        <div id="tab-preview" class="tab-content-panel">
+            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">👁️ Student Live Question Layout</h4>
             <div id="teacher-pdf-preview-container" class="pdf-viewer-box" style="max-height: 350px;"></div>
             <div id="teacher-mcq-preview-container"></div>
         </div>
-
-        <div id="teacher-granted-tools" style="margin-top: 20px; border-top: 2px dashed var(--border-color); padding-top: 15px; display: none;">
-            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">🛠️ Assigned Teacher Controls</h4>
-            
-            <div id="teacher-tool-upload" style="display:none; margin-bottom: 12px; background:#f1f5f9; padding:10px; border-radius:6px;">
-                <label style="font-weight:bold; font-size:12px; display:block; margin-bottom:4px;">📤 Upload Question Paper (.PDF or .JSON)</label>
-                <input type="file" id="teacher-upload-file-input" accept=".pdf,.json" style="font-size:12px;">
-                <button class="btn" style="padding:4px 10px; font-size:12px; margin-top:6px;" onclick="handleQuestionUpload('teacher-upload-file-input', 'teacher-chosen-subject')">Upload Paper</button>
-            </div>
-
-            <div id="teacher-tool-scheduler" style="display:none; margin-bottom: 12px; background:#f1f5f9; padding:10px; border-radius:6px;">
-                <label style="font-weight:bold; font-size:12px; display:block; margin-bottom:4px;">⏱️ Schedule Exam Go-Live & Delist</label>
-                <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                    <input type="datetime-local" id="teacher-start-time" style="font-size:11px; padding:4px;">
-                    <input type="datetime-local" id="teacher-end-time" style="font-size:11px; padding:4px;">
-                    <button class="btn" style="padding:4px 8px; font-size:12px;" onclick="saveExamSchedule('teacher-chosen-subject', 'teacher-start-time', 'teacher-end-time')">Save Schedule</button>
-                </div>
-            </div>
-
-            <div id="teacher-tool-csv" style="display:none; background:#f1f5f9; padding:10px; border-radius:6px;">
-                <button class="btn" style="font-size: 12px; background: #2563eb; width: 100%;" onclick="downloadFilteredResultsCSV()">📥 Download Class Results (.CSV)</button>
-            </div>
-        </div>
-
-        <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 15px;" onclick="location.reload()">Back to Login</button>
     </div>
 
     <!-- ADMIN CONTROL PANEL VIEW -->
     <div id="admin-box" style="display: none;">
-        <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 System Admin Portal</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, PDF/JSON papers, schedules, and permissions</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+            <h2 style="margin: 0; color: #059669;">🔒 System Admin Portal</h2>
+            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="location.reload()">🔒 Logout</button>
+        </div>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, PDF/JSON/TXT papers, schedules, and permissions</p>
 
         <!-- Admin Filters -->
         <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px; display: flex; gap: 10px;">
@@ -389,14 +447,14 @@
             </div>
         </div>
 
-        <!-- 1. Question Upload Section (Supports PDF & JSON) -->
+        <!-- 1. Question Upload Section (PDF, TXT, JSON) -->
         <div class="admin-section-card">
-            <h4 style="margin: 0 0 8px 0; color: var(--text-main);">📤 Upload Question Paper (.PDF or .JSON File)</h4>
+            <h4 style="margin: 0 0 8px 0; color: var(--text-main);">📤 Upload Question Paper (.PDF, .TXT, or .JSON File)</h4>
             <div style="display: flex; gap: 10px; align-items: center;">
-                <input type="file" id="admin-upload-file-input" accept=".pdf,.json" style="font-size: 12px; flex: 1;">
+                <input type="file" id="admin-upload-file-input" accept=".pdf,.txt,.json" style="font-size: 12px; flex: 1;">
                 <button class="btn" style="font-size: 12px; background: #059669;" onclick="handleQuestionUpload('admin-upload-file-input', 'admin-subject-select')">Upload Paper</button>
             </div>
-            <p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 0 0;">PDF papers preserve exact figure graphics, math symbols, and tables cleanly for student exams.</p>
+            <p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 0 0;">Supports PDF graphics, plain text files, or structured JSON arrays.</p>
         </div>
 
         <!-- 2. Exam Scheduler Section -->
@@ -419,18 +477,10 @@
         <!-- 3. Teacher Delegation Manager -->
         <div class="admin-section-card">
             <h4 style="margin: 0 0 8px 0; color: var(--text-main);">🔑 Assign Powers / Permissions to Teachers</h4>
-            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
-                <select id="admin-teacher-target" style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color);">
-                    <option value="all">All Teachers</option>
-                    <option value="teacher1">Teacher 1</option>
-                    <option value="teacher2">Teacher 2</option>
-                    <option value="teacher3">Teacher 3</option>
-                </select>
-            </div>
             <div class="perm-checkbox-group">
-                <label><input type="checkbox" id="perm-upload"> Upload Question Papers</label>
-                <label><input type="checkbox" id="perm-scheduler"> Set Exam Schedules</label>
-                <label><input type="checkbox" id="perm-csv"> Export CSV Results</label>
+                <label><input type="checkbox" id="perm-upload" checked> Upload Question Papers</label>
+                <label><input type="checkbox" id="perm-scheduler" checked> Set Exam Schedules</label>
+                <label><input type="checkbox" id="perm-csv" checked> Access & Export Results</label>
             </div>
             <button class="btn" style="font-size: 12px; background: #7c3aed; margin-top: 10px;" onclick="saveTeacherPermissions()">Save Teacher Powers</button>
         </div>
@@ -464,9 +514,12 @@
 
     <!-- QUIZ INTERFACE (STUDENT ONLY) -->
     <div id="quiz-box" style="display: none;">
-        <div class="security-banner">
-            <span>🔒 HIGH SECURITY EXAM ENVIRONMENT ACTIVE</span>
-            <span id="cheat-warning-count">Warnings: 0/2</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div class="security-banner" style="margin: 0; flex: 1; margin-right: 10px;">
+                <span>🔒 HIGH SECURITY EXAM ENVIRONMENT ACTIVE</span>
+                <span id="cheat-warning-count" style="margin-left: 10px;">Warnings: 0/2</span>
+            </div>
+            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="location.reload()">🔒 Logout</button>
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
@@ -566,14 +619,44 @@
     let loggedInTeacherName = "";
     let currentFetchedSubmissions = [];
 
-    // Global Stores for PDF Papers & Dynamic Configurations
-    let pdfPapersStore = {}; // Holds pdf data array buffers per subject
+    // Global Stores
+    let pdfPapersStore = {};
     let examSchedules = {}; 
-    let teacherPermissions = {
-        upload: false,
-        scheduler: false,
+    
+    // Persistent Teacher Permissions (Default enabled for all tabs)
+    let teacherPermissions = JSON.parse(localStorage.getItem("cps_teacher_perms")) || {
+        upload: true,
+        scheduler: true,
         csv: true
     };
+
+    // --- TAB SWITCHER FOR TEACHER DASHBOARD ---
+    function switchTeacherTab(tabId) {
+        document.querySelectorAll('.tab-content-panel').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active-tab'));
+
+        const targetPanel = document.getElementById(tabId);
+        if (targetPanel) targetPanel.style.display = 'block';
+
+        const targetBtn = document.getElementById('btn-' + tabId);
+        if (targetBtn) targetBtn.classList.add('active-tab');
+
+        if (tabId === 'tab-preview') {
+            renderTeacherLivePreview();
+        } else if (tabId === 'tab-results') {
+            loadTeacherResultsTable();
+        } else if (tabId === 'tab-schedule') {
+            updateScheduleDisplayStatus(document.getElementById('teacher-chosen-subject').value);
+        }
+    }
+
+    function handleTeacherSubjectChange() {
+        const activeTab = document.querySelector('.tab-button.active-tab');
+        if (activeTab) {
+            const tabId = activeTab.id.replace('btn-', '');
+            switchTeacherTab(tabId);
+        }
+    }
 
     // --- 1. LIVE CLOCK & DATE MODULE ---
     function startLiveClock() {
@@ -590,50 +673,73 @@
         setInterval(updateClock, 1000);
     }
 
-    // --- 2. QUESTION UPLOAD MODULE (HANDLES BOTH .PDF AND .JSON) ---
+    // --- 2. QUESTION UPLOAD MODULE (SUPPORTS .PDF, .TXT, .JSON) ---
     function handleQuestionUpload(fileInputId, subjectSelectId) {
         const fileInput = document.getElementById(fileInputId);
         const selectedSub = document.getElementById(subjectSelectId).value;
         const targetSubject = selectedSub === "All" ? "Physics" : selectedSub;
 
         if (!fileInput.files || fileInput.files.length === 0) {
-            return alert("Please select a PDF or JSON file to upload!");
+            return alert("Please select a PDF, TXT, or JSON file to upload!");
         }
 
         const file = fileInput.files[0];
-        const isPdf = file.name.toLowerCase().endsWith('.pdf');
+        const fileName = file.name.toLowerCase();
 
-        if (isPdf) {
+        if (fileName.endsWith('.pdf')) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 pdfPapersStore[targetSubject] = e.target.result;
-                alert(`✅ PDF Question Paper successfully uploaded for ${targetSubject}! All figures/tables preserved.`);
+                alert(`✅ PDF Question Paper uploaded for ${targetSubject}! All figures/tables preserved.`);
                 fileInput.value = "";
                 if (document.getElementById("teacher-subject-box").style.display !== "none") {
-                    renderTeacherLivePreview();
+                    switchTeacherTab('tab-preview');
                 }
             };
             reader.readAsArrayBuffer(file);
-        } else {
+        } else if (fileName.endsWith('.json')) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const parsedData = JSON.parse(e.target.result);
-                    if (!Array.isArray(parsedData)) {
-                        throw new Error("File content must be a JSON array of questions.");
-                    }
+                    if (!Array.isArray(parsedData)) throw new Error("JSON file must contain an array of question objects.");
                     quizDataset[targetSubject] = parsedData;
-                    delete pdfPapersStore[targetSubject]; // Clear PDF if JSON uploaded
-                    alert(`✅ JSON Question Paper uploaded for ${targetSubject}! Total Questions: ${parsedData.length}`);
+                    delete pdfPapersStore[targetSubject];
+                    alert(`✅ JSON Question Paper uploaded for ${targetSubject}! (${parsedData.length} questions)`);
                     fileInput.value = "";
                     if (document.getElementById("teacher-subject-box").style.display !== "none") {
-                        renderTeacherLivePreview();
+                        switchTeacherTab('tab-preview');
                     }
-                } catch (err) {
-                    alert("❌ Upload Failed: " + err.message);
+                } catch (err) { alert("❌ JSON Parse Error: " + err.message); }
+            };
+            reader.readAsText(file);
+        } else if (fileName.endsWith('.txt')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const textContent = e.target.result;
+                const lines = textContent.split('\n').filter(l => l.trim().length > 0);
+                const generatedQuestions = [];
+
+                lines.forEach((line, i) => {
+                    generatedQuestions.push({
+                        type: "mcq",
+                        question: line,
+                        options: ["Option A", "Option B", "Option C", "Option D"],
+                        correct: 0
+                    });
+                });
+
+                quizDataset[targetSubject] = generatedQuestions;
+                delete pdfPapersStore[targetSubject];
+                alert(`✅ Text Paper parsed and loaded for ${targetSubject}! (${generatedQuestions.length} questions)`);
+                fileInput.value = "";
+                if (document.getElementById("teacher-subject-box").style.display !== "none") {
+                    switchTeacherTab('tab-preview');
                 }
             };
             reader.readAsText(file);
+        } else {
+            alert("❌ Unsupported file format! Please upload a .PDF, .TXT, or .JSON file.");
         }
     }
 
@@ -659,7 +765,7 @@
         }
     }
 
-    // --- 3. TEACHER LIVE PREVIEW MODE (NO EXAM SUBMISSIONS) ---
+    // --- 3. TEACHER LIVE PREVIEW MODE ---
     function renderTeacherLivePreview() {
         const sub = document.getElementById("teacher-chosen-subject").value;
         const pdfContainer = document.getElementById("teacher-pdf-preview-container");
@@ -698,7 +804,44 @@
         }
     }
 
-    // --- 4. EXAM SCHEDULER (GO-LIVE & AUTO-DELIST) ---
+    // --- TEACHER RESULTS TABLE LOADER ---
+    async function loadTeacherResultsTable() {
+        const container = document.getElementById("teacher-submissions-list");
+        const sub = document.getElementById("teacher-chosen-subject").value;
+
+        if (!dbClientInstance) {
+            container.innerHTML = "<span>Database Connection Error</span>";
+            return;
+        }
+
+        try {
+            const { data, error } = await dbClientInstance
+                .from('student_submissions')
+                .select('*')
+                .ilike('class_label', `%${sub}%`)
+                .order('submitted_at', { ascending: false });
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                container.innerHTML = `<span style="font-size:12px; color:#64748b;">No submissions found for ${sub}.</span>`;
+                return;
+            }
+
+            let html = `<table class='admin-table'><thead><tr><th>Name</th><th>Class & Subject</th><th>Roll</th><th>Score</th></tr></thead><tbody>`;
+            data.forEach(item => {
+                let scoreOnly = item.score_summary || "0";
+                if (scoreOnly.includes("/")) scoreOnly = scoreOnly.split("/")[0].trim();
+                html += `<tr><td>${item.student_name}</td><td>${item.class_label}</td><td>${item.roll_number}</td><td><strong>${scoreOnly}</strong></td></tr>`;
+            });
+            html += "</tbody></table>";
+            container.innerHTML = html;
+        } catch (e) {
+            container.innerHTML = "Error loading results: " + e.message;
+        }
+    }
+
+    // --- 4. EXAM SCHEDULER ---
     function saveExamSchedule(subjectSelectId, startInputId, endInputId) {
         const selectedSub = document.getElementById(subjectSelectId).value;
         const targetSubject = selectedSub === "All" ? "Physics" : selectedSub;
@@ -723,14 +866,19 @@
     }
 
     function updateScheduleDisplayStatus(subject) {
-        const display = document.getElementById("schedule-status-display");
-        if (!display) return;
+        const displayAdmin = document.getElementById("schedule-status-display");
+        const displayTeacher = document.getElementById("teacher-schedule-status");
         const sched = examSchedules[subject];
+
+        let msg = "";
         if (sched) {
-            display.innerText = `Active Schedule (${subject}): Live from ${new Date(sched.start).toLocaleString()} to ${new Date(sched.end).toLocaleString()}`;
+            msg = `Active Schedule (${subject}): Live from ${new Date(sched.start).toLocaleString()} to ${new Date(sched.end).toLocaleString()}`;
         } else {
-            display.innerText = `No schedule set for ${subject} (Exam available immediately).`;
+            msg = `No schedule set for ${subject} (Exam available immediately).`;
         }
+
+        if (displayAdmin) displayAdmin.innerText = msg;
+        if (displayTeacher) displayTeacher.innerText = msg;
     }
 
     function isExamLive(subject) {
@@ -748,28 +896,25 @@
         return { live: true };
     }
 
-    // --- 5. TEACHER PERMISSION DELEGATION MODULE ---
+    // --- 5. PERMISSIONS MODULE ---
     function saveTeacherPermissions() {
         teacherPermissions.upload = document.getElementById("perm-upload").checked;
         teacherPermissions.scheduler = document.getElementById("perm-scheduler").checked;
         teacherPermissions.csv = document.getElementById("perm-csv").checked;
 
+        localStorage.setItem("cps_teacher_perms", JSON.stringify(teacherPermissions));
         alert("✅ Teacher permissions successfully saved!");
+        applyTeacherPermissionsUI();
     }
 
     function applyTeacherPermissionsUI() {
-        const toolsBox = document.getElementById("teacher-granted-tools");
-        const uploadBox = document.getElementById("teacher-tool-upload");
-        const schedulerBox = document.getElementById("teacher-tool-scheduler");
-        const csvBox = document.getElementById("teacher-tool-csv");
+        const uploadBtn = document.getElementById("btn-tab-upload");
+        const scheduleBtn = document.getElementById("btn-tab-schedule");
+        const resultsBtn = document.getElementById("btn-tab-results");
 
-        let anyActive = false;
-
-        if (teacherPermissions.upload) { uploadBox.style.display = "block"; anyActive = true; } else { uploadBox.style.display = "none"; }
-        if (teacherPermissions.scheduler) { schedulerBox.style.display = "block"; anyActive = true; } else { schedulerBox.style.display = "none"; }
-        if (teacherPermissions.csv) { csvBox.style.display = "block"; anyActive = true; } else { csvBox.style.display = "none"; }
-
-        toolsBox.style.display = anyActive ? "block" : "none";
+        if (uploadBtn) uploadBtn.style.display = teacherPermissions.upload ? "block" : "none";
+        if (scheduleBtn) scheduleBtn.style.display = teacherPermissions.scheduler ? "block" : "none";
+        if (resultsBtn) resultsBtn.style.display = teacherPermissions.csv ? "block" : "none";
     }
 
     // --- 6. EXPORT QUESTION PAPER STRICTLY AS PDF ---
@@ -782,7 +927,6 @@
         pdfContainer.innerHTML = "";
 
         if (pdfPapersStore[targetSubject]) {
-            // Render existing PDF onto canvas then export
             const wrapper = document.createElement("div");
             wrapper.innerHTML = `<h2 style="text-align:center;">CITY PUBLIC SCHOOL, NAJIBABAD</h2><h3 style="text-align:center;">QUESTION PAPER: ${targetSubject.toUpperCase()}</h3><hr><br>`;
             pdfContainer.appendChild(wrapper);
@@ -894,6 +1038,10 @@
         updateRollLimits();
         setupHighSecurityLocks();
         setStageBackground("login");
+
+        document.getElementById("perm-upload").checked = teacherPermissions.upload;
+        document.getElementById("perm-scheduler").checked = teacherPermissions.scheduler;
+        document.getElementById("perm-csv").checked = teacherPermissions.csv;
     });
 
     function handleLoginSubmit() {
@@ -914,9 +1062,9 @@
             loggedInTeacherName = rawNameInput || "Teacher";
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("teacher-subject-box").style.display = "block";
-            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select subject to view live layout:`;
+            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select active subject to manage exams:`;
             applyTeacherPermissionsUI();
-            renderTeacherLivePreview();
+            switchTeacherTab('tab-upload');
             return;
         }
 
@@ -948,7 +1096,7 @@
     async function downloadFilteredResultsCSV() {
         if (!dbClientInstance) return alert("Database Connection Error!");
         const selectedClassFilter = document.getElementById("admin-class-select")?.value || "All";
-        const selectedSubjectFilter = document.getElementById("admin-subject-select")?.value || "All";
+        const selectedSubjectFilter = document.getElementById("admin-subject-select")?.value || document.getElementById("teacher-chosen-subject")?.value || "All";
 
         try {
             let query = dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
@@ -1111,7 +1259,6 @@
         selectedSubject = document.getElementById("subject-select").value;
         const enteredPass = document.getElementById("student-pass").value.trim();
 
-        // Validate Schedule Live Status
         const liveCheck = isExamLive(selectedSubject);
         if (!liveCheck.live) {
             return alert(`🚫 Access Blocked!\n${liveCheck.reason}`);
@@ -1273,7 +1420,6 @@
                 if (error) throw error;
             } catch (e) {
                 alert("Submission Save Error: " + e.message);
-                console.error("Database save error:", e);
             }
         }
 
@@ -1293,9 +1439,7 @@
                 .from('student_submissions')
                 .delete()
                 .lt('submitted_at', cutoffTime);
-        } catch (e) {
-            console.error("Auto-purge error:", e);
-        }
+        } catch (e) {}
     }
 
     async function renderAdminDashboardData() {
@@ -1405,18 +1549,9 @@
             }
 
             const { count, error } = await query;
-            
-            if (error) {
-                alert("Supabase Delete Error: " + error.message);
-                return;
-            }
+            if (error) throw error;
 
-            if (count === 0) {
-                alert("⚠️ Row was not deleted on the server! Please run 'ALTER TABLE student_submissions DISABLE ROW LEVEL SECURITY;' in your Supabase SQL Editor.");
-            } else {
-                alert("Submission deleted permanently.");
-            }
-
+            alert("Submission deleted permanently.");
             await renderSubmissionsZone();
         } catch (e) {
             alert("Failed to delete submission: " + e.message);
@@ -1440,7 +1575,6 @@
                 const item = currentFetchedSubmissions[idx];
                 if (item) {
                     let query = dbClientInstance.from('student_submissions').delete();
-                    
                     if (item.id !== undefined && item.id !== null) {
                         query = query.eq('id', item.id);
                     } else {
@@ -1450,7 +1584,6 @@
                             .eq('class_label', item.class_label)
                             .eq('submitted_at', item.submitted_at);
                     }
-
                     await query;
                 }
             }

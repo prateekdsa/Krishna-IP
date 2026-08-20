@@ -13,7 +13,6 @@
         :root {
             --primary-color: #2563eb;
             --primary-hover: #1d4ed8;
-            --bg-overlay: rgba(15, 23, 42, 0.40);
             --card-bg: rgba(255, 255, 255, 0.96);
             --text-main: #0f172a;
             --text-muted: #475569;
@@ -21,12 +20,22 @@
             --success-color: #16a34a;
             --danger-color: #dc2626;
             --warning-color: #d97706;
+
+            /* Dedicated Stage Background Images */
+            --bg-login: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.55)), 
+                        url('https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+
+            --bg-student: linear-gradient(rgba(15, 23, 42, 0.70), rgba(15, 23, 42, 0.70)), 
+                          url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+
+            --bg-admin: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.85)), 
+                        url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
-                        url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+            background: var(--bg-login);
+            transition: background 0.5s ease-in-out;
             color: var(--text-main);
             margin: 0;
             padding: 20px 10px;
@@ -446,6 +455,16 @@
     let loggedInTeacherName = "";
     let currentFetchedSubmissions = [];
 
+    function setStageBackground(stage) {
+        if (stage === "admin") {
+            document.body.style.background = "var(--bg-admin)";
+        } else if (stage === "student") {
+            document.body.style.background = "var(--bg-student)";
+        } else {
+            document.body.style.background = "var(--bg-login)";
+        }
+    }
+
     function getSeedFromString(str) {
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
@@ -493,6 +512,7 @@
     window.addEventListener("DOMContentLoaded", () => {
         updateRollLimits();
         setupHighSecurityLocks();
+        setStageBackground("login");
     });
 
     function handleLoginSubmit() {
@@ -501,6 +521,7 @@
         const enteredPass = document.getElementById("student-pass").value.trim();
 
         if (rawNameInput === MASTER_TEACHER_PASSWORD || enteredPass === MASTER_TEACHER_PASSWORD) {
+            setStageBackground("admin");
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("admin-box").style.display = "block";
             renderAdminDashboardData();
@@ -837,6 +858,7 @@
         studentRoll = 999;
         selectedClassLabel = `${teacherClassLabel} (${selectedSubject})`;
 
+        setStageBackground("student");
         document.getElementById("teacher-subject-box").style.display = "none";
         document.getElementById("quiz-box").style.display = "block";
 
@@ -930,6 +952,7 @@
         const initialSecs = timeRemainingSeconds % 60;
         document.getElementById("timer-display").innerText = `⏱️ ${initialMins}:${initialSecs < 10 ? '0' : ''}${initialSecs}`;
 
+        setStageBackground("student");
         document.getElementById("setup-box").style.display = "none";
         document.getElementById("quiz-box").style.display = "block";
 
@@ -1184,7 +1207,6 @@
                 alert("Submission deleted permanently from all filters.");
             }
 
-            // Reload fresh database state across all view filters
             await renderSubmissionsZone();
         } catch (e) {
             alert("Failed to delete submission: " + e.message);

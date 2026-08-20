@@ -404,7 +404,7 @@
 
     const MASTER_TEACHER_PASSWORD = "Admin@7055";
     const VALID_TEACHER_LOGINS = Array.from({ length: 25 }, (_, i) => `teacher${i + 1}`);
-    const EXPIRATION_MS = 72 * 60 * 60 * 1000; // 72 Hours in Milliseconds
+    const EXPIRATION_MS = 72 * 60 * 60 * 1000;
 
     let dbClientInstance = null;
     if (typeof supabase !== "undefined" && SUPABASE_KEY !== "") {
@@ -835,7 +835,7 @@
         
         studentName = `${loggedInTeacherName} (Teacher Evaluation)`;
         studentRoll = 999;
-        selectedClassLabel = `${teacherClassLabel} - Teacher Evaluation (${selectedSubject})`;
+        selectedClassLabel = `${teacherClassLabel} (${selectedSubject})`;
 
         document.getElementById("teacher-subject-box").style.display = "none";
         document.getElementById("quiz-box").style.display = "block";
@@ -1171,22 +1171,21 @@
                     .eq('submitted_at', item.submitted_at);
             }
 
-            const { count, error } = await query.select();
+            const { count, error } = await query;
             
             if (error) {
-                alert("Supabase Error: " + error.message + "\nCheck if RLS DELETE policies are enabled in your Supabase console.");
+                alert("Supabase Delete Error: " + error.message);
                 return;
             }
 
             if (count === 0) {
-                alert("⚠️ Deletion blocked by database Row Level Security (RLS). Please allow DELETE policy for anon users in Supabase Dashboard.");
+                alert("⚠️ Row was not deleted on the server! Please run 'ALTER TABLE student_submissions DISABLE ROW LEVEL SECURITY;' in your Supabase SQL Editor.");
             } else {
-                alert("Submission deleted successfully.");
+                alert("Submission deleted permanently from all filters.");
             }
 
-            // Instantly remove from local memory & refresh UI
-            currentFetchedSubmissions.splice(idx, 1);
-            renderSubmissionsUI();
+            // Reload fresh database state across all view filters
+            await renderSubmissionsZone();
         } catch (e) {
             alert("Failed to delete submission: " + e.message);
         }
@@ -1202,15 +1201,13 @@
 
         if (!confirm(`Are you sure you want to delete the selected ${checkboxes.length} submission(s)?`)) return;
 
-        const indicesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.getAttribute('data-idx'), 10)).sort((a, b) => b - a);
-        let deletedCount = 0;
-        let rlsBlocked = false;
+        const indicesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.getAttribute('data-idx'), 10));
 
         try {
             for (let idx of indicesToDelete) {
                 const item = currentFetchedSubmissions[idx];
                 if (item) {
-                    let query = dbClientInstance.from('student_submissions').delete({ count: 'exact' });
+                    let query = dbClientInstance.from('student_submissions').delete();
                     
                     if (item.id !== undefined && item.id !== null) {
                         query = query.eq('id', item.id);
@@ -1222,24 +1219,12 @@
                             .eq('submitted_at', item.submitted_at);
                     }
 
-                    const { count, error } = await query.select();
-                    if (!error && count > 0) {
-                        deletedCount++;
-                        currentFetchedSubmissions.splice(idx, 1);
-                    } else if (!error && count === 0) {
-                        rlsBlocked = true;
-                        currentFetchedSubmissions.splice(idx, 1); // remove from UI anyway
-                    }
+                    await query;
                 }
             }
 
-            if (rlsBlocked) {
-                alert("⚠️ Note: Supabase RLS policies are restricting DELETE access on the server. Update policies on Supabase Dashboard if rows reappear on page refresh.");
-            } else {
-                alert("Selected submissions deleted successfully.");
-            }
-
-            renderSubmissionsUI();
+            alert("Selected submissions deleted successfully.");
+            await renderSubmissionsZone();
         } catch (e) {
             alert("Failed to delete selected submissions: " + e.message);
         }

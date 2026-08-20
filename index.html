@@ -21,13 +21,10 @@
             --danger-color: #dc2626;
             --warning-color: #d97706;
 
-            /* Dedicated Stage Background Images */
             --bg-login: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.55)), 
                         url('https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
-
             --bg-student: linear-gradient(rgba(15, 23, 42, 0.70), rgba(15, 23, 42, 0.70)), 
                           url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
-
             --bg-admin: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.85)), 
                         url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
         }
@@ -66,6 +63,19 @@
             letter-spacing: 1px;
         }
 
+        .clock-widget {
+            background: rgba(15, 23, 42, 0.75);
+            color: #f8fafc;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            letter-spacing: 0.5px;
+        }
+
         .container {
             width: 100%;
             max-width: 820px;
@@ -92,12 +102,8 @@
 
         .btn:hover { background-color: var(--primary-hover); }
 
-        .btn-danger {
-            background-color: var(--danger-color);
-        }
-        .btn-danger:hover {
-            background-color: #b91c1c;
-        }
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-danger:hover { background-color: #b91c1c; }
 
         .restart-btn {
             width: 100%;
@@ -184,6 +190,14 @@
         }
         table.admin-table th { background-color: #e2e8f0; }
 
+        .admin-section-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
         .security-banner {
             background-color: #fef2f2;
             border: 1px solid #fca5a5;
@@ -196,6 +210,21 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+
+        .perm-checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .perm-checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: normal;
         }
 
         .app-footer {
@@ -213,6 +242,7 @@
 
 <div class="header-title">
     <h1>CITY PUBLIC SCHOOL, NAJIBABAD</h1>
+    <div id="live-clock-widget" class="clock-widget">📅 Loading Date & Time...</div>
 </div>
 
 <div class="container">
@@ -267,7 +297,7 @@
         <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Proceed</button>
     </div>
 
-    <!-- TEACHER SETUP SCREEN -->
+    <!-- TEACHER PORTAL -->
     <div id="teacher-subject-box" style="display: none;">
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Welcome Teacher!</h2>
         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;" id="teacher-greeting-text">Select class and subject to begin your exam session:</p>
@@ -299,14 +329,39 @@
         </div>
 
         <button class="btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="startTeacherExam()">Start Teacher Exam Session</button>
-        <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="location.reload()">Back to Login</button>
+
+        <div id="teacher-granted-tools" style="margin-top: 20px; border-top: 2px dashed var(--border-color); padding-top: 15px; display: none;">
+            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">🛠️ Assigned Teacher Controls</h4>
+            
+            <div id="teacher-tool-upload" style="display:none; margin-bottom: 12px; background:#f1f5f9; padding:10px; border-radius:6px;">
+                <label style="font-weight:bold; font-size:12px; display:block; margin-bottom:4px;">📤 Upload Question Paper (.JSON)</label>
+                <input type="file" id="teacher-upload-file-input" accept=".json" style="font-size:12px;">
+                <button class="btn" style="padding:4px 10px; font-size:12px; margin-top:6px;" onclick="handleQuestionUpload('teacher-upload-file-input', 'teacher-chosen-subject')">Upload JSON</button>
+            </div>
+
+            <div id="teacher-tool-scheduler" style="display:none; margin-bottom: 12px; background:#f1f5f9; padding:10px; border-radius:6px;">
+                <label style="font-weight:bold; font-size:12px; display:block; margin-bottom:4px;">⏱️ Schedule Exam Go-Live & Delist</label>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <input type="datetime-local" id="teacher-start-time" style="font-size:11px; padding:4px;">
+                    <input type="datetime-local" id="teacher-end-time" style="font-size:11px; padding:4px;">
+                    <button class="btn" style="padding:4px 8px; font-size:12px;" onclick="saveExamSchedule('teacher-chosen-subject', 'teacher-start-time', 'teacher-end-time')">Save Schedule</button>
+                </div>
+            </div>
+
+            <div id="teacher-tool-csv" style="display:none; background:#f1f5f9; padding:10px; border-radius:6px;">
+                <button class="btn" style="font-size: 12px; background: #2563eb; width: 100%;" onclick="downloadFilteredResultsCSV()">📥 Download Class Results (.CSV)</button>
+            </div>
+        </div>
+
+        <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 15px;" onclick="location.reload()">Back to Login</button>
     </div>
 
     <!-- ADMIN CONTROL PANEL VIEW -->
     <div id="admin-box" style="display: none;">
         <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 System Admin Portal</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, question papers, and system logs</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, question papers, schedules, and permissions</p>
 
+        <!-- Admin Filters -->
         <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px; display: flex; gap: 10px;">
             <div style="flex: 1;">
                 <label for="admin-class-select" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 6px; color: var(--text-main);">Filter Class:</label>
@@ -337,6 +392,53 @@
             </div>
         </div>
 
+        <!-- 1. Question Upload Section -->
+        <div class="admin-section-card">
+            <h4 style="margin: 0 0 8px 0; color: var(--text-main);">📤 Upload Question Paper (.JSON File)</h4>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="file" id="admin-upload-file-input" accept=".json" style="font-size: 12px; flex: 1;">
+                <button class="btn" style="font-size: 12px; background: #059669;" onclick="handleQuestionUpload('admin-upload-file-input', 'admin-subject-select')">Upload JSON Paper</button>
+            </div>
+            <p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 0 0;">Upload structured JSON question data directly into the selected subject array.</p>
+        </div>
+
+        <!-- 2. Exam Scheduler Section -->
+        <div class="admin-section-card">
+            <h4 style="margin: 0 0 8px 0; color: var(--text-main);">⏱️ Exam Go-Live & Auto-Delist Scheduler</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end;">
+                <div>
+                    <label style="font-size: 11px; font-weight: 600;">Go-Live Time (Start):</label>
+                    <input type="datetime-local" id="admin-start-time">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 600;">Auto-Delist Time (End):</label>
+                    <input type="datetime-local" id="admin-end-time">
+                </div>
+                <button class="btn" style="font-size: 12px; background: #2563eb;" onclick="saveExamSchedule('admin-subject-select', 'admin-start-time', 'admin-end-time')">Apply Schedule</button>
+            </div>
+            <div id="schedule-status-display" style="font-size: 11px; font-weight: bold; margin-top: 8px; color: var(--warning-color);"></div>
+        </div>
+
+        <!-- 3. Teacher Delegation Manager -->
+        <div class="admin-section-card">
+            <h4 style="margin: 0 0 8px 0; color: var(--text-main);">🔑 Assign Powers / Permissions to Teachers</h4>
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
+                <select id="admin-teacher-target" style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color);">
+                    <option value="all">All Teachers</option>
+                    <option value="teacher1">Teacher 1</option>
+                    <option value="teacher2">Teacher 2</option>
+                    <option value="teacher3">Teacher 3</option>
+                </select>
+            </div>
+            <div class="perm-checkbox-group">
+                <label><input type="checkbox" id="perm-upload"> Upload Question Papers</label>
+                <label><input type="checkbox" id="perm-scheduler"> Set Exam Schedules</label>
+                <label><input type="checkbox" id="perm-csv"> Export CSV Results</label>
+            </div>
+            <button class="btn" style="font-size: 12px; background: #7c3aed; margin-top: 10px;" onclick="saveTeacherPermissions()">Save Teacher Powers</button>
+        </div>
+
+        <!-- Quick Action Buttons -->
         <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
             <div style="display: flex; gap: 10px;">
                 <button class="btn" style="font-size: 13px; background: #059669; flex: 1;" onclick="downloadAllPasswordsCSV()">📊 Passwords (.CSV)</button>
@@ -345,7 +447,8 @@
             <button class="btn" style="font-size: 13px; background: #d97706; width: 100%;" onclick="downloadQuestionPaper()">📄 Download Selected Question Paper (.TXT)</button>
         </div>
 
-        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+        <!-- Live Submissions -->
+        <div class="admin-section-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <h4 style="margin: 0; color: var(--text-main);">📋 Live Student Test Submissions (Auto-purges after 72 hrs)</h4>
                 <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteSelectedCheckedSubmissions()">Delete Selected Checked</button>
@@ -353,7 +456,8 @@
             <div id="admin-submissions-zone" style="max-height: 280px; overflow-y: auto;">Loading submissions...</div>
         </div>
 
-        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+        <!-- Active Locks -->
+        <div class="admin-section-card">
             <h4 style="margin: 0 0 10px 0; color: var(--text-main);">Active Device Locks</h4>
             <div id="admin-unblock-zone">Loading locks...</div>
         </div>
@@ -455,6 +559,140 @@
     let loggedInTeacherName = "";
     let currentFetchedSubmissions = [];
 
+    // Global Stores for Dynamic Configurations
+    let examSchedules = {}; 
+    let teacherPermissions = {
+        upload: false,
+        scheduler: false,
+        csv: true
+    };
+
+    // --- 1. LIVE CLOCK & DATE MODULE ---
+    function startLiveClock() {
+        const clockElem = document.getElementById("live-clock-widget");
+        function updateClock() {
+            const now = new Date();
+            const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            const formattedDate = now.toLocaleDateString('en-US', dateOptions);
+            const formattedTime = now.toLocaleTimeString('en-US', timeOptions);
+            clockElem.innerHTML = `📅 ${formattedDate} | 🕒 ${formattedTime}`;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+    }
+
+    // --- 2. QUESTION UPLOAD MODULE ---
+    function handleQuestionUpload(fileInputId, subjectSelectId) {
+        const fileInput = document.getElementById(fileInputId);
+        const selectedSub = document.getElementById(subjectSelectId).value;
+        const targetSubject = selectedSub === "All" ? "Physics" : selectedSub;
+
+        if (!fileInput.files || fileInput.files.length === 0) {
+            return alert("Please select a valid JSON file to upload!");
+        }
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            try {
+                const parsedData = JSON.parse(e.target.result);
+                if (!Array.isArray(parsedData)) {
+                    throw new Error("File content must be a JSON array of questions.");
+                }
+
+                // Simple structure validation
+                if (parsedData.length > 0 && (!parsedData[0].question || !parsedData[0].options)) {
+                    throw new Error("Invalid question format! Each object must contain 'question' and 'options'.");
+                }
+
+                quizDataset[targetSubject] = parsedData;
+                alert(`✅ Question Paper successfully uploaded for ${targetSubject}! Total Questions: ${parsedData.length}`);
+                fileInput.value = "";
+            } catch (err) {
+                alert("❌ Upload Failed: " + err.message);
+            }
+        };
+
+        reader.readAsText(file);
+    }
+
+    // --- 3. EXAM SCHEDULER (GO-LIVE & AUTO-DELIST) ---
+    function saveExamSchedule(subjectSelectId, startInputId, endInputId) {
+        const selectedSub = document.getElementById(subjectSelectId).value;
+        const targetSubject = selectedSub === "All" ? "Physics" : selectedSub;
+        const startTime = document.getElementById(startInputId).value;
+        const endTime = document.getElementById(endInputId).value;
+
+        if (!startTime || !endTime) {
+            return alert("Please select both Go-Live start time and Auto-Delist end time.");
+        }
+
+        if (new Date(startTime) >= new Date(endTime)) {
+            return alert("Go-Live start time must be earlier than Auto-Delist end time!");
+        }
+
+        examSchedules[targetSubject] = {
+            start: new Date(startTime).getTime(),
+            end: new Date(endTime).getTime()
+        };
+
+        alert(`🗓️ Schedule saved for ${targetSubject}!\nGo-Live: ${startTime}\nAuto-Delist: ${endTime}`);
+        updateScheduleDisplayStatus(targetSubject);
+    }
+
+    function updateScheduleDisplayStatus(subject) {
+        const display = document.getElementById("schedule-status-display");
+        if (!display) return;
+        const sched = examSchedules[subject];
+        if (sched) {
+            display.innerText = `Active Schedule (${subject}): Live from ${new Date(sched.start).toLocaleString()} to ${new Date(sched.end).toLocaleString()}`;
+        } else {
+            display.innerText = `No schedule set for ${subject} (Exam available immediately).`;
+        }
+    }
+
+    function isExamLive(subject) {
+        const sched = examSchedules[subject];
+        if (!sched) return { live: true }; // Default live if no schedule set
+
+        const now = Date.now();
+        if (now < sched.start) {
+            return { live: false, reason: `Exam is not live yet! Scheduled to start on ${new Date(sched.start).toLocaleString()}` };
+        }
+        if (now > sched.end) {
+            return { live: false, reason: `Exam has ended and auto-delisted on ${new Date(sched.end).toLocaleString()}` };
+        }
+
+        return { live: true };
+    }
+
+    // --- 4. TEACHER PERMISSION DELEGATION MODULE ---
+    function saveTeacherPermissions() {
+        teacherPermissions.upload = document.getElementById("perm-upload").checked;
+        teacherPermissions.scheduler = document.getElementById("perm-scheduler").checked;
+        teacherPermissions.csv = document.getElementById("perm-csv").checked;
+
+        alert("✅ Teacher permissions successfully saved!");
+    }
+
+    function applyTeacherPermissionsUI() {
+        const toolsBox = document.getElementById("teacher-granted-tools");
+        const uploadBox = document.getElementById("teacher-tool-upload");
+        const schedulerBox = document.getElementById("teacher-tool-scheduler");
+        const csvBox = document.getElementById("teacher-tool-csv");
+
+        let anyActive = false;
+
+        if (teacherPermissions.upload) { uploadBox.style.display = "block"; anyActive = true; } else { uploadBox.style.display = "none"; }
+        if (teacherPermissions.scheduler) { schedulerBox.style.display = "block"; anyActive = true; } else { schedulerBox.style.display = "none"; }
+        if (teacherPermissions.csv) { csvBox.style.display = "block"; anyActive = true; } else { csvBox.style.display = "none"; }
+
+        toolsBox.style.display = anyActive ? "block" : "none";
+    }
+
+    // --- ORIGINAL CORE FUNCTIONS & INTEGRATION ---
     function setStageBackground(stage) {
         if (stage === "admin") {
             document.body.style.background = "var(--bg-admin)";
@@ -510,6 +748,7 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+        startLiveClock();
         updateRollLimits();
         setupHighSecurityLocks();
         setStageBackground("login");
@@ -534,6 +773,7 @@
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("teacher-subject-box").style.display = "block";
             document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
+            applyTeacherPermissionsUI();
             return;
         }
 
@@ -564,8 +804,8 @@
 
     async function downloadFilteredResultsCSV() {
         if (!dbClientInstance) return alert("Database Connection Error!");
-        const selectedClassFilter = document.getElementById("admin-class-select").value;
-        const selectedSubjectFilter = document.getElementById("admin-subject-select").value;
+        const selectedClassFilter = document.getElementById("admin-class-select")?.value || "All";
+        const selectedSubjectFilter = document.getElementById("admin-subject-select")?.value || "All";
 
         try {
             let query = dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
@@ -917,6 +1157,12 @@
         selectedSubject = document.getElementById("subject-select").value;
         const enteredPass = document.getElementById("student-pass").value.trim();
 
+        // Validate Schedule Live Status
+        const liveCheck = isExamLive(selectedSubject);
+        if (!liveCheck.live) {
+            return alert(`🚫 Access Blocked!\n${liveCheck.reason}`);
+        }
+
         const config = classConfig[selectedClassKey];
         selectedClassLabel = `${config.label} (${selectedSubject})`;
 
@@ -1095,6 +1341,7 @@
         await purgeExpiredSubmissions();
         await renderSubmissionsZone();
         await renderLockoutManagerZone();
+        updateScheduleDisplayStatus(document.getElementById("admin-subject-select").value);
     }
 
     function toggleSelectAllSubmissions(masterCheckbox) {
@@ -1108,6 +1355,8 @@
 
         const filterClass = document.getElementById("admin-class-select").value;
         const filterSubject = document.getElementById("admin-subject-select").value;
+
+        updateScheduleDisplayStatus(filterSubject === "All" ? "Physics" : filterSubject);
 
         try {
             let query = dbClientInstance.from('student_submissions').select('*').order('submitted_at', { ascending: false });
@@ -1170,7 +1419,7 @@
                 </td>
             </tr>`;
         });
-        html += "</tbody>mtable>";
+        html += "</tbody></table>";
         zone.innerHTML = html;
     }
 

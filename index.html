@@ -339,9 +339,9 @@
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <h4 style="margin: 0; color: var(--text-main);">📋 Live Student Test Submissions (Auto-purges after 72 hrs)</h4>
-                <button class="btn btn-danger" style="padding: 4px 10px; font-size: 12px;" onclick="deleteAllFilteredSubmissions()">Delete Filtered Tests</button>
+                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteSelectedCheckedSubmissions()">Delete Selected Checked</button>
             </div>
-            <div id="admin-submissions-zone" style="max-height: 250px; overflow-y: auto;">Loading submissions...</div>
+            <div id="admin-submissions-zone" style="max-height: 280px; overflow-y: auto;">Loading submissions...</div>
         </div>
 
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
@@ -444,6 +444,7 @@
     let securityViolationCount = 0;
     let isExamActive = false;
     let loggedInTeacherName = "";
+    let currentFetchedSubmissions = [];
 
     function getSeedFromString(str) {
         let hash = 0;
@@ -558,7 +559,6 @@
             const { data, error } = await query;
             if (error) throw error;
             
-            // Filter out items older than 72 hours
             const now = Date.now();
             const validData = (data || []).filter(item => {
                 const submittedTime = new Date(item.submitted_at).getTime();
@@ -1074,6 +1074,11 @@
         await renderLockoutManagerZone();
     }
 
+    function toggleSelectAllSubmissions(masterCheckbox) {
+        const rowBoxes = document.querySelectorAll('.sub-select-box');
+        rowBoxes.forEach(cb => cb.checked = masterCheckbox.checked);
+    }
+
     async function renderSubmissionsZone() {
         const zone = document.getElementById("admin-submissions-zone");
         if (!dbClientInstance) return zone.innerHTML = "<span style='color:red;'>Database Instance Not Ready</span>";
@@ -1094,30 +1099,45 @@
             const { data, error } = await query;
             if (error) throw error;
 
-            // Client-side enforcement of 72 hour expiration filter
             const now = Date.now();
-            const activeData = (data || []).filter(item => {
+            currentFetchedSubmissions = (data || []).filter(item => {
                 const submittedTime = new Date(item.submitted_at).getTime();
                 return (now - submittedTime) < EXPIRATION_MS;
             });
 
-            if (activeData.length === 0) return zone.innerHTML = "<span>No submissions recorded matching filters.</span>";
+            if (currentFetchedSubmissions.length === 0) {
+                return zone.innerHTML = "<span>No submissions recorded matching filters.</span>";
+            }
 
-            let html = "<table class='admin-table'><thead><tr><th>Name</th><th>Class & Subject</th><th>Roll</th><th>Score</th><th>Submitted At</th><th>Actions</th></tr></thead><tbody>";
-            activeData.forEach(item => {
+            let html = `<table class='admin-table'>
+                <thead>
+                    <tr>
+                        <th style="width:30px; text-align:center;"><input type="checkbox" id="master-select-cb" onclick="toggleSelectAllSubmissions(this)"></th>
+                        <th>Name</th>
+                        <th>Class & Subject</th>
+                        <th>Roll</th>
+                        <th>Score</th>
+                        <th>Submitted At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            currentFetchedSubmissions.forEach((item, index) => {
                 const dateStr = new Date(item.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 
                 let scoreOnly = item.score_summary || "0";
                 if (scoreOnly.includes("/")) scoreOnly = scoreOnly.split("/")[0].trim();
 
                 html += `<tr>
+                    <td style="text-align:center;"><input type="checkbox" class="sub-select-box" data-idx="${index}"></td>
                     <td>${item.student_name}</td>
                     <td>${item.class_label}</td>
                     <td>${item.roll_number}</td>
                     <td><strong>${scoreOnly}</strong></td>
                     <td>${dateStr}</td>
                     <td>
-                        <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deleteSubmissionById('${item.id}')">Delete</button>
+                        <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deleteSingleSubmissionRow(${index})">Delete</button>
                     </td>
                 </tr>`;
             });
@@ -1126,19 +1146,27 @@
         } catch (e) { zone.innerHTML = "Error fetching submissions: " + e.message; }
     }
 
-    async function deleteSubmissionById(id) {
+    async function deleteSingleSubmissionRow(idx) {
         if (!dbClientInstance) return alert("Database Not Available");
-        if (!confirm("Are you sure you want to delete this specific test submission?")) return;
+        const item = currentFetchedSubmissions[idx];
+        if (!item) return;
+
+        if (!confirm(`Are you sure you want to delete test for "${item.student_name}"?`)) return;
 
         try {
-            // Handle numeric primary key or String UUID
-            const parsedId = isNaN(id) ? id : Number(id);
+            let query = dbClientInstance.from('student_submissions').delete();
 
-            const { error } = await dbClientInstance
-                .from('student_submissions')
-                .delete()
-                .eq('id', parsedId);
+            if (item.id !== undefined && item.id !== null) {
+                query = query.eq('id', item.id);
+            } else {
+                query = query
+                    .eq('student_name', item.student_name)
+                    .eq('roll_number', item.roll_number)
+                    .eq('class_label', item.class_label)
+                    .eq('submitted_at', item.submitted_at);
+            }
 
+            const { error } = await query;
             if (error) throw error;
 
             alert("Submission deleted successfully.");
@@ -1148,39 +1176,42 @@
         }
     }
 
-    async function deleteAllFilteredSubmissions() {
+    async function deleteSelectedCheckedSubmissions() {
         if (!dbClientInstance) return alert("Database Not Available");
-        
-        const filterClass = document.getElementById("admin-class-select").value;
-        const filterSubject = document.getElementById("admin-subject-select").value;
 
-        let confirmMsg = "Are you sure you want to delete ALL test submissions matching current filters?";
-        if (filterClass === "All" && filterSubject === "All") {
-            confirmMsg = "⚠️ WARNING: You are about to DELETE ALL STUDENT TEST SUBMISSIONS from the database! Proceed?";
+        const checkboxes = document.querySelectorAll('.sub-select-box:checked');
+        if (checkboxes.length === 0) {
+            return alert("Please select at least one submission checkbox to delete.");
         }
 
-        if (!confirm(confirmMsg)) return;
+        if (!confirm(`Are you sure you want to delete the selected ${checkboxes.length} submission(s)?`)) return;
 
         try {
-            let query = dbClientInstance.from('student_submissions').delete();
+            for (let cb of checkboxes) {
+                const idx = parseInt(cb.getAttribute('data-idx'), 10);
+                const item = currentFetchedSubmissions[idx];
+                if (item) {
+                    let query = dbClientInstance.from('student_submissions').delete();
+                    
+                    if (item.id !== undefined && item.id !== null) {
+                        query = query.eq('id', item.id);
+                    } else {
+                        query = query
+                            .eq('student_name', item.student_name)
+                            .eq('roll_number', item.roll_number)
+                            .eq('class_label', item.class_label)
+                            .eq('submitted_at', item.submitted_at);
+                    }
 
-            if (filterClass !== "All") {
-                query = query.ilike('class_label', `%${filterClass}%`);
-            } else {
-                query = query.not('id', 'is', null); 
+                    const { error } = await query;
+                    if (error) console.error("Error deleting individual row: ", error);
+                }
             }
 
-            if (filterSubject !== "All") {
-                query = query.ilike('class_label', `%${filterSubject}%`);
-            }
-
-            const { error } = await query;
-            if (error) throw error;
-
-            alert("Filtered submissions deleted successfully.");
+            alert("Selected submissions deleted successfully.");
             await renderSubmissionsZone();
         } catch (e) {
-            alert("Failed to delete submissions: " + e.message);
+            alert("Failed to delete selected submissions: " + e.message);
         }
     }
 

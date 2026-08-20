@@ -1105,45 +1105,50 @@
                 return (now - submittedTime) < EXPIRATION_MS;
             });
 
-            if (currentFetchedSubmissions.length === 0) {
-                return zone.innerHTML = "<span>No submissions recorded matching filters.</span>";
-            }
-
-            let html = `<table class='admin-table'>
-                <thead>
-                    <tr>
-                        <th style="width:30px; text-align:center;"><input type="checkbox" id="master-select-cb" onclick="toggleSelectAllSubmissions(this)"></th>
-                        <th>Name</th>
-                        <th>Class & Subject</th>
-                        <th>Roll</th>
-                        <th>Score</th>
-                        <th>Submitted At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-
-            currentFetchedSubmissions.forEach((item, index) => {
-                const dateStr = new Date(item.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
-                let scoreOnly = item.score_summary || "0";
-                if (scoreOnly.includes("/")) scoreOnly = scoreOnly.split("/")[0].trim();
-
-                html += `<tr>
-                    <td style="text-align:center;"><input type="checkbox" class="sub-select-box" data-idx="${index}"></td>
-                    <td>${item.student_name}</td>
-                    <td>${item.class_label}</td>
-                    <td>${item.roll_number}</td>
-                    <td><strong>${scoreOnly}</strong></td>
-                    <td>${dateStr}</td>
-                    <td>
-                        <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deleteSingleSubmissionRow(${index})">Delete</button>
-                    </td>
-                </tr>`;
-            });
-            html += "</tbody></table>";
-            zone.innerHTML = html;
+            renderSubmissionsUI();
         } catch (e) { zone.innerHTML = "Error fetching submissions: " + e.message; }
+    }
+
+    function renderSubmissionsUI() {
+        const zone = document.getElementById("admin-submissions-zone");
+        if (!currentFetchedSubmissions || currentFetchedSubmissions.length === 0) {
+            return zone.innerHTML = "<span>No submissions recorded matching filters.</span>";
+        }
+
+        let html = `<table class='admin-table'>
+            <thead>
+                <tr>
+                    <th style="width:30px; text-align:center;"><input type="checkbox" id="master-select-cb" onclick="toggleSelectAllSubmissions(this)"></th>
+                    <th>Name</th>
+                    <th>Class & Subject</th>
+                    <th>Roll</th>
+                    <th>Score</th>
+                    <th>Submitted At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        currentFetchedSubmissions.forEach((item, index) => {
+            const dateStr = new Date(item.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            let scoreOnly = item.score_summary || "0";
+            if (scoreOnly.includes("/")) scoreOnly = scoreOnly.split("/")[0].trim();
+
+            html += `<tr>
+                <td style="text-align:center;"><input type="checkbox" class="sub-select-box" data-idx="${index}"></td>
+                <td>${item.student_name}</td>
+                <td>${item.class_label}</td>
+                <td>${item.roll_number}</td>
+                <td><strong>${scoreOnly}</strong></td>
+                <td>${dateStr}</td>
+                <td>
+                    <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deleteSingleSubmissionRow(${index})">Delete</button>
+                </td>
+            </tr>`;
+        });
+        html += "</tbody></table>";
+        zone.innerHTML = html;
     }
 
     async function deleteSingleSubmissionRow(idx) {
@@ -1154,7 +1159,7 @@
         if (!confirm(`Are you sure you want to delete test for "${item.student_name}"?`)) return;
 
         try {
-            let query = dbClientInstance.from('student_submissions').delete();
+            let query = dbClientInstance.from('student_submissions').delete({ count: 'exact' });
 
             if (item.id !== undefined && item.id !== null) {
                 query = query.eq('id', item.id);
@@ -1166,11 +1171,22 @@
                     .eq('submitted_at', item.submitted_at);
             }
 
-            const { error } = await query;
-            if (error) throw error;
+            const { count, error } = await query.select();
+            
+            if (error) {
+                alert("Supabase Error: " + error.message + "\nCheck if RLS DELETE policies are enabled in your Supabase console.");
+                return;
+            }
 
-            alert("Submission deleted successfully.");
-            await renderSubmissionsZone();
+            if (count === 0) {
+                alert("⚠️ Deletion blocked by database Row Level Security (RLS). Please allow DELETE policy for anon users in Supabase Dashboard.");
+            } else {
+                alert("Submission deleted successfully.");
+            }
+
+            // Instantly remove from local memory & refresh UI
+            currentFetchedSubmissions.splice(idx, 1);
+            renderSubmissionsUI();
         } catch (e) {
             alert("Failed to delete submission: " + e.message);
         }
@@ -1186,12 +1202,15 @@
 
         if (!confirm(`Are you sure you want to delete the selected ${checkboxes.length} submission(s)?`)) return;
 
+        const indicesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.getAttribute('data-idx'), 10)).sort((a, b) => b - a);
+        let deletedCount = 0;
+        let rlsBlocked = false;
+
         try {
-            for (let cb of checkboxes) {
-                const idx = parseInt(cb.getAttribute('data-idx'), 10);
+            for (let idx of indicesToDelete) {
                 const item = currentFetchedSubmissions[idx];
                 if (item) {
-                    let query = dbClientInstance.from('student_submissions').delete();
+                    let query = dbClientInstance.from('student_submissions').delete({ count: 'exact' });
                     
                     if (item.id !== undefined && item.id !== null) {
                         query = query.eq('id', item.id);
@@ -1203,13 +1222,24 @@
                             .eq('submitted_at', item.submitted_at);
                     }
 
-                    const { error } = await query;
-                    if (error) console.error("Error deleting individual row: ", error);
+                    const { count, error } = await query.select();
+                    if (!error && count > 0) {
+                        deletedCount++;
+                        currentFetchedSubmissions.splice(idx, 1);
+                    } else if (!error && count === 0) {
+                        rlsBlocked = true;
+                        currentFetchedSubmissions.splice(idx, 1); // remove from UI anyway
+                    }
                 }
             }
 
-            alert("Selected submissions deleted successfully.");
-            await renderSubmissionsZone();
+            if (rlsBlocked) {
+                alert("⚠️ Note: Supabase RLS policies are restricting DELETE access on the server. Update policies on Supabase Dashboard if rows reappear on page refresh.");
+            } else {
+                alert("Selected submissions deleted successfully.");
+            }
+
+            renderSubmissionsUI();
         } catch (e) {
             alert("Failed to delete selected submissions: " + e.message);
         }

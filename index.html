@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>City Public School, Najibabad</title>
+    <title>City Public School, Najibabad - Examination Portal</title>
 
     <meta name="median-secure" content="true">
     <meta name="gonative-secure" content="true">
@@ -21,7 +21,6 @@
             --danger-color: #dc2626;
             --warning-color: #d97706;
 
-            /* Dedicated Stage Background Images */
             --bg-login: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.55)), 
                         url('https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
 
@@ -58,6 +57,8 @@
             text-align: center;
             margin-bottom: 15px;
             text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+            position: relative;
+            width: 100%;
         }
 
         .header-title h1 {
@@ -78,6 +79,23 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(4px);
         }
+
+        .logout-btn-header {
+            position: absolute;
+            right: 15px;
+            top: 0;
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: none;
+        }
+        .logout-btn-header:hover { background-color: #b91c1c; }
 
         .container {
             width: 100%;
@@ -137,7 +155,7 @@
         }
         .restart-btn:hover { background-color: #b91c1c; }
 
-        .input-group { margin-bottom: 16px; }
+        .input-group { margin-bottom: 16px; position: relative; }
         .input-group label {
             display: block;
             font-size: 13px;
@@ -154,6 +172,33 @@
             box-sizing: border-box;
             font-size: 14px;
         }
+
+        /* Password input container with integrated inline eye icon and forgot link */
+        .password-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-input-wrapper input {
+            padding-right: 40px;
+        }
+        .toggle-password-eye {
+            position: absolute;
+            right: 12px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 16px;
+            opacity: 0.7;
+        }
+        .toggle-password-eye:hover { opacity: 1; }
+
+        .pass-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .pass-label-row label { margin-bottom: 0; }
 
         .option-container {
             border: 1px solid var(--border-color);
@@ -239,11 +284,36 @@
             cursor: pointer;
             font-size: 13px;
         }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .badge-live { background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .badge-offline { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+        .permission-checkboxes {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+        .permission-checkboxes label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: normal;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
 
 <div class="header-title">
+    <button class="logout-btn-header" id="global-logout-btn" onclick="location.reload()">🔒 Log Out</button>
     <h1>CITY PUBLIC SCHOOL, NAJIBABAD</h1>
     <div class="live-clock-bar" id="live-datetime">Loading Date & Time...</div>
 </div>
@@ -262,6 +332,10 @@
                 <option value="student">Student</option>
                 <option value="teacher">Teacher</option>
             </select>
+            <!-- REPOSITIONED REQUIREMENT #9: New user registration link placed immediately after I AM dropdown -->
+            <div style="margin-top: 6px; text-align: right;">
+                <span class="auth-link" onclick="showAuthView('register-box')">New User? Register Here</span>
+            </div>
         </div>
 
         <div class="input-group">
@@ -270,12 +344,21 @@
         </div>
 
         <div class="input-group">
-            <label for="auth-pass">Password</label>
-            <input type="password" id="auth-pass" placeholder="Enter account password">
+            <!-- REPOSITIONED REQUIREMENT #8: Forgot password link inline with Password Label -->
+            <div class="pass-label-row">
+                <label for="auth-pass">Password</label>
+                <span class="auth-link" onclick="showAuthView('forgot-box')">Forgot Password?</span>
+            </div>
+            <!-- ADDED REQUIREMENT #5: Password View Eye Icon -->
+            <div class="password-input-wrapper">
+                <input type="password" id="auth-pass" placeholder="Enter account password">
+                <span class="toggle-password-eye" onclick="togglePasswordVisibility('auth-pass', this)">👁️</span>
+            </div>
         </div>
 
-        <!-- Student-Specific Selection Options (Subject Removed as requested) -->
+        <!-- Student-Specific Selection Options -->
         <div id="student-only-fields">
+            <!-- RESTORED REQUIREMENT #1: Class Dropdown Menu -->
             <div class="input-group" id="class-group">
                 <label for="class-select">Select Class & Section</label>
                 <select id="class-select" onchange="updateRollLimits()">
@@ -297,11 +380,6 @@
         </div>
 
         <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Proceed</button>
-
-        <div style="display: flex; justify-content: space-between; margin-top: 15px;">
-            <span class="auth-link" onclick="showAuthView('register-box')">New User? Register Here</span>
-            <span class="auth-link" onclick="showAuthView('forgot-box')">Forgot Password?</span>
-        </div>
     </div>
 
     <!-- DUAL-ROLE REGISTRATION PANEL -->
@@ -311,9 +389,24 @@
 
         <div class="input-group">
             <label for="reg-role">Account Type</label>
-            <select id="reg-role">
+            <select id="reg-role" onchange="toggleRegRoleFields()">
                 <option value="Student">Student</option>
                 <option value="Teacher">Teacher (Requires Admin Authorization)</option>
+            </select>
+        </div>
+
+        <!-- RESTORED REQUIREMENT #1: Class Dropdown for Registration -->
+        <div class="input-group" id="reg-class-group">
+            <label for="reg-class">Assign Class & Section</label>
+            <select id="reg-class">
+                <option value="class9A">Class 9th - Section A</option>
+                <option value="class9B">Class 9th - Section B</option>
+                <option value="class10A">Class 10th - Section A</option>
+                <option value="class10B">Class 10th - Section B</option>
+                <option value="class11A">Class 11th - Section A</option>
+                <option value="class11B">Class 11th - Section B</option>
+                <option value="class12A">Class 12th - Section A</option>
+                <option value="class12B">Class 12th - Section B</option>
             </select>
         </div>
 
@@ -329,7 +422,10 @@
 
         <div class="input-group">
             <label for="reg-pass">Create Password</label>
-            <input type="password" id="reg-pass" placeholder="Create new password">
+            <div class="password-input-wrapper">
+                <input type="password" id="reg-pass" placeholder="Create new password">
+                <span class="toggle-password-eye" onclick="togglePasswordVisibility('reg-pass', this)">👁️</span>
+            </div>
         </div>
 
         <button class="btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="handleRegisterSubmit()">Register Account</button>
@@ -348,7 +444,10 @@
 
         <div class="input-group">
             <label for="reset-new-pass">New Password</label>
-            <input type="password" id="reset-new-pass" placeholder="Enter new password">
+            <div class="password-input-wrapper">
+                <input type="password" id="reset-new-pass" placeholder="Enter new password">
+                <span class="toggle-password-eye" onclick="togglePasswordVisibility('reset-new-pass', this)">👁️</span>
+            </div>
         </div>
 
         <button class="btn" style="width: 100%; background-color: var(--warning-color); margin-top: 10px;" onclick="handlePasswordReset()">Update Password</button>
@@ -368,14 +467,7 @@
 
         <div class="input-group">
             <label for="post-login-subject">Subject</label>
-            <select id="post-login-subject">
-                <option value="Physics">Physics</option>
-                <option value="Chemistry">Chemistry</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science (Combined)</option>
-                <option value="Information Technology">Information Technology (402)</option>
-                <option value="Informatics Practices">Informatics Practices (065)</option>
-            </select>
+            <select id="post-login-subject"></select>
         </div>
 
         <button class="btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="confirmStudentSubjectAndStart()">Start Exam Session</button>
@@ -417,7 +509,7 @@
             </select>
         </div>
 
-        <button class="btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="startTeacherExam()">Start Teacher Exam Session</button>
+        <button class="btn" id="teacher-start-btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="startTeacherExam()">Start Teacher Exam Session</button>
         <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="location.reload()">Back to Login</button>
     </div>
 
@@ -426,13 +518,35 @@
         <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 System Admin Portal</h2>
         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage registered accounts, teacher authorizations, student results, and system logs</p>
 
-        <!-- USER MANAGEMENT SECTION -->
+        <!-- USER MANAGEMENT SECTION WITH CLASS-WISE DELETE & TEACHER POWER ASSIGNMENT -->
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
                 <h4 style="margin: 0; color: var(--text-main);">👥 Registered Users & Authorization</h4>
-                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="clearAllUsers()">Clear All Users</button>
+                
+                <!-- ADDED REQUIREMENT #6: Option for deleting users class wise to free up roll numbers -->
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <select id="admin-delete-class-select" style="padding: 4px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color);">
+                        <option value="all">Select Class to Purge</option>
+                        <option value="class9A">Class 9th - A</option>
+                        <option value="class9B">Class 9th - B</option>
+                        <option value="class10A">Class 10th - A</option>
+                        <option value="class10B">Class 10th - B</option>
+                        <option value="class11A">Class 11th - A</option>
+                        <option value="class11B">Class 11th - B</option>
+                        <option value="class12A">Class 12th - A</option>
+                        <option value="class12B">Class 12th - B</option>
+                    </select>
+                    <button class="btn btn-danger" style="padding: 4px 10px; font-size: 11px;" onclick="deleteUsersByClass()">Purge Class Users</button>
+                    <button class="btn btn-danger" style="padding: 4px 10px; font-size: 11px; background-color:#7f1d1d;" onclick="clearAllUsers()">Purge ALL</button>
+                </div>
             </div>
-            <div id="admin-users-zone" style="max-height: 200px; overflow-y: auto;">Loading registered users...</div>
+            <div id="admin-users-zone" style="max-height: 250px; overflow-y: auto;">Loading registered users...</div>
+        </div>
+
+        <!-- ADDED REQUIREMENT #2: EXAM LIVE LISTING AND DELISTING CONTROL -->
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+            <h4 style="margin: 0 0 10px 0; color: var(--text-main);">🟢 Exam Status Control (Live Listing / Delisting)</h4>
+            <div id="exam-status-toggle-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;"></div>
         </div>
 
         <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px; display: flex; gap: 10px;">
@@ -465,11 +579,9 @@
             </div>
         </div>
 
+        <!-- REMOVED REQUIREMENT #4: Removed Password.csv button -->
         <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-            <div style="display: flex; gap: 10px;">
-                <button class="btn" style="font-size: 13px; background: #059669; flex: 1;" onclick="downloadAllPasswordsCSV()">📊 Passwords (.CSV)</button>
-                <button class="btn" style="font-size: 13px; background: #2563eb; flex: 1;" onclick="downloadFilteredResultsCSV()">📥 Filtered Results (.CSV)</button>
-            </div>
+            <button class="btn" style="font-size: 13px; background: #2563eb; width: 100%;" onclick="downloadFilteredResultsCSV()">📥 Filtered Results (.CSV)</button>
             <button class="btn" style="font-size: 13px; background: #d97706; width: 100%;" onclick="downloadQuestionPaper()">📄 Download Selected Question Paper (.TXT)</button>
         </div>
 
@@ -542,7 +654,6 @@
         ? window.ENV.SUPABASE_ANON_KEY 
         : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE";
 
-    // ADMIN CREDENTIALS SPECIFIED
     const ADMIN_USER_ID = "ADMIN";
     const MASTER_TEACHER_PASSWORD = "Admin@7055";
     
@@ -589,6 +700,36 @@
     let loggedInTeacherName = "";
     let currentFetchedSubmissions = [];
 
+    // Helper for Live Exam Statuses
+    function getExamStatuses() {
+        const defaults = {
+            "Physics": true,
+            "Chemistry": true,
+            "Mathematics": true,
+            "Science": true,
+            "Information Technology": true,
+            "Informatics Practices": true
+        };
+        const stored = localStorage.getItem("cps_exam_statuses");
+        return stored ? JSON.parse(stored) : defaults;
+    }
+
+    function saveExamStatuses(statuses) {
+        localStorage.setItem("cps_exam_statuses", JSON.stringify(statuses));
+    }
+
+    // REQUIREMENT #5: Toggle password eye visibility
+    function togglePasswordVisibility(inputId, eyeIcon) {
+        const inputElem = document.getElementById(inputId);
+        if (inputElem.type === "password") {
+            inputElem.type = "text";
+            eyeIcon.innerText = "🙈";
+        } else {
+            inputElem.type = "password";
+            eyeIcon.innerText = "👁️";
+        }
+    }
+
     // Live Clock & Date Update
     function startLiveClock() {
         const datetimeElem = document.getElementById("live-datetime");
@@ -626,6 +767,16 @@
             studentFields.style.display = "none";
         } else {
             studentFields.style.display = "block";
+        }
+    }
+
+    function toggleRegRoleFields() {
+        const role = document.getElementById("reg-role").value;
+        const classGroup = document.getElementById("reg-class-group");
+        if (role === "Teacher") {
+            classGroup.style.display = "none";
+        } else {
+            classGroup.style.display = "block";
         }
     }
 
@@ -711,12 +862,14 @@
         document.getElementById("quiz-box").style.display = "none";
         document.getElementById("result-box").style.display = "none";
         document.getElementById("admin-box").style.display = "block";
+        document.getElementById("global-logout-btn").style.display = "block";
         renderAdminDashboardData();
     }
 
     // AUTHENTICATION & REGISTRATION LOGIC
     function handleRegisterSubmit() {
         const role = document.getElementById("reg-role").value;
+        const userClass = (role === "Student") ? document.getElementById("reg-class").value : "";
         const name = document.getElementById("reg-name").value.trim();
         const email = document.getElementById("reg-email").value.trim().toLowerCase();
         const pass = document.getElementById("reg-pass").value.trim();
@@ -732,14 +885,16 @@
             return;
         }
 
-        // Teachers require authorization by admin
+        // Teachers require authorization by admin; students default active
         const isAuthorized = (role.toLowerCase() === "teacher") ? false : true;
+        // REQUIREMENT #3: Default Teacher Powers (Can view results, manage exam status)
+        const permissions = (role.toLowerCase() === "teacher") ? { canViewResults: true, canToggleExams: false } : {};
 
-        users.push({ role, name, email, pass, isAuthorized });
+        users.push({ role, userClass, name, email, pass, isAuthorized, permissions });
         saveRegisteredUsers(users);
 
         if (role.toLowerCase() === "teacher") {
-            alert("Teacher account submitted for authorization! An Admin must authorize your account in the Admin Portal before you can log in.");
+            alert("Teacher account submitted for authorization! An Admin must authorize your account and assign powers in the Admin Portal before you can log in.");
         } else {
             alert("Account registered successfully! You can now log in.");
         }
@@ -799,11 +954,11 @@
                 loggedInTeacherName = matchedUser.name;
                 document.getElementById("setup-box").style.display = "none";
                 document.getElementById("teacher-subject-box").style.display = "block";
+                document.getElementById("global-logout-btn").style.display = "block";
                 document.getElementById("teacher-welcome-msg").innerText = `👋 Welcome, ${loggedInTeacherName}! Login Authorized.`;
                 document.getElementById("teacher-greeting-text").innerText = `Select class and subject to start:`;
                 return;
             } else {
-                // Student authenticated -> Proceed to subject selection screen
                 promptStudentSubjectSelection(matchedUser.name);
                 return;
             }
@@ -819,6 +974,7 @@
             loggedInTeacherName = rawEmailInput || "Teacher";
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("teacher-subject-box").style.display = "block";
+            document.getElementById("global-logout-btn").style.display = "block";
             document.getElementById("teacher-welcome-msg").innerText = `👋 Welcome, ${loggedInTeacherName}! Login Authorized.`;
             document.getElementById("teacher-greeting-text").innerText = `Select class and subject to start:`;
             return;
@@ -847,7 +1003,6 @@
             return;
         }
 
-        // Password validation (same for all subjects)
         const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
         if (enteredPass !== expectedPass) {
             const users = getRegisteredUsers();
@@ -858,14 +1013,42 @@
             }
         }
 
+        // Populating Available Live Exams in Post-login dropdown
+        const postSubjectSelect = document.getElementById("post-login-subject");
+        postSubjectSelect.innerHTML = "";
+        const statuses = getExamStatuses();
+        
+        let liveCount = 0;
+        Object.keys(statuses).forEach(subj => {
+            if (statuses[subj]) {
+                const opt = document.createElement("option");
+                opt.value = subj;
+                opt.innerText = subj;
+                postSubjectSelect.appendChild(opt);
+                liveCount++;
+            }
+        });
+
+        if (liveCount === 0) {
+            alert("⚠️ All Subject Examinations are currently offline or unlisted by the Administrator.");
+            return;
+        }
+
         // Show Welcome Message and Subject Choice screen AFTER Login
         document.getElementById("setup-box").style.display = "none";
         document.getElementById("student-subject-box").style.display = "block";
+        document.getElementById("global-logout-btn").style.display = "block";
         document.getElementById("student-welcome-msg").innerText = `👋 Welcome, ${studentName}! Logged in to ${config.label} (Roll No: ${studentRoll}).`;
     }
 
     async function confirmStudentSubjectAndStart() {
         selectedSubject = document.getElementById("post-login-subject").value;
+        const statuses = getExamStatuses();
+        if (!statuses[selectedSubject]) {
+            alert("⚠️ This exam has just been delisted/offline by the administrator.");
+            return;
+        }
+
         const config = classConfig[selectedClassKey];
         selectedClassLabel = `${config.label} (${selectedSubject})`;
 
@@ -894,28 +1077,6 @@
         currentQuestionIdx = 0;
         startTimer();
         loadQuestion();
-    }
-
-    function downloadAllPasswordsCSV() {
-        let csvRows = ["Class & Section,Roll Number,6-Digit Password"];
-
-        Object.keys(classConfig).forEach(key => {
-            const conf = classConfig[key];
-            for (let r = 1; r <= conf.maxRoll; r++) {
-                const pass = generateUniquePassword(key, r);
-                csvRows.push(`"${conf.label}",${r},"${pass}"`);
-            }
-        });
-
-        const csvString = csvRows.join("\n");
-        const blob = new Blob(["\uFEFF" + csvString], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", "CPS_Student_Passwords_Master_List.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
     }
 
     async function downloadFilteredResultsCSV() {
@@ -1396,10 +1557,43 @@
     async function renderAdminDashboardData() {
         await purgeExpiredSubmissions();
         renderUserDirectoryZone();
+        renderExamStatusControlZone();
         await renderSubmissionsZone();
         await renderLockoutManagerZone();
     }
 
+    // REQUIREMENT #2: Render Exam Status Control Cards
+    function renderExamStatusControlZone() {
+        const container = document.getElementById("exam-status-toggle-container");
+        const statuses = getExamStatuses();
+        container.innerHTML = "";
+
+        Object.keys(statuses).forEach(subject => {
+            const isLive = statuses[subject];
+            const card = document.createElement("div");
+            card.style.cssText = "background:#fff; padding:10px 12px; border-radius:6px; border:1px solid #cbd5e1; display:flex; justify-content:space-between; align-items:center;";
+
+            card.innerHTML = `
+                <div>
+                    <strong style="font-size:13px; display:block; color:var(--text-main);">${subject}</strong>
+                    <span class="status-badge ${isLive ? 'badge-live' : 'badge-offline'}">${isLive ? '● LIVE' : '○ OFFLINE'}</span>
+                </div>
+                <button class="btn" style="padding:4px 10px; font-size:11px; background-color:${isLive ? 'var(--danger-color)' : 'var(--success-color)'};" onclick="toggleExamStatus('${subject}')">
+                    ${isLive ? 'Delist Exam' : 'Make Live'}
+                </button>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function toggleExamStatus(subject) {
+        const statuses = getExamStatuses();
+        statuses[subject] = !statuses[subject];
+        saveExamStatuses(statuses);
+        renderExamStatusControlZone();
+    }
+
+    // REQUIREMENT #3 & #6: Render User Directory with Teacher Power Checkboxes & Class-wise Deletion
     function renderUserDirectoryZone() {
         const zone = document.getElementById("admin-users-zone");
         const users = getRegisteredUsers();
@@ -1413,9 +1607,10 @@
             <thead>
                 <tr>
                     <th>Role</th>
+                    <th>Class</th>
                     <th>Name</th>
                     <th>Email / Username</th>
-                    <th>Status</th>
+                    <th>Teacher Powers / Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -1423,9 +1618,20 @@
 
         users.forEach((u, index) => {
             const isTeacher = u.role.toLowerCase() === "teacher";
-            const statusLabel = isTeacher 
-                ? (u.isAuthorized ? "<span style='color:green; font-weight:bold;'>Authorized</span>" : "<span style='color:orange; font-weight:bold;'>Pending</span>")
-                : "<span style='color:blue;'>Active</span>";
+            const classLabel = u.userClass ? (classConfig[u.userClass]?.label || u.userClass) : "N/A";
+            
+            let powerControls = "";
+            if (isTeacher) {
+                const perms = u.permissions || {};
+                powerControls = `
+                    <div class="permission-checkboxes">
+                        <label><input type="checkbox" ${perms.canViewResults ? 'checked' : ''} onchange="updateTeacherPower(${index}, 'canViewResults', this.checked)"> View Results</label>
+                        <label><input type="checkbox" ${perms.canToggleExams ? 'checked' : ''} onchange="updateTeacherPower(${index}, 'canToggleExams', this.checked)"> Manage Exams</label>
+                    </div>
+                `;
+            } else {
+                powerControls = "<span style='color:blue; font-size:12px;'>Active Student</span>";
+            }
 
             const authBtn = (isTeacher && !u.isAuthorized) 
                 ? `<button class="btn" style="padding:2px 8px; font-size:11px; background-color:var(--success-color); margin-right:4px;" onclick="authorizeTeacher(${index})">Authorize</button>`
@@ -1433,9 +1639,10 @@
 
             html += `<tr>
                 <td><strong>${u.role}</strong></td>
+                <td><small>${classLabel}</small></td>
                 <td>${u.name}</td>
                 <td>${u.email}</td>
-                <td>${statusLabel}</td>
+                <td>${powerControls}</td>
                 <td>
                     ${authBtn}
                     <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deleteSingleUser(${index})">Delete</button>
@@ -1447,21 +1654,45 @@
         zone.innerHTML = html;
     }
 
+    function updateTeacherPower(index, powerKey, value) {
+        let users = getRegisteredUsers();
+        if (!users[index].permissions) users[index].permissions = {};
+        users[index].permissions[powerKey] = value;
+        saveRegisteredUsers(users);
+    }
+
     function authorizeTeacher(index) {
         let users = getRegisteredUsers();
         users[index].isAuthorized = true;
         saveRegisteredUsers(users);
-        alert(`Teacher ${users[index].name} has been authorized successfully!`);
+        alert(`Teacher ${users[index].name} authorized!`);
         renderUserDirectoryZone();
     }
 
     function deleteSingleUser(index) {
         let users = getRegisteredUsers();
-        if (confirm(`Are you sure you want to delete user "${users[index].name}"?`)) {
+        if (confirm(`Delete registered user "${users[index].name}"? This will allow their roll/email to be registered again.`)) {
             users.splice(index, 1);
             saveRegisteredUsers(users);
             renderUserDirectoryZone();
         }
+    }
+
+    // REQUIREMENT #6: Delete users class-wise to free up roll numbers
+    function deleteUsersByClass() {
+        const selectedClass = document.getElementById("admin-delete-class-select").value;
+        if (selectedClass === "all") {
+            return alert("Please select a specific class to purge users.");
+        }
+
+        let users = getRegisteredUsers();
+        const beforeCount = users.length;
+        users = users.filter(u => u.userClass !== selectedClass);
+        const deletedCount = beforeCount - users.length;
+
+        saveRegisteredUsers(users);
+        alert(`Purged ${deletedCount} user(s) belonging to ${classConfig[selectedClass]?.label || selectedClass}. Roll numbers in this class can now be registered again!`);
+        renderUserDirectoryZone();
     }
 
     function clearAllUsers() {

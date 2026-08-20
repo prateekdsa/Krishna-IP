@@ -207,6 +207,13 @@
             padding: 10px 0;
             text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
+
+        .auth-link {
+            color: var(--primary-color);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
@@ -216,55 +223,122 @@
 </div>
 
 <div class="container">
-    <!-- LOGIN PANEL -->
+    <!-- ROLE-BASED LOGIN PANEL -->
     <div id="setup-box">
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal Login</h2>
         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
-            Enter your details below to begin or log in.
+            Select your role and authenticate using your registered email and password.
         </p>
-        
+
         <div class="input-group">
-            <label for="student-name">Full Name / Login ID</label>
-            <input type="text" id="student-name" placeholder="Enter Full Name, Teacher ID, or Admin Key">
-        </div>
-
-        <div class="input-group" id="class-group">
-            <label for="class-select">Select Class & Section</label>
-            <select id="class-select" onchange="updateRollLimits()">
-                <option value="class9A">Class 9th - Section A (Max 50 Students)</option>
-                <option value="class9B">Class 9th - Section B (Max 50 Students)</option>
-                <option value="class10A">Class 10th - Section A (Max 50 Students)</option>
-                <option value="class10B">Class 10th - Section B (Max 50 Students)</option>
-                <option value="class11A">Class 11th - Section A (Max 65 Students)</option>
-                <option value="class11B">Class 11th - Section B (Max 20 Students)</option>
-                <option value="class12A">Class 12th - Section A (Max 60 Students)</option>
-                <option value="class12B">Class 12th - Section B (Max 20 Students)</option>
+            <label for="login-role">I am a:</label>
+            <select id="login-role" onchange="toggleLoginRoleFields()">
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
             </select>
         </div>
 
-        <div class="input-group" id="student-subject-group">
-            <label for="subject-select">Select Subject</label>
-            <select id="subject-select">
-                <option value="Physics">Physics</option>
-                <option value="Chemistry">Chemistry</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science (Combined)</option>
-                <option value="Information Technology">Information Technology (402)</option>
-                <option value="Informatics Practices">Informatics Practices (065)</option>
-            </select>
+        <div class="input-group">
+            <label for="auth-email">Email Address / User ID</label>
+            <input type="email" id="auth-email" placeholder="e.g. user@school.com or full name">
         </div>
 
-        <div class="input-group" id="roll-group">
-            <label for="student-roll" id="roll-label">Enter Roll Number (1 to 50)</label>
-            <input type="number" id="student-roll" min="1" max="50" placeholder="e.g. 12">
+        <div class="input-group">
+            <label for="auth-pass">Password</label>
+            <input type="password" id="auth-pass" placeholder="Enter account password">
         </div>
 
-        <div class="input-group" id="pass-group">
-            <label for="student-pass">Password</label>
-            <input type="password" id="student-pass" placeholder="Enter password or Admin Key">
+        <!-- Student-Specific Selection Options -->
+        <div id="student-only-fields">
+            <div class="input-group" id="class-group">
+                <label for="class-select">Select Class & Section</label>
+                <select id="class-select" onchange="updateRollLimits()">
+                    <option value="class9A">Class 9th - Section A (Max 50 Students)</option>
+                    <option value="class9B">Class 9th - Section B (Max 50 Students)</option>
+                    <option value="class10A">Class 10th - Section A (Max 50 Students)</option>
+                    <option value="class10B">Class 10th - Section B (Max 50 Students)</option>
+                    <option value="class11A">Class 11th - Section A (Max 65 Students)</option>
+                    <option value="class11B">Class 11th - Section B (Max 20 Students)</option>
+                    <option value="class12A">Class 12th - Section A (Max 60 Students)</option>
+                    <option value="class12B">Class 12th - Section B (Max 20 Students)</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="student-subject-group">
+                <label for="subject-select">Select Subject</label>
+                <select id="subject-select">
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science (Combined)</option>
+                    <option value="Information Technology">Information Technology (402)</option>
+                    <option value="Informatics Practices">Informatics Practices (065)</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="roll-group">
+                <label for="student-roll" id="roll-label">Enter Roll Number (1 to 50)</label>
+                <input type="number" id="student-roll" min="1" max="50" placeholder="e.g. 12">
+            </div>
         </div>
 
         <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Proceed</button>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+            <span class="auth-link" onclick="showAuthView('register-box')">New User? Register Here</span>
+            <span class="auth-link" onclick="showAuthView('forgot-box')">Forgot Password?</span>
+        </div>
+    </div>
+
+    <!-- DUAL-ROLE REGISTRATION PANEL -->
+    <div id="register-box" style="display: none;">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Create Account</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Register as a Teacher or Student</p>
+
+        <div class="input-group">
+            <label for="reg-role">Account Type</label>
+            <select id="reg-role">
+                <option value="Student">Student</option>
+                <option value="Teacher">Teacher</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="reg-name">Full Name</label>
+            <input type="text" id="reg-name" placeholder="Enter Full Name">
+        </div>
+
+        <div class="input-group">
+            <label for="reg-email">Email Address</label>
+            <input type="email" id="reg-email" placeholder="name@example.com">
+        </div>
+
+        <div class="input-group">
+            <label for="reg-pass">Create Password</label>
+            <input type="password" id="reg-pass" placeholder="Create new password">
+        </div>
+
+        <button class="btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="handleRegisterSubmit()">Register Account</button>
+        <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="showAuthView('setup-box')">Back to Login</button>
+    </div>
+
+    <!-- FORGOT / RESET PASSWORD PANEL -->
+    <div id="forgot-box" style="display: none;">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Reset Password</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Enter your registered email to update your password</p>
+
+        <div class="input-group">
+            <label for="reset-email">Registered Email</label>
+            <input type="email" id="reset-email" placeholder="Enter email">
+        </div>
+
+        <div class="input-group">
+            <label for="reset-new-pass">New Password</label>
+            <input type="password" id="reset-new-pass" placeholder="Enter new password">
+        </div>
+
+        <button class="btn" style="width: 100%; background-color: var(--warning-color); margin-top: 10px;" onclick="handlePasswordReset()">Update Password</button>
+        <button class="btn" style="width: 100%; background-color: #64748b; margin-top: 10px;" onclick="showAuthView('setup-box')">Back to Login</button>
     </div>
 
     <!-- TEACHER SETUP SCREEN -->
@@ -305,7 +379,16 @@
     <!-- ADMIN CONTROL PANEL VIEW -->
     <div id="admin-box" style="display: none;">
         <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 System Admin Portal</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, question papers, and system logs</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage registered accounts, student results, question papers, and system logs</p>
+
+        <!-- USER MANAGEMENT SECTION -->
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="margin: 0; color: var(--text-main);">👥 Registered Users Directory</h4>
+                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="clearAllUsers()">Clear All Users</button>
+            </div>
+            <div id="admin-users-zone" style="max-height: 200px; overflow-y: auto;">Loading registered users...</div>
+        </div>
 
         <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px; display: flex; gap: 10px;">
             <div style="flex: 1;">
@@ -455,6 +538,32 @@
     let loggedInTeacherName = "";
     let currentFetchedSubmissions = [];
 
+    // Local Storage helpers for User Database
+    function getRegisteredUsers() {
+        return JSON.parse(localStorage.getItem("cps_registered_users") || "[]");
+    }
+
+    function saveRegisteredUsers(users) {
+        localStorage.setItem("cps_registered_users", JSON.stringify(users));
+    }
+
+    function showAuthView(viewId) {
+        document.getElementById("setup-box").style.display = "none";
+        document.getElementById("register-box").style.display = "none";
+        document.getElementById("forgot-box").style.display = "none";
+        document.getElementById(viewId).style.display = "block";
+    }
+
+    function toggleLoginRoleFields() {
+        const role = document.getElementById("login-role").value;
+        const studentFields = document.getElementById("student-only-fields");
+        if (role === "teacher") {
+            studentFields.style.display = "none";
+        } else {
+            studentFields.style.display = "block";
+        }
+    }
+
     function setStageBackground(stage) {
         if (stage === "admin") {
             document.body.style.background = "var(--bg-admin)";
@@ -512,32 +621,135 @@
     window.addEventListener("DOMContentLoaded", () => {
         updateRollLimits();
         setupHighSecurityLocks();
+        setupHiddenAdminTrigger();
         setStageBackground("login");
     });
 
-    function handleLoginSubmit() {
-        const rawNameInput = document.getElementById("student-name").value.trim();
-        const cleanedName = rawNameInput.toLowerCase().replace(/\s+/g, '');
-        const enteredPass = document.getElementById("student-pass").value.trim();
+    // Hidden Admin Trigger: CTRL + SHIFT + TAB + 1
+    function setupHiddenAdminTrigger() {
+        window.addEventListener("keydown", (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === "Tab" || e.code === "Tab")) {
+                const triggerHandler = (nextEvt) => {
+                    if (nextEvt.key === "1") {
+                        nextEvt.preventDefault();
+                        openAdminPortalDirect();
+                    }
+                    window.removeEventListener("keydown", triggerHandler);
+                };
+                window.addEventListener("keydown", triggerHandler, { once: true });
+            }
+        });
+    }
 
-        if (rawNameInput === MASTER_TEACHER_PASSWORD || enteredPass === MASTER_TEACHER_PASSWORD) {
-            setStageBackground("admin");
-            document.getElementById("setup-box").style.display = "none";
-            document.getElementById("admin-box").style.display = "block";
-            renderAdminDashboardData();
+    function openAdminPortalDirect() {
+        setStageBackground("admin");
+        document.getElementById("setup-box").style.display = "none";
+        document.getElementById("register-box").style.display = "none";
+        document.getElementById("forgot-box").style.display = "none";
+        document.getElementById("teacher-subject-box").style.display = "none";
+        document.getElementById("quiz-box").style.display = "none";
+        document.getElementById("result-box").style.display = "none";
+        document.getElementById("admin-box").style.display = "block";
+        renderAdminDashboardData();
+    }
+
+    // AUTHENTICATION LOGIC
+    function handleRegisterSubmit() {
+        const role = document.getElementById("reg-role").value;
+        const name = document.getElementById("reg-name").value.trim();
+        const email = document.getElementById("reg-email").value.trim().toLowerCase();
+        const pass = document.getElementById("reg-pass").value.trim();
+
+        if (!name || !email || !pass) {
+            alert("Please fill in all registration fields.");
             return;
         }
 
-        const isTeacherLogin = VALID_TEACHER_LOGINS.includes(cleanedName) || cleanedName.startsWith("teacher");
+        const users = getRegisteredUsers();
+        if (users.find(u => u.email === email)) {
+            alert("An account with this email already exists!");
+            return;
+        }
+
+        users.push({ role, name, email, pass });
+        saveRegisteredUsers(users);
+        alert("Account registered successfully! You can now log in.");
+        showAuthView("setup-box");
+    }
+
+    function handlePasswordReset() {
+        const email = document.getElementById("reset-email").value.trim().toLowerCase();
+        const newPass = document.getElementById("reset-new-pass").value.trim();
+
+        if (!email || !newPass) {
+            alert("Please enter both email and new password.");
+            return;
+        }
+
+        let users = getRegisteredUsers();
+        const userIndex = users.findIndex(u => u.email === email);
+
+        if (userIndex === -1) {
+            alert("No registered account found with this email address.");
+            return;
+        }
+
+        users[userIndex].pass = newPass;
+        saveRegisteredUsers(users);
+        alert("Password updated successfully! Please log in with your new password.");
+        showAuthView("setup-box");
+    }
+
+    function handleLoginSubmit() {
+        const selectedRole = document.getElementById("login-role").value;
+        const rawEmailInput = document.getElementById("auth-email").value.trim();
+        const cleanedEmail = rawEmailInput.toLowerCase().replace(/\s+/g, '');
+        const enteredPass = document.getElementById("auth-pass").value.trim();
+
+        // Admin Override
+        if (rawEmailInput === MASTER_TEACHER_PASSWORD || enteredPass === MASTER_TEACHER_PASSWORD) {
+            openAdminPortalDirect();
+            return;
+        }
+
+        // Search in local user database first
+        const users = getRegisteredUsers();
+        const matchedUser = users.find(u => u.email === cleanedEmail || u.name.toLowerCase() === cleanedEmail);
+
+        if (matchedUser) {
+            if (matchedUser.pass !== enteredPass) {
+                alert("❌ Incorrect Password!");
+                return;
+            }
+
+            if (matchedUser.role.toLowerCase() === "teacher" || selectedRole === "teacher") {
+                loggedInTeacherName = matchedUser.name;
+                document.getElementById("setup-box").style.display = "none";
+                document.getElementById("teacher-subject-box").style.display = "block";
+                document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
+                return;
+            } else {
+                authenticateStudentAndStart(matchedUser.name);
+                return;
+            }
+        }
+
+        // Fallback for direct teacher logins
+        const isTeacherLogin = (selectedRole === "teacher") || VALID_TEACHER_LOGINS.includes(cleanedEmail) || cleanedEmail.startsWith("teacher");
         if (isTeacherLogin) {
-            loggedInTeacherName = rawNameInput || "Teacher";
+            if (enteredPass !== MASTER_TEACHER_PASSWORD && enteredPass !== "teacher123") {
+                alert("Invalid Teacher credentials.");
+                return;
+            }
+            loggedInTeacherName = rawEmailInput || "Teacher";
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("teacher-subject-box").style.display = "block";
             document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
             return;
         }
 
-        authenticateStudentAndStart(rawNameInput);
+        // Fallback for Student login
+        authenticateStudentAndStart(rawEmailInput);
     }
 
     function downloadAllPasswordsCSV() {
@@ -915,7 +1127,7 @@
         studentRoll = parseInt(rollInputVal, 10);
         selectedClassKey = document.getElementById("class-select").value;
         selectedSubject = document.getElementById("subject-select").value;
-        const enteredPass = document.getElementById("student-pass").value.trim();
+        const enteredPass = document.getElementById("auth-pass").value.trim();
 
         const config = classConfig[selectedClassKey];
         selectedClassLabel = `${config.label} (${selectedSubject})`;
@@ -932,8 +1144,12 @@
 
         const expectedPass = generateUniquePassword(selectedClassKey, studentRoll);
         if (enteredPass !== expectedPass) {
-            alert("❌ Invalid Password! Please check your section roll password provided by your teacher.");
-            return;
+            const users = getRegisteredUsers();
+            const matched = users.find(u => u.name.toLowerCase() === nameVal.toLowerCase() && u.pass === enteredPass);
+            if (!matched) {
+                alert("❌ Invalid Password! Please check your section roll password or account credentials.");
+                return;
+            }
         }
 
         const lockGranted = await checkOrSetDeviceLock(studentRoll, selectedClassKey, studentName);
@@ -1093,8 +1309,61 @@
 
     async function renderAdminDashboardData() {
         await purgeExpiredSubmissions();
+        renderUserDirectoryZone();
         await renderSubmissionsZone();
         await renderLockoutManagerZone();
+    }
+
+    function renderUserDirectoryZone() {
+        const zone = document.getElementById("admin-users-zone");
+        const users = getRegisteredUsers();
+
+        if (users.length === 0) {
+            zone.innerHTML = "<span style='color: var(--text-muted); font-size: 13px;'>No registered users found.</span>";
+            return;
+        }
+
+        let html = `<table class='admin-table'>
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        users.forEach((u, index) => {
+            html += `<tr>
+                <td><strong>${u.role}</strong></td>
+                <td>${u.name}</td>
+                <td>${u.email}</td>
+                <td>
+                    <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deleteSingleUser(${index})">Delete</button>
+                </td>
+            </tr>`;
+        });
+
+        html += "</tbody></table>";
+        zone.innerHTML = html;
+    }
+
+    function deleteSingleUser(index) {
+        let users = getRegisteredUsers();
+        if (confirm(`Are you sure you want to delete user "${users[index].name}"?`)) {
+            users.splice(index, 1);
+            saveRegisteredUsers(users);
+            renderUserDirectoryZone();
+        }
+    }
+
+    function clearAllUsers() {
+        if (confirm("⚠️ WARNING: Are you sure you want to purge all registered users from the database?")) {
+            localStorage.removeItem("cps_registered_users");
+            renderUserDirectoryZone();
+            alert("User database cleared successfully.");
+        }
     }
 
     function toggleSelectAllSubmissions(masterCheckbox) {

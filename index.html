@@ -8,7 +8,13 @@
     <meta name="median-secure" content="true">
     <meta name="gonative-secure" content="true">
 
+    <!-- Supabase Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- PDF.js for rendering uploaded PDF question papers -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- html2pdf.js for exporting papers directly to PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         :root {
             --primary-color: #2563eb;
@@ -101,7 +107,6 @@
         }
 
         .btn:hover { background-color: var(--primary-hover); }
-
         .btn-danger { background-color: var(--danger-color); }
         .btn-danger:hover { background-color: #b91c1c; }
 
@@ -149,33 +154,26 @@
         .option-container:hover { background-color: #f8fafc; }
         .option-label { margin-left: 10px; cursor: pointer; font-size: 14px; width: 100%; }
 
-        .q-rich-media {
-            margin: 12px 0;
-            padding: 12px;
-            background: #f1f5f9;
-            border: 1px dashed var(--border-color);
+        /* PDF Render Display Style */
+        .pdf-viewer-box {
+            width: 100%;
+            max-height: 480px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            overflow-x: auto;
+            background: #525659;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
         }
-        .q-rich-media img {
+        .pdf-canvas-item {
             max-width: 100%;
             height: auto;
-            border-radius: 6px;
-            display: block;
-            margin: 0 auto;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            background: white;
         }
-        .q-rich-media table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #ffffff;
-            font-size: 13px;
-        }
-        .q-rich-media table th, .q-rich-media table td {
-            border: 1px solid #cbd5e1;
-            padding: 6px 10px;
-            text-align: center;
-        }
-        .q-rich-media table th { background: #e2e8f0; }
 
         table.admin-table {
             width: 100%;
@@ -236,6 +234,15 @@
             padding: 10px 0;
             text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
+
+        /* Printable PDF Template container */
+        #pdf-export-template {
+            display: none;
+            padding: 20px;
+            background: white;
+            color: black;
+            font-family: Arial, sans-serif;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
@@ -250,7 +257,7 @@
     <div id="setup-box">
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Online Examination Portal Login</h2>
         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
-            Enter your details below to begin or log in.
+            Enter your credentials below to begin.
         </p>
         
         <div class="input-group">
@@ -297,28 +304,14 @@
         <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLoginSubmit()">Login & Proceed</button>
     </div>
 
-    <!-- TEACHER PORTAL -->
+    <!-- TEACHER PORTAL (PREVIEW & CONTROL MODE ONLY) -->
     <div id="teacher-subject-box" style="display: none;">
         <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 6px;">Welcome Teacher!</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;" id="teacher-greeting-text">Select class and subject to begin your exam session:</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;" id="teacher-greeting-text">Select subject to preview exact question layout without submitting a response:</p>
 
         <div class="input-group">
-            <label for="teacher-chosen-class">Select Class & Section</label>
-            <select id="teacher-chosen-class">
-                <option value="class9A">Class 9th - Section A</option>
-                <option value="class9B">Class 9th - Section B</option>
-                <option value="class10A">Class 10th - Section A</option>
-                <option value="class10B">Class 10th - Section B</option>
-                <option value="class11A">Class 11th - Section A</option>
-                <option value="class11B">Class 11th - Section B</option>
-                <option value="class12A">Class 12th - Section A</option>
-                <option value="class12B">Class 12th - Section B</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label for="teacher-chosen-subject">Select Examination Subject</label>
-            <select id="teacher-chosen-subject">
+            <label for="teacher-chosen-subject">Select Subject to Preview / Manage</label>
+            <select id="teacher-chosen-subject" onchange="renderTeacherLivePreview()">
                 <option value="Physics">Physics</option>
                 <option value="Chemistry">Chemistry</option>
                 <option value="Mathematics">Mathematics</option>
@@ -328,15 +321,20 @@
             </select>
         </div>
 
-        <button class="btn" style="width: 100%; background-color: var(--success-color); margin-top: 10px;" onclick="startTeacherExam()">Start Teacher Exam Session</button>
+        <!-- Live Layout Preview Window for Teachers -->
+        <div style="margin-top: 15px; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; background: white;">
+            <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">👁️ Student Exam Layout Preview</h4>
+            <div id="teacher-pdf-preview-container" class="pdf-viewer-box" style="max-height: 350px;"></div>
+            <div id="teacher-mcq-preview-container"></div>
+        </div>
 
         <div id="teacher-granted-tools" style="margin-top: 20px; border-top: 2px dashed var(--border-color); padding-top: 15px; display: none;">
             <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">🛠️ Assigned Teacher Controls</h4>
             
             <div id="teacher-tool-upload" style="display:none; margin-bottom: 12px; background:#f1f5f9; padding:10px; border-radius:6px;">
-                <label style="font-weight:bold; font-size:12px; display:block; margin-bottom:4px;">📤 Upload Question Paper (.JSON)</label>
-                <input type="file" id="teacher-upload-file-input" accept=".json" style="font-size:12px;">
-                <button class="btn" style="padding:4px 10px; font-size:12px; margin-top:6px;" onclick="handleQuestionUpload('teacher-upload-file-input', 'teacher-chosen-subject')">Upload JSON</button>
+                <label style="font-weight:bold; font-size:12px; display:block; margin-bottom:4px;">📤 Upload Question Paper (.PDF or .JSON)</label>
+                <input type="file" id="teacher-upload-file-input" accept=".pdf,.json" style="font-size:12px;">
+                <button class="btn" style="padding:4px 10px; font-size:12px; margin-top:6px;" onclick="handleQuestionUpload('teacher-upload-file-input', 'teacher-chosen-subject')">Upload Paper</button>
             </div>
 
             <div id="teacher-tool-scheduler" style="display:none; margin-bottom: 12px; background:#f1f5f9; padding:10px; border-radius:6px;">
@@ -359,7 +357,7 @@
     <!-- ADMIN CONTROL PANEL VIEW -->
     <div id="admin-box" style="display: none;">
         <h2 style="text-align: center; color: #059669; margin-bottom: 6px;">🔒 System Admin Portal</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, question papers, schedules, and permissions</p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Manage student results, PDF/JSON papers, schedules, and permissions</p>
 
         <!-- Admin Filters -->
         <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px; display: flex; gap: 10px;">
@@ -375,7 +373,6 @@
                     <option value="Class 11th - Section B">Class 11th - Section B</option>
                     <option value="Class 12th - Section A">Class 12th - Section A</option>
                     <option value="Class 12th - Section B">Class 12th - Section B</option>
-                    <option value="Teacher Evaluation">Teacher Evaluation</option>
                 </select>
             </div>
             <div style="flex: 1;">
@@ -392,14 +389,14 @@
             </div>
         </div>
 
-        <!-- 1. Question Upload Section -->
+        <!-- 1. Question Upload Section (Supports PDF & JSON) -->
         <div class="admin-section-card">
-            <h4 style="margin: 0 0 8px 0; color: var(--text-main);">📤 Upload Question Paper (.JSON File)</h4>
+            <h4 style="margin: 0 0 8px 0; color: var(--text-main);">📤 Upload Question Paper (.PDF or .JSON File)</h4>
             <div style="display: flex; gap: 10px; align-items: center;">
-                <input type="file" id="admin-upload-file-input" accept=".json" style="font-size: 12px; flex: 1;">
-                <button class="btn" style="font-size: 12px; background: #059669;" onclick="handleQuestionUpload('admin-upload-file-input', 'admin-subject-select')">Upload JSON Paper</button>
+                <input type="file" id="admin-upload-file-input" accept=".pdf,.json" style="font-size: 12px; flex: 1;">
+                <button class="btn" style="font-size: 12px; background: #059669;" onclick="handleQuestionUpload('admin-upload-file-input', 'admin-subject-select')">Upload Paper</button>
             </div>
-            <p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 0 0;">Upload structured JSON question data directly into the selected subject array.</p>
+            <p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 0 0;">PDF papers preserve exact figure graphics, math symbols, and tables cleanly for student exams.</p>
         </div>
 
         <!-- 2. Exam Scheduler Section -->
@@ -444,7 +441,7 @@
                 <button class="btn" style="font-size: 13px; background: #059669; flex: 1;" onclick="downloadAllPasswordsCSV()">📊 Passwords (.CSV)</button>
                 <button class="btn" style="font-size: 13px; background: #2563eb; flex: 1;" onclick="downloadFilteredResultsCSV()">📥 Filtered Results (.CSV)</button>
             </div>
-            <button class="btn" style="font-size: 13px; background: #d97706; width: 100%;" onclick="downloadQuestionPaper()">📄 Download Selected Question Paper (.TXT)</button>
+            <button class="btn" style="font-size: 13px; background: #d97706; width: 100%;" onclick="downloadQuestionPaperPDF()">📄 Download Selected Question Paper (.PDF ONLY)</button>
         </div>
 
         <!-- Live Submissions -->
@@ -465,7 +462,7 @@
         <button class="restart-btn" onclick="location.reload()">Exit Admin Portal</button>
     </div>
 
-    <!-- QUIZ INTERFACE -->
+    <!-- QUIZ INTERFACE (STUDENT ONLY) -->
     <div id="quiz-box" style="display: none;">
         <div class="security-banner">
             <span>🔒 HIGH SECURITY EXAM ENVIRONMENT ACTIVE</span>
@@ -476,6 +473,9 @@
             <span id="question-tracker" style="font-weight: bold; font-size: 14px;">Question 1 / 10</span>
             <span id="timer-display" style="font-weight: bold; font-size: 14px; color: var(--danger-color);">⏱️ 15:00</span>
         </div>
+
+        <!-- PDF Embedded Viewer for clear rendering of tables/figures -->
+        <div id="student-pdf-viewer" class="pdf-viewer-box" style="display:none;"></div>
 
         <h3 id="secure-question-host" style="font-size: 16px; margin-bottom: 8px;"></h3>
         
@@ -504,9 +504,16 @@
     </div>
 </div>
 
+<!-- Invisible Container for PDF Export Generation -->
+<div id="pdf-export-template"></div>
+
 <div class="app-footer">Designed By Krishna Kumar</div>
 
 <script>
+    if (typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
     const SUPABASE_URL = (typeof window.ENV !== "undefined" && window.ENV.SUPABASE_URL) 
         ? window.ENV.SUPABASE_URL 
         : "https://pqkjdtajklalzjmqkgln.supabase.co";
@@ -559,7 +566,8 @@
     let loggedInTeacherName = "";
     let currentFetchedSubmissions = [];
 
-    // Global Stores for Dynamic Configurations
+    // Global Stores for PDF Papers & Dynamic Configurations
+    let pdfPapersStore = {}; // Holds pdf data array buffers per subject
     let examSchedules = {}; 
     let teacherPermissions = {
         upload: false,
@@ -582,43 +590,115 @@
         setInterval(updateClock, 1000);
     }
 
-    // --- 2. QUESTION UPLOAD MODULE ---
+    // --- 2. QUESTION UPLOAD MODULE (HANDLES BOTH .PDF AND .JSON) ---
     function handleQuestionUpload(fileInputId, subjectSelectId) {
         const fileInput = document.getElementById(fileInputId);
         const selectedSub = document.getElementById(subjectSelectId).value;
         const targetSubject = selectedSub === "All" ? "Physics" : selectedSub;
 
         if (!fileInput.files || fileInput.files.length === 0) {
-            return alert("Please select a valid JSON file to upload!");
+            return alert("Please select a PDF or JSON file to upload!");
         }
 
         const file = fileInput.files[0];
-        const reader = new FileReader();
+        const isPdf = file.name.toLowerCase().endsWith('.pdf');
 
-        reader.onload = function(e) {
-            try {
-                const parsedData = JSON.parse(e.target.result);
-                if (!Array.isArray(parsedData)) {
-                    throw new Error("File content must be a JSON array of questions.");
-                }
-
-                // Simple structure validation
-                if (parsedData.length > 0 && (!parsedData[0].question || !parsedData[0].options)) {
-                    throw new Error("Invalid question format! Each object must contain 'question' and 'options'.");
-                }
-
-                quizDataset[targetSubject] = parsedData;
-                alert(`✅ Question Paper successfully uploaded for ${targetSubject}! Total Questions: ${parsedData.length}`);
+        if (isPdf) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                pdfPapersStore[targetSubject] = e.target.result;
+                alert(`✅ PDF Question Paper successfully uploaded for ${targetSubject}! All figures/tables preserved.`);
                 fileInput.value = "";
-            } catch (err) {
-                alert("❌ Upload Failed: " + err.message);
-            }
-        };
-
-        reader.readAsText(file);
+                if (document.getElementById("teacher-subject-box").style.display !== "none") {
+                    renderTeacherLivePreview();
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsedData = JSON.parse(e.target.result);
+                    if (!Array.isArray(parsedData)) {
+                        throw new Error("File content must be a JSON array of questions.");
+                    }
+                    quizDataset[targetSubject] = parsedData;
+                    delete pdfPapersStore[targetSubject]; // Clear PDF if JSON uploaded
+                    alert(`✅ JSON Question Paper uploaded for ${targetSubject}! Total Questions: ${parsedData.length}`);
+                    fileInput.value = "";
+                    if (document.getElementById("teacher-subject-box").style.display !== "none") {
+                        renderTeacherLivePreview();
+                    }
+                } catch (err) {
+                    alert("❌ Upload Failed: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
     }
 
-    // --- 3. EXAM SCHEDULER (GO-LIVE & AUTO-DELIST) ---
+    // --- RENDER PDF PAGES INTO CONTAINER ---
+    async function renderPDFToContainer(arrayBuffer, containerElement) {
+        containerElement.innerHTML = "";
+        try {
+            const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+                const page = await pdfDoc.getPage(pageNum);
+                const viewport = page.getViewport({ scale: 1.2 });
+                const canvas = document.createElement("canvas");
+                canvas.className = "pdf-canvas-item";
+                const context = canvas.getContext("2d");
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+                containerElement.appendChild(canvas);
+            }
+        } catch (err) {
+            containerElement.innerHTML = `<p style="color:white;">Error rendering PDF: ${err.message}</p>`;
+        }
+    }
+
+    // --- 3. TEACHER LIVE PREVIEW MODE (NO EXAM SUBMISSIONS) ---
+    function renderTeacherLivePreview() {
+        const sub = document.getElementById("teacher-chosen-subject").value;
+        const pdfContainer = document.getElementById("teacher-pdf-preview-container");
+        const mcqContainer = document.getElementById("teacher-mcq-preview-container");
+
+        pdfContainer.innerHTML = "";
+        mcqContainer.innerHTML = "";
+
+        if (pdfPapersStore[sub]) {
+            pdfContainer.style.display = "block";
+            renderPDFToContainer(pdfPapersStore[sub], pdfContainer);
+            mcqContainer.innerHTML = "<p style='font-size:12px; color:#64748b;'>📄 PDF Question Paper is active for students in this subject.</p>";
+        } else {
+            pdfContainer.style.display = "none";
+            const questions = quizDataset[sub] || [];
+            if (questions.length === 0) {
+                mcqContainer.innerHTML = "<em>No questions uploaded for this subject yet.</em>";
+                return;
+            }
+
+            let previewHtml = "<div style='font-size:13px;'>";
+            questions.forEach((q, i) => {
+                previewHtml += `<p><strong>Q${i+1}. ${q.question}</strong></p>`;
+                if (q.mediaHTML) previewHtml += q.mediaHTML;
+                if (q.options) {
+                    previewHtml += "<ul style='margin-top:4px;'>";
+                    q.options.forEach((opt, oIdx) => {
+                        const isCorrect = oIdx === q.correct ? " <strong style='color:green;'>(Correct)</strong>" : "";
+                        previewHtml += `<li>(${String.fromCharCode(65+oIdx)}) ${opt}${isCorrect}</li>`;
+                    });
+                    previewHtml += "</ul>";
+                }
+            });
+            previewHtml += "</div>";
+            mcqContainer.innerHTML = previewHtml;
+        }
+    }
+
+    // --- 4. EXAM SCHEDULER (GO-LIVE & AUTO-DELIST) ---
     function saveExamSchedule(subjectSelectId, startInputId, endInputId) {
         const selectedSub = document.getElementById(subjectSelectId).value;
         const targetSubject = selectedSub === "All" ? "Physics" : selectedSub;
@@ -655,7 +735,7 @@
 
     function isExamLive(subject) {
         const sched = examSchedules[subject];
-        if (!sched) return { live: true }; // Default live if no schedule set
+        if (!sched) return { live: true };
 
         const now = Date.now();
         if (now < sched.start) {
@@ -668,7 +748,7 @@
         return { live: true };
     }
 
-    // --- 4. TEACHER PERMISSION DELEGATION MODULE ---
+    // --- 5. TEACHER PERMISSION DELEGATION MODULE ---
     function saveTeacherPermissions() {
         teacherPermissions.upload = document.getElementById("perm-upload").checked;
         teacherPermissions.scheduler = document.getElementById("perm-scheduler").checked;
@@ -692,7 +772,69 @@
         toolsBox.style.display = anyActive ? "block" : "none";
     }
 
-    // --- ORIGINAL CORE FUNCTIONS & INTEGRATION ---
+    // --- 6. EXPORT QUESTION PAPER STRICTLY AS PDF ---
+    async function downloadQuestionPaperPDF() {
+        const filterSubject = document.getElementById("admin-subject-select").value;
+        const targetSubject = filterSubject === "All" ? "Physics" : filterSubject;
+        const pdfContainer = document.getElementById("pdf-export-template");
+
+        pdfContainer.style.display = "block";
+        pdfContainer.innerHTML = "";
+
+        if (pdfPapersStore[targetSubject]) {
+            // Render existing PDF onto canvas then export
+            const wrapper = document.createElement("div");
+            wrapper.innerHTML = `<h2 style="text-align:center;">CITY PUBLIC SCHOOL, NAJIBABAD</h2><h3 style="text-align:center;">QUESTION PAPER: ${targetSubject.toUpperCase()}</h3><hr><br>`;
+            pdfContainer.appendChild(wrapper);
+
+            const canvasHolder = document.createElement("div");
+            pdfContainer.appendChild(canvasHolder);
+            await renderPDFToContainer(pdfPapersStore[targetSubject], canvasHolder);
+        } else {
+            const questions = quizDataset[targetSubject];
+            if (!questions || questions.length === 0) {
+                pdfContainer.style.display = "none";
+                return alert(`No question paper found for ${targetSubject}`);
+            }
+
+            let paperContent = `<div style="font-family:Arial, sans-serif; padding:10px;">`;
+            paperContent += `<h2 style="text-align:center; margin-bottom:2px;">CITY PUBLIC SCHOOL, NAJIBABAD</h2>`;
+            paperContent += `<h4 style="text-align:center; margin-top:0;">QUESTION PAPER: ${targetSubject.toUpperCase()}</h4><hr><br>`;
+
+            questions.forEach((q, idx) => {
+                paperContent += `<div style="margin-bottom:15px;">`;
+                paperContent += `<p><strong>Q${idx + 1}. ${q.question}</strong></p>`;
+                if (q.mediaHTML) paperContent += q.mediaHTML;
+                if (q.options) {
+                    paperContent += `<ol type="A" style="margin-top:5px;">`;
+                    q.options.forEach(opt => {
+                        paperContent += `<li>${opt}</li>`;
+                    });
+                    paperContent += `</ol>`;
+                    paperContent += `<p style="font-size:11px; color:#16a34a;"><em>[Correct Option: (${String.fromCharCode(65 + q.correct)}) ${q.options[q.correct]}]</em></p>`;
+                }
+                paperContent += `</div><hr style="border-top:1px dashed #ccc;">`;
+            });
+
+            paperContent += `</div>`;
+            pdfContainer.innerHTML = paperContent;
+        }
+
+        const opt = {
+            margin:       0.5,
+            filename:     `Question_Paper_${targetSubject.replace(/\s+/g, '_')}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(pdfContainer).save().then(() => {
+            pdfContainer.style.display = "none";
+            pdfContainer.innerHTML = "";
+        });
+    }
+
+    // --- CORE SYSTEM FUNCTIONS ---
     function setStageBackground(stage) {
         if (stage === "admin") {
             document.body.style.background = "var(--bg-admin)";
@@ -772,8 +914,9 @@
             loggedInTeacherName = rawNameInput || "Teacher";
             document.getElementById("setup-box").style.display = "none";
             document.getElementById("teacher-subject-box").style.display = "block";
-            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select class and subject to start:`;
+            document.getElementById("teacher-greeting-text").innerText = `Hello ${loggedInTeacherName}, select subject to view live layout:`;
             applyTeacherPermissionsUI();
+            renderTeacherLivePreview();
             return;
         }
 
@@ -849,94 +992,6 @@
         }
     }
 
-    function extractMediaTextForExport(mediaHTML) {
-        if (!mediaHTML) return "";
-        let parsedText = "\n   [ATTACHED DIAGRAM / TABLE / MEDIA]:\n";
-        
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = mediaHTML;
-
-        const tables = tempDiv.querySelectorAll('table');
-        tables.forEach(tbl => {
-            const rows = tbl.querySelectorAll('tr');
-            let tableGrid = [];
-
-            rows.forEach(r => {
-                const cols = Array.from(r.querySelectorAll('th, td')).map(c => c.textContent.trim());
-                if (cols.length > 0) {
-                    tableGrid.push(cols);
-                }
-            });
-
-            if (tableGrid.length > 0) {
-                let colWidths = [];
-                tableGrid.forEach(row => {
-                    row.forEach((cellText, colIdx) => {
-                        colWidths[colIdx] = Math.max(colWidths[colIdx] || 0, cellText.length);
-                    });
-                });
-
-                tableGrid.forEach(row => {
-                    let formattedRow = "   | ";
-                    row.forEach((cellText, colIdx) => {
-                        let targetWidth = colWidths[colIdx];
-                        let paddedCell = cellText.padEnd(targetWidth, ' ');
-                        formattedRow += paddedCell + " | ";
-                    });
-                    parsedText += formattedRow.trimEnd() + "\n";
-                });
-            }
-        });
-
-        const imgs = tempDiv.querySelectorAll('img');
-        imgs.forEach(img => {
-            const altText = img.alt ? ` (${img.alt})` : '';
-            parsedText += `   [Image Asset]: ${img.src}${altText}\n`;
-        });
-
-        return parsedText;
-    }
-
-    function downloadQuestionPaper() {
-        const filterSubject = document.getElementById("admin-subject-select").value;
-        const targetSubject = filterSubject === "All" ? "Physics" : filterSubject;
-        const questions = quizDataset[targetSubject];
-
-        if (!questions || questions.length === 0) {
-            return alert(`No question paper found for ${targetSubject}`);
-        }
-
-        let paperContent = `=========================================\n`;
-        paperContent += `      CITY PUBLIC SCHOOL, NAJIBABAD      \n`;
-        paperContent += `      QUESTION PAPER: ${targetSubject.toUpperCase()}     \n`;
-        paperContent += `=========================================\n\n`;
-
-        questions.forEach((q, idx) => {
-            paperContent += `Q${idx + 1}. ${q.question}\n`;
-            
-            if (q.mediaHTML) {
-                paperContent += extractMediaTextForExport(q.mediaHTML);
-            }
-
-            if (q.options) {
-                q.options.forEach((opt, oIdx) => {
-                    paperContent += `   (${String.fromCharCode(65 + oIdx)}) ${opt}\n`;
-                });
-                paperContent += `   [Correct Option: (${String.fromCharCode(65 + q.correct)}) ${q.options[q.correct]}]\n`;
-            }
-            paperContent += `\n-----------------------------------------\n\n`;
-        });
-
-        const blob = new Blob([paperContent], { type: "text/plain;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `Question_Paper_${targetSubject.replace(/\s+/g, '_')}.txt`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
     const quizDataset = {
         Physics: [
             {
@@ -944,8 +999,8 @@
                 question: "Examine the circuit diagram table below. Calculate the total current (I) flowing through the circuit:",
                 mediaHTML: `
                     <div class="q-rich-media">
-                        <table>
-                            <tr><th>Resistor</th><th>Resistance (Ω)</th><th>Voltage (V)</th></tr>
+                        <table style="width:100%; border-collapse:collapse; background:white;">
+                            <tr style="background:#e2e8f0;"><th>Resistor</th><th>Resistance (Ω)</th><th>Voltage (V)</th></tr>
                             <tr><td>R1</td><td>10 Ω</td><td>20 V</td></tr>
                             <tr><td>R2</td><td>20 Ω</td><td>20 V</td></tr>
                         </table>
@@ -953,86 +1008,14 @@
                 `,
                 options: ["1.0 A", "3.0 A", "1.5 A", "2.5 A"],
                 correct: 1
-            },
-            {
-                type: "mcq",
-                question: "Which wave property determines the loudness of a sound wave shown in the diagram?",
-                mediaHTML: `
-                    <div class="q-rich-media" style="text-align:center;">
-                        <svg width="220" height="80" viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M 0 40 Q 25 10, 50 40 T 100 40 T 150 40 T 200 40" fill="none" stroke="#2563eb" stroke-width="3"/>
-                            <line x1="0" y1="40" x2="220" y2="40" stroke="#cbd5e1" stroke-dasharray="4"/>
-                        </svg>
-                        <p style="font-size:11px; color:#64748b; margin:4px 0 0 0;">Transverse Wave Displacement</p>
-                    </div>
-                `,
-                options: ["Frequency", "Amplitude", "Wavelength", "Velocity"],
-                correct: 1
             }
         ],
         Chemistry: [
             {
                 type: "mcq",
                 question: "Based on the pH test data table below, identify the substance that is strongly basic:",
-                mediaHTML: `
-                    <div class="q-rich-media">
-                        <table>
-                            <tr><th>Solution</th><th>pH Value</th><th>Litmus Effect</th></tr>
-                            <tr><td>Sample A</td><td>2.4</td><td>Red</td></tr>
-                            <tr><td>Sample B</td><td>7.0</td><td>No Change</td></tr>
-                            <tr><td>Sample C</td><td>13.1</td><td>Blue</td></tr>
-                        </table>
-                    </div>
-                `,
-                options: ["Sample A", "Sample B", "Sample C", "None of these"],
+                options: ["Sample A (pH 2.4)", "Sample B (pH 7.0)", "Sample C (pH 13.1)", "None of these"],
                 correct: 2
-            }
-        ],
-        Mathematics: [
-            {
-                type: "mcq",
-                question: "Find the value of x from the geometric right-triangle figure specification:",
-                mediaHTML: `
-                    <div class="q-rich-media" style="text-align:center;">
-                        <svg width="180" height="100" viewBox="0 0 180 100" xmlns="http://www.w3.org/2000/svg">
-                            <polygon points="20,80 140,80 140,20" fill="none" stroke="#059669" stroke-width="3"/>
-                            <text x="75" y="95" font-size="12" fill="#0f172a">Base = 12</text>
-                            <text x="148" y="55" font-size="12" fill="#0f172a">Height = 5</text>
-                            <text x="65" y="45" font-size="12" fill="#dc2626">x = ?</text>
-                        </svg>
-                    </div>
-                `,
-                options: ["13", "15", "17", "14"],
-                correct: 0
-            }
-        ],
-        Science: [
-            {
-                type: "mcq",
-                question: "Which organelle in the plant cell diagram below produces ATP energy via cellular respiration?",
-                mediaHTML: `
-                    <div class="q-rich-media" style="text-align:center;">
-                        <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=400&q=80" alt="Cell Organelle" style="max-height:140px;" crossorigin="anonymous">
-                    </div>
-                `,
-                options: ["Mitochondria", "Chloroplast", "Nucleus", "Ribosome"],
-                correct: 0
-            }
-        ],
-        "Information Technology": [
-            {
-                type: "mcq",
-                question: "Which web service should the school use to post daily notices and journals?",
-                options: ["Blog", "Web Browser", "FTP", "Email Client"],
-                correct: 0
-            }
-        ],
-        "Informatics Practices": [
-            {
-                type: "mcq",
-                question: "Which Pandas function creates a DataFrame from a CSV file?",
-                options: ["pd.read_csv()", "pd.import_csv()", "pd.open_csv()"],
-                correct: 0
             }
         ]
     };
@@ -1087,35 +1070,6 @@
         } else {
             alert(`⚠️ SECURITY WARNING (${securityViolationCount}/2):\n${reason}\nSwitching tabs or minimizing will auto-submit your exam!`);
         }
-    }
-
-    function startTeacherExam() {
-        selectedClassKey = document.getElementById("teacher-chosen-class").value;
-        const teacherClassLabel = classConfig[selectedClassKey] ? classConfig[selectedClassKey].label : "Teacher Class";
-        selectedSubject = document.getElementById("teacher-chosen-subject").value;
-        
-        studentName = `${loggedInTeacherName} (Teacher Evaluation)`;
-        studentRoll = 999;
-        selectedClassLabel = `${teacherClassLabel} (${selectedSubject})`;
-
-        setStageBackground("student");
-        document.getElementById("teacher-subject-box").style.display = "none";
-        document.getElementById("quiz-box").style.display = "block";
-
-        const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
-        quizData = JSON.parse(JSON.stringify(rawQuestions));
-        userAnswers = new Array(quizData.length).fill(null);
-
-        timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
-        const initialMins = Math.floor(timeRemainingSeconds / 60);
-        const initialSecs = timeRemainingSeconds % 60;
-        document.getElementById("timer-display").innerText = `⏱️ ${initialMins}:${initialSecs < 10 ? '0' : ''}${initialSecs}`;
-
-        isExamActive = true;
-        securityViolationCount = 0;
-        currentQuestionIdx = 0;
-        startTimer();
-        loadQuestion();
     }
 
     async function checkOrSetDeviceLock(roll, classKey, name) {
@@ -1188,19 +1142,26 @@
             return;
         }
 
+        setStageBackground("student");
+        document.getElementById("setup-box").style.display = "none";
+        document.getElementById("quiz-box").style.display = "block";
+
+        const pdfViewer = document.getElementById("student-pdf-viewer");
+        if (pdfPapersStore[selectedSubject]) {
+            pdfViewer.style.display = "block";
+            renderPDFToContainer(pdfPapersStore[selectedSubject], pdfViewer);
+        } else {
+            pdfViewer.style.display = "none";
+        }
+
         const rawQuestions = quizDataset[selectedSubject] || quizDataset["Physics"];
         quizData = shuffleArrayForRoll(rawQuestions, studentRoll);
-
         userAnswers = new Array(quizData.length).fill(null);
 
         timeRemainingSeconds = subjectTimerConfig[selectedSubject] || 900;
         const initialMins = Math.floor(timeRemainingSeconds / 60);
         const initialSecs = timeRemainingSeconds % 60;
         document.getElementById("timer-display").innerText = `⏱️ ${initialMins}:${initialSecs < 10 ? '0' : ''}${initialSecs}`;
-
-        setStageBackground("student");
-        document.getElementById("setup-box").style.display = "none";
-        document.getElementById("quiz-box").style.display = "block";
 
         isExamActive = true;
         securityViolationCount = 0;
@@ -1453,7 +1414,7 @@
             if (count === 0) {
                 alert("⚠️ Row was not deleted on the server! Please run 'ALTER TABLE student_submissions DISABLE ROW LEVEL SECURITY;' in your Supabase SQL Editor.");
             } else {
-                alert("Submission deleted permanently from all filters.");
+                alert("Submission deleted permanently.");
             }
 
             await renderSubmissionsZone();

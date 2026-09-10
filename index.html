@@ -9,6 +9,8 @@
     <!-- PDF.js and Mammoth CDNs for Document Parsing with Image/Figure Support -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; user-select: none; }
@@ -66,6 +68,11 @@
 
     <!-- Application Script -->
     <script>
+        // Supabase Initialization
+        const SUPABASE_URL = 'https://pqkjdtajklalzjqmkgln.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxa2pkdGFqa2xhbHpqbXFrZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODIzOTIsImV4cCI6MjA5NTU1ODM5Mn0.clSfXa2TYqacZQSQe4iXQI1-5lQzs-mapWyYztGGrwE';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         let state = {
             currentUser: null,
             activeTab: 'users',
@@ -150,10 +157,39 @@
             submissions: JSON.parse(localStorage.getItem('cps_submissions')) || []
         };
 
-        function saveState() {
+        // Load data from Supabase on startup
+        async function loadFromSupabase() {
+            try {
+                const { data, error } = await supabaseClient.from('cps_app_data').select('*');
+                if (data && data.length > 0) {
+                    data.forEach(row => {
+                        if (row.key === 'cps_users') state.users = row.value;
+                        if (row.key === 'cps_exams') state.exams = row.value;
+                        if (row.key === 'cps_submissions') state.submissions = row.value;
+                    });
+                    render();
+                }
+            } catch(e) {
+                console.log('Supabase load fallback to localStorage', e);
+            }
+        }
+        loadFromSupabase();
+
+        // Save data to localStorage and sync to Supabase
+        async function saveState() {
             localStorage.setItem('cps_users', JSON.stringify(state.users));
             localStorage.setItem('cps_exams', JSON.stringify(state.exams));
             localStorage.setItem('cps_submissions', JSON.stringify(state.submissions));
+
+            try {
+                await supabaseClient.from('cps_app_data').upsert([
+                    { key: 'cps_users', value: state.users },
+                    { key: 'cps_exams', value: state.exams },
+                    { key: 'cps_submissions', value: state.submissions }
+                ], { onConflict: 'key' });
+            } catch(e) {
+                console.log('Supabase sync error', e);
+            }
         }
 
         // Live Clock Timer for Login Screen
